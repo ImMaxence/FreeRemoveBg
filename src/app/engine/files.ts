@@ -8,10 +8,13 @@ export const EXPORT_FORMATS: Record<ExportFormat, { mime: string; extension: str
   webp: { mime: 'image/webp', extension: 'webp', transparency: true },
 };
 
-/** Formats every browser decodes; others (HEIC on Safari…) are tried and refused if unreadable. */
-export const ACCEPTED_TYPES = 'image/png,image/jpeg,image/webp,image/avif,image/gif,image/bmp,image/heic,image/heif';
+/**
+ * Every picture: the browser itself decodes it, so what it can open is accepted (JPG, PNG,
+ * WebP, AVIF, GIF, BMP everywhere, HEIC on Safari…). What it cannot open is refused with a message.
+ */
+export const ACCEPTED_TYPES = 'image/*';
 
-const IMAGE_EXTENSION = /\.(png|jpe?g|webp|avif|gif|bmp|heic|heif|jfif)$/i;
+const IMAGE_EXTENSION = /\.(png|jpe?g|jfif|webp|avif|gif|bmp|heic|heif|tiff?|ico)$/i;
 
 /** Whether a dropped or pasted file may be a picture (its type, else its extension). */
 export function isImageFile(file: { type: string; name: string }): boolean {

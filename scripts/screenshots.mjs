@@ -1,11 +1,12 @@
 // Takes the screenshots of the README (docs/screenshots) from a running build, with the sample
 // pictures. Usage: npm run screenshots [-- http://localhost:4281]
 // Uses the installed Chrome, so the AI runs on the graphics card when there is one.
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, rmSync } from 'node:fs';
 import { chromium } from '@playwright/test';
 
 const BASE = process.argv[2] ?? 'http://localhost:4281';
 const OUT = 'docs/screenshots';
+rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch({ channel: 'chrome', args: ['--enable-unsafe-webgpu', '--ignore-gpu-blocklist'] });
@@ -19,68 +20,91 @@ async function open(path, { width = 1440, height = 900, colorScheme = 'light', l
 
 const shot = (target, name) => target.screenshot({ path: `${OUT}/${name}.png` });
 
-/** Drops the samples and waits until every background is removed. */
-async function load(page, ...ids) {
+/** Scrolls a section under the floating header, lets its pictures load, then takes the viewport. */
+async function section(page, selector, name) {
+  await page.locator(selector).first().evaluate((el) => el.scrollIntoView({ block: 'start' }));
+  await page.evaluate(() => window.scrollBy(0, -100));
+  await page.waitForTimeout(800);
+  await shot(page, name);
+}
+
+/** Through the model step (a fresh browser does not have the model yet). */
+async function agree(page, label = /Download the model/, next = 'Continue to my pictures') {
+  const button = page.getByRole('button', { name: label });
+  if (await button.waitFor({ timeout: 10_000 }).then(() => true, () => false)) {
+    await button.click();
+    await page.getByRole('button', { name: next }).click({ timeout: 20_000 }).catch(() => undefined);
+  }
+}
+
+/** Drops samples, cuts them all out, and waits for every result. */
+async function cutOut(page, ...ids) {
   await page
     .locator('input[type=file]')
     .first()
     .setInputFiles(ids.map((id) => `public/samples/${id}.jpg`));
-  for (const id of ids) await page.getByRole('button', { name: new RegExp(`^${id}\\.jpg — (background removed|fond supprimé)`) }).waitFor({ timeout: 300_000 });
-  await page.waitForTimeout(500);
+  await page.getByRole('button', { name: /^Cut out (this picture|all)/ }).last().click();
+  for (const id of ids) await page.getByRole('button', { name: new RegExp(`^${id}\\.jpg — background removed`) }).waitFor({ timeout: 300_000 });
+  await page.waitForTimeout(600);
 }
 
 // --- Home page -----------------------------------------------------------------------------
 let page = await open('/');
 await shot(page, 'landing-light');
-for (const [selector, name] of [
-  ['#features', 'features'],
-  ['.table-wrap', 'compare'],
-  ['.showcase-section', 'backgrounds'],
-]) {
-  await page.locator(selector).scrollIntoViewIfNeeded();
-  await page.waitForTimeout(400);
-  await shot(page.locator(selector), name);
-}
+await section(page, '#ai', 'landing-ai');
+await section(page, '#how', 'landing-steps');
+await section(page, '#features', 'landing-features');
+await section(page, '#privacy', 'landing-privacy');
 await page.context().close();
 
 page = await open('/fr', { colorScheme: 'dark', locale: 'fr-FR' });
 await shot(page, 'landing-dark');
 await page.context().close();
 
-// --- The tool ------------------------------------------------------------------------------
+// --- The tool, step by step ------------------------------------------------------------------
 page = await open('/app');
-await load(page, 'dog', 'cat', 'plant');
-await page.getByRole('button', { name: /^cat\.jpg/ }).click();
+await page.getByRole('button', { name: /Download the model/ }).waitFor({ timeout: 10_000 });
+await shot(page, 'step-1-model');
+await agree(page);
+await page.getByRole('button', { name: 'Choose pictures' }).waitFor({ timeout: 60_000 });
+await shot(page, 'step-2-pictures');
+await page.locator('app-dropzone input[type=file]').setInputFiles('public/samples/hero.jpg');
+await page.getByRole('button', { name: 'Crop', exact: true }).click();
+await page.getByRole('button', { name: '4:5', exact: true }).click();
 await page.waitForTimeout(400);
-await shot(page, 'editor');
-
+await shot(page, 'step-3-prepare');
+await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+await page.getByRole('button', { name: 'Cut out this picture' }).click();
+await page.locator('p[role=status]').filter({ hasText: 'Background removed' }).waitFor({ timeout: 300_000 });
+await page.waitForTimeout(500);
+await shot(page, 'step-4-result');
+await cutOut(page, 'cat', 'plant');
+await page.getByRole('button', { name: /^cat\.jpg/ }).click();
 await page.getByRole('button', { name: 'Gradient', exact: true }).click();
 await page.getByRole('button', { name: 'Gradient 3' }).click();
-await page.waitForTimeout(300);
+await page.waitForTimeout(400);
 await shot(page, 'editor-background');
-
-await page.getByRole('button', { name: /^dog\.jpg/ }).click();
+await page.getByRole('button', { name: /^hero\.jpg/ }).click();
 await page.getByRole('button', { name: 'Blur', exact: true }).click();
 await page.waitForTimeout(400);
 await shot(page, 'editor-blur');
-
-// The eraser at work: a stroke across the plant, zoomed in.
+// The rescue tool: an area drawn around the plant's leaves.
 await page.getByRole('button', { name: /^plant\.jpg/ }).click();
 await page.getByRole('button', { name: 'None', exact: true }).click();
-await page.getByRole('button', { name: 'Zoom in' }).click();
-await page.getByRole('button', { name: 'Erase', exact: true }).click();
-const box = await page.locator('.viewport').boundingBox();
-await page.mouse.move(box.x + box.width * 0.3, box.y + box.height * 0.45);
+await page.getByRole('tab', { name: 'Retouch' }).click();
+await page.getByRole('button', { name: 'Rescue', exact: true }).click();
+const frame = await page.locator('.viewport canvas').boundingBox();
+await page.mouse.move(frame.x + frame.width * 0.12, frame.y + frame.height * 0.2);
 await page.mouse.down();
-await page.mouse.move(box.x + box.width * 0.55, box.y + box.height * 0.6, { steps: 12 });
+await page.mouse.move(frame.x + frame.width * 0.7, frame.y + frame.height * 0.62, { steps: 8 });
 await page.mouse.up();
-await page.mouse.move(box.x + box.width * 0.6, box.y + box.height * 0.5);
 await page.waitForTimeout(300);
-await shot(page, 'editor-brush');
+await shot(page, 'editor-rescue');
 await page.context().close();
 
 page = await open('/app', { colorScheme: 'dark' });
-await load(page, 'cat');
+await agree(page);
+await cutOut(page, 'cat');
 await shot(page, 'editor-dark');
 await page.context().close();
 
@@ -93,7 +117,8 @@ await shot(page, 'mobile-menu');
 await page.context().close();
 
 page = await open('/app', { width: 390, height: 844, mobile: true });
-await load(page, 'dog');
+await agree(page);
+await cutOut(page, 'dog');
 await shot(page, 'mobile-editor');
 await page.context().close();
 

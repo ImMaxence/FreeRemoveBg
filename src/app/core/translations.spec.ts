@@ -1,9 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseChangelog } from '../changelog/changelog-parser';
-import { BROWSERS, COMPARE, FAQ, FEATURES, PRIVACY_POINTS, STEPS } from './landing-content';
+import { AI_FACTS, BROWSERS, COMPARE, FAQ, FEATURES, PRIVACY_POINTS, STEPS } from './landing-content';
 import { LANGUAGES, languageFor } from './languages';
-import { MODEL_IDS } from './models';
 
 type Tree = { [key: string]: Tree | string | Tree[] | string[] };
 
@@ -41,7 +40,7 @@ describe('translations', () => {
       ...PRIVACY_POINTS.map((p) => `landing.privacy.${p}`),
       ...BROWSERS.flatMap((b) => [`landing.support.${b.key}`, `landing.support.${b.level}`]),
       ...FAQ.flatMap((q) => [`landing.faq.${q}.q`, `landing.faq.${q}.a`]),
-      ...MODEL_IDS.map((id) => `landing.ai.${id}`),
+      ...AI_FACTS.flatMap((f) => [`landing.ai.facts.${f}.label`, `landing.ai.facts.${f}.value`]),
     ];
     for (const key of keys) expect(english[key], key).toBeTruthy();
   });

@@ -35,6 +35,13 @@ export interface RemoveWorkerApi {
   /** To call before anything else. */
   configure(options: WorkerOptions): void;
   target(): Promise<WorkerTarget>;
+  /** Whether the browser already holds the model's weights: then nothing needs downloading. */
+  isCached(): Promise<boolean>;
+  /**
+   * Downloads the model if needed (only once the user agreed to it), then prepares it on the
+   * device. `remove` does it too, but then the user has already agreed.
+   */
+  load(onProgress: (p: RemoveProgress) => void): Promise<WorkerTarget>;
   /** `image`: the picture stretched to the square size of the target. */
   remove(image: ImageBitmap, onProgress: (p: RemoveProgress) => void): Promise<RemoveResult>;
 }

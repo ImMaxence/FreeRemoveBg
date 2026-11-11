@@ -1,13 +1,13 @@
 {
   "name": "FreeRemoveBg",
   "short_name": "RemoveBg",
-  "description": "Remove image backgrounds for free, 100% in your browser: AI cutout, new backgrounds, batch, full resolution. Nothing is uploaded.",
+  "description": "Remove picture backgrounds for free, in your browser, with the open source IS-Net AI: new backgrounds, batches, full size. Nothing is uploaded.",
   "id": "/",
   "start_url": "/app",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0a0d0c",
-  "theme_color": "#0b7a5a",
+  "background_color": "#f5f0e6",
+  "theme_color": "#ffd60a",
   "categories": ["photo", "productivity", "utilities"],
   "icons": [
     { "src": "icons/icon-72x72.png", "sizes": "72x72", "type": "image/png", "purpose": "any" },

@@ -14,25 +14,25 @@ import { Icon } from './icon';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.over]': 'over()',
-    '[class.compact]': 'compact()',
     '(dragover)': 'onDragOver($event)',
     '(dragleave)': 'over.set(false)',
     '(drop)': 'onDrop($event)',
   },
   template: `
     <input #picker class="sr-only" type="file" multiple tabindex="-1" aria-hidden="true" [accept]="accept" (change)="onPick(picker)" />
-    <span class="art" aria-hidden="true"><app-icon name="images" [size]="compact() ? 26 : 34" /></span>
+    <span class="art" aria-hidden="true"><app-icon name="images" [size]="34" /></span>
     <button class="btn primary lg" type="button" (click)="picker.click()">
-      <app-icon name="upload" [size]="18" /> {{ 'drop.choose' | transloco }}
+      <app-icon name="upload" [size]="19" /> {{ 'drop.choose' | transloco }}
     </button>
     <p class="hint">{{ 'drop.hint' | transloco }}</p>
+    <p class="formats">{{ 'drop.formats' | transloco }}</p>
     @if (samples()) {
       <div class="samples">
-        <span class="muted">{{ 'drop.samples' | transloco }}</span>
+        <span>{{ 'drop.samples' | transloco }}</span>
         <div class="row">
-          @for (s of sampleList; track s.id) {
-            <button type="button" class="sample" (click)="sample.emit(s)" [attr.aria-label]="'drop.sample.' + s.id | transloco">
-              <img [src]="s.thumb" alt="" width="56" height="56" loading="lazy" decoding="async" />
+          @for (s of sampleList; track s.id; let i = $index) {
+            <button type="button" class="sample" [style.--tilt]="(i - 1) * 4 + 'deg'" (click)="sample.emit(s)" [attr.aria-label]="'drop.sample.' + s.id | transloco">
+              <img [src]="s.thumb" alt="" width="64" height="64" loading="lazy" decoding="async" />
             </button>
           }
         </div>
@@ -44,81 +44,84 @@ import { Icon } from './icon';
       display: grid;
       justify-items: center;
       gap: 14px;
-      padding: 36px 24px;
-      border: 2px dashed var(--border-strong);
-      border-radius: var(--radius-lg);
-      background: var(--bg-elev);
+      padding: 46px 28px 34px;
+      border: 2.5px dashed var(--line);
+      border-radius: var(--r-xl);
+      background: var(--card);
       text-align: center;
       transition:
-        border-color 0.15s,
         background 0.15s,
-        transform 0.15s;
+        transform 0.2s var(--ease);
     }
     :host(.over) {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-      transform: scale(1.01);
-    }
-    :host(.compact) {
-      padding: 24px 16px;
-      gap: 10px;
+      background: var(--yellow-soft);
+      transform: scale(1.01) rotate(-0.4deg);
     }
     .art {
       display: grid;
       place-items: center;
-      width: 68px;
-      height: 68px;
-      border-radius: 20px;
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-    :host(.compact) .art {
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
+      width: 76px;
+      height: 76px;
+      margin-bottom: 4px;
+      border: 2px solid var(--line);
+      border-radius: 24px;
+      background: var(--yellow);
+      color: var(--on-yellow);
+      box-shadow: var(--shadow);
+      transform: rotate(-6deg);
     }
     .hint {
-      color: var(--text-muted);
-      font-size: 14px;
-      max-width: 340px;
+      color: var(--ink-muted);
+      font-size: 15px;
+      max-width: 400px;
+    }
+    .formats {
+      margin-top: -6px;
+      color: var(--ink-faint);
+      font-size: 13px;
+      max-width: 440px;
     }
     .samples {
       display: grid;
       justify-items: center;
-      gap: 8px;
-      margin-top: 6px;
-      font-size: 13px;
+      gap: 10px;
+      margin-top: 10px;
+      padding-top: 18px;
+      border-top: 1.5px dashed var(--line-soft);
+      width: min(100%, 360px);
+      font-size: 13.5px;
+      font-weight: 600;
     }
     .row {
       display: flex;
-      gap: 8px;
+      gap: 14px;
     }
     .sample {
       padding: 0;
-      border: 2px solid transparent;
-      border-radius: 12px;
-      background: none;
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      box-shadow: var(--shadow-sm);
       cursor: pointer;
       overflow: hidden;
+      transform: rotate(var(--tilt, 0deg));
       transition:
-        transform 0.15s,
-        border-color 0.15s;
+        transform 0.15s var(--ease),
+        box-shadow 0.15s var(--ease);
       &:hover {
-        transform: translateY(-2px);
-        border-color: var(--accent);
+        transform: rotate(0deg) translateY(-3px);
+        box-shadow: var(--shadow);
       }
       img {
         display: block;
-        width: 56px;
-        height: 56px;
+        width: 64px;
+        height: 64px;
         object-fit: cover;
       }
     }
   `,
 })
 export class Dropzone {
-  /** Smaller, for the editor's side panel. */
-  readonly compact = input(false);
   /** Offers the sample pictures. */
   readonly samples = input(true);
   readonly files = output<File[]>();

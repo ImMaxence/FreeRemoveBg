@@ -1,0 +1,107 @@
+@let it = item();
+<section class="stage panel" [attr.aria-label]="'tool.prepare.preview' | transloco">
+  <div class="stage-head">
+    <span class="file" [title]="it.name">{{ it.name }}</span>
+    <span class="faint size">{{ it.width }} × {{ it.height }} px</span>
+  </div>
+  <div #viewport class="viewport">
+    <div class="frame" [style.width.px]="display().width" [style.height.px]="display().height">
+      <canvas #canvas role="img" [attr.aria-label]="'tool.prepare.alt' | transloco: { name: it.name }"></canvas>
+      @if (frame(); as f) {
+        <div
+          class="crop"
+          tabindex="0"
+          role="group"
+          [attr.aria-label]="('tool.prepare.cropFrame' | transloco) + ', ' + frameSize()"
+          [style.left.%]="percent(f.x, it.width)"
+          [style.top.%]="percent(f.y, it.height)"
+          [style.width.%]="percent(f.width, it.width)"
+          [style.height.%]="percent(f.height, it.height)"
+          (pointerdown)="grab($event, 'move')"
+          (pointermove)="move($event)"
+          (pointerup)="release()"
+          (pointercancel)="release()"
+          (keydown)="onCropKey($event)"
+        >
+          <span class="thirds" aria-hidden="true"></span>
+          <span class="crop-size" aria-hidden="true">{{ frameSize() }}</span>
+          @for (h of handles; track h) {
+            <span class="handle" [class]="'handle ' + h" aria-hidden="true" (pointerdown)="grab($event, h)" (pointermove)="move($event)" (pointerup)="release()" (pointercancel)="release()"></span>
+          }
+        </div>
+      }
+    </div>
+    @if (busy()) {
+      <div class="busy" aria-hidden="true"><span class="spinner"></span></div>
+    }
+  </div>
+  @if (it.resized) {
+    <p class="faint note">{{ 'tool.resized' | transloco }}</p>
+  }
+</section>
+
+<aside class="side" [attr.aria-label]="'tool.prepare.title' | transloco">
+  <section class="card group">
+    <span class="eyebrow">{{ 'tool.prepare.eyebrow' | transloco }}</span>
+    <h2>{{ 'tool.prepare.title' | transloco }}</h2>
+    <p class="muted">{{ 'tool.prepare.text' | transloco }}</p>
+
+    <div class="tool-grid" role="group" [attr.aria-label]="'tool.prepare.tools' | transloco">
+      <button class="tool-btn" type="button" [disabled]="busy()" (click)="rotate(-1)">
+        <app-icon name="rotate-ccw" [size]="20" />
+        <span>{{ 'tool.prepare.rotateLeft' | transloco }}</span>
+      </button>
+      <button class="tool-btn" type="button" [disabled]="busy()" (click)="rotate(1)">
+        <app-icon name="rotate-cw" [size]="20" />
+        <span>{{ 'tool.prepare.rotateRight' | transloco }}</span>
+      </button>
+      <button class="tool-btn" type="button" [disabled]="busy()" (click)="flip()">
+        <app-icon name="flip" [size]="20" />
+        <span>{{ 'tool.prepare.flip' | transloco }}</span>
+      </button>
+      <button class="tool-btn" type="button" [class.on]="cropping()" [attr.aria-pressed]="cropping()" [disabled]="busy()" (click)="cropping() ? cancelCrop() : startCrop()">
+        <app-icon name="crop" [size]="20" />
+        <span>{{ 'tool.prepare.crop' | transloco }}</span>
+      </button>
+    </div>
+
+    @if (cropping()) {
+      <div class="crop-options">
+        <span class="mini-label" id="ratio-label">{{ 'tool.prepare.ratio' | transloco }}</span>
+        <div class="ratios" role="group" aria-labelledby="ratio-label">
+          @for (r of ratios; track r) {
+            <button type="button" class="chip-btn" [class.active]="ratio() === r" [attr.aria-pressed]="ratio() === r" (click)="setRatio(r)">{{ 'tool.prepare.ratios.' + r | transloco }}</button>
+          }
+        </div>
+        <p class="faint help">{{ 'tool.prepare.cropHelp' | transloco }}</p>
+        <div class="row">
+          <button class="btn dark sm" type="button" (click)="applyCrop()"><app-icon name="check" [size]="16" /> {{ 'tool.prepare.apply' | transloco }}</button>
+          <button class="btn ghost sm" type="button" (click)="cancelCrop()">{{ 'tool.prepare.cancel' | transloco }}</button>
+        </div>
+      </div>
+    }
+
+    @if (modified()) {
+      <button class="btn ghost sm restore" type="button" [disabled]="busy()" (click)="restore()"><app-icon name="restore" [size]="16" /> {{ 'tool.prepare.original' | transloco }}</button>
+    }
+  </section>
+
+  <section class="go">
+    @if (store.modelState() === 'downloading') {
+      <p class="model-wait" role="status">
+        <span class="spinner small" aria-hidden="true"></span>
+        {{ 'tool.prepare.modelWait' | transloco: { percent: modelPercent() } }}
+      </p>
+    }
+    <button class="btn primary lg block" type="button" [disabled]="busy()" (click)="cutOut()">
+      <app-icon name="sparkles" [size]="19" />
+      {{ 'tool.prepare.go' | transloco }}
+    </button>
+    @if (otherDrafts() > 0) {
+      <button class="btn block" type="button" [disabled]="busy()" (click)="cutOut(true)">
+        {{ 'tool.prepare.goAll' | transloco: { count: otherDrafts() + 1 } }}
+      </button>
+    }
+    <p class="faint help center">{{ 'tool.prepare.skipHint' | transloco }}</p>
+  </section>
+</aside>

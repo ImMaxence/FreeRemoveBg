@@ -1,0 +1,265 @@
+@let it = item();
+<!-- Announced by screen readers when the state of the picture changes. -->
+<p class="sr-only" role="status" aria-live="polite">{{ statusKey() | transloco }}</p>
+
+<section class="stage panel" [attr.aria-label]="'tool.result.preview' | transloco">
+  <div class="stage-head">
+    <div class="segmented compact" role="group" [attr.aria-label]="'tool.result.view' | transloco">
+      <button type="button" [class.active]="view() === 'original'" [attr.aria-pressed]="view() === 'original'" (click)="view.set('original')">{{ 'tool.result.original' | transloco }}</button>
+      <button type="button" [class.active]="view() === 'result'" [attr.aria-pressed]="view() === 'result'" (click)="view.set('result')">{{ 'tool.result.result' | transloco }}</button>
+    </div>
+    <span class="spacer"></span>
+    <button class="btn ghost icon sm" type="button" [disabled]="!it.undo.length" (click)="store.undo(it.id)" [attr.aria-label]="'tool.result.undo' | transloco" [title]="('tool.result.undo' | transloco) + ' (Ctrl+Z)'">
+      <app-icon name="undo" [size]="17" />
+    </button>
+    <button class="btn ghost icon sm" type="button" [disabled]="!it.redo.length" (click)="store.redo(it.id)" [attr.aria-label]="'tool.result.redo' | transloco" [title]="('tool.result.redo' | transloco) + ' (Ctrl+Y)'">
+      <app-icon name="redo" [size]="17" />
+    </button>
+    <span class="divider" aria-hidden="true"></span>
+    <button class="btn ghost icon sm" type="button" [disabled]="zoom() === 1" (click)="zoomBy(-1)" [attr.aria-label]="'tool.result.zoomOut' | transloco" [title]="'tool.result.zoomOut' | transloco">
+      <app-icon name="zoom-out" [size]="17" />
+    </button>
+    <button class="btn ghost sm zoom-value" type="button" (click)="zoom.set(1)" [title]="'tool.result.zoomFit' | transloco" [attr.aria-label]="'tool.result.zoomFit' | transloco">{{ percent(zoom()) }} %</button>
+    <button class="btn ghost icon sm" type="button" [disabled]="zoom() === 8" (click)="zoomBy(1)" [attr.aria-label]="'tool.result.zoomIn' | transloco" [title]="'tool.result.zoomIn' | transloco">
+      <app-icon name="zoom" [size]="17" />
+    </button>
+  </div>
+
+  <div #viewport class="viewport" (wheel)="onWheel($event)">
+    <div class="frame" [class.done]="done() && view() === 'result'" [style.width.px]="display().width" [style.height.px]="display().height">
+      <canvas
+        #canvas
+        role="img"
+        [attr.aria-label]="(view() === 'original' || !done() ? 'tool.result.altOriginal' : 'tool.result.altResult') | transloco: { name: it.name }"
+        [class.brush]="brushing()"
+        [class.select]="rescuing()"
+        (pointerdown)="onPointerDown($event)"
+        (pointermove)="onPointerMove($event)"
+        (pointerup)="onPointerUp()"
+        (pointercancel)="onPointerUp()"
+        (pointerleave)="cursor.set(null)"
+      ></canvas>
+      @if (area(); as a) {
+        <span
+          class="selection"
+          aria-hidden="true"
+          [style.left.%]="percent(a.x, it.width)"
+          [style.top.%]="percent(a.y, it.height)"
+          [style.width.%]="percent(a.width, it.width)"
+          [style.height.%]="percent(a.height, it.height)"
+        ></span>
+      }
+      @if (cursor(); as c) {
+        @if (brushing()) {
+          <span class="brush-cursor" [class.erase]="tool() === 'erase'" [style.width.px]="brush()" [style.height.px]="brush()" [style.transform]="'translate(' + (c.x - brush() / 2) + 'px,' + (c.y - brush() / 2) + 'px)'" aria-hidden="true"></span>
+        }
+      }
+      @if (it.status === 'queued' || it.status === 'working') {
+        <div class="scan" aria-hidden="true"></div>
+      }
+    </div>
+
+    @if (it.status === 'queued' || it.status === 'working') {
+      <div class="working card">
+        @if (store.modelState() === 'downloading') {
+          <b>{{ 'tool.result.waitModel' | transloco }}</b>
+          <div class="progress"><div [style.width.%]="modelPercent()"></div></div>
+          @if (store.modelDownload(); as d) {
+            @if (d.loaded !== undefined && d.total) {
+              <app-download-progress [loaded]="d.loaded" [total]="d.total" />
+            }
+          }
+        } @else if (store.modelState() === 'preparing' || store.progress()?.stage === 'load') {
+          <b>{{ 'tool.result.loading' | transloco }}</b>
+          <div class="progress indeterminate"><div></div></div>
+        } @else if (it.status === 'queued') {
+          <b>{{ 'tool.result.queued' | transloco }}</b>
+          <div class="progress indeterminate"><div></div></div>
+        } @else {
+          <b>{{ 'tool.result.working' | transloco }}</b>
+          <div class="progress indeterminate"><div></div></div>
+        }
+      </div>
+    }
+    @if (it.status === 'error') {
+      <div class="working card error" role="alert">
+        <b><app-icon name="alert" [size]="18" /> {{ 'tool.result.error' | transloco }}</b>
+        <p class="muted">{{ 'tool.result.errorText' | transloco }}</p>
+        @if (it.error) {
+          <code>{{ it.error }}</code>
+        }
+        <div class="row">
+          <button class="btn primary sm" type="button" (click)="store.start([it.id])"><app-icon name="refresh" [size]="15" /> {{ 'tool.result.retry' | transloco }}</button>
+          <button class="btn sm" type="button" (click)="store.backToPrepare(it.id)">{{ 'tool.result.back' | transloco }}</button>
+          <a class="btn ghost sm" [href]="repoUrl + '/issues'" target="_blank" rel="noopener">{{ 'tool.result.report' | transloco }}</a>
+        </div>
+      </div>
+    }
+  </div>
+
+  <p class="meta faint">
+    <span>{{ it.width }} × {{ it.height }} px</span>
+    @if (store.engine(); as e) {
+      <span>{{ models[e.model].name }} · {{ (e.device === 'webgpu' ? 'tool.result.gpu' : 'tool.result.cpu') | transloco }} · {{ e.ms }} ms</span>
+    }
+  </p>
+</section>
+
+<aside class="side" [attr.aria-label]="'tool.result.settings' | transloco">
+  <div class="side-top">
+    <button class="btn ghost sm" type="button" [disabled]="!done() && it.status !== 'error'" (click)="backToPrepare()"><app-icon name="arrow-left" [size]="16" /> {{ 'tool.result.back' | transloco }}</button>
+  </div>
+
+  @if (otherDrafts().length) {
+    <div class="waiting">
+      <span>{{ 'tool.result.waiting' | transloco: { count: otherDrafts().length } }}</span>
+      <button class="btn sm" type="button" (click)="prepareNext()">{{ 'tool.result.prepareNext' | transloco }} <app-icon name="arrow-right" [size]="15" /></button>
+    </div>
+  }
+
+  @if (rescueFailed()) {
+    <div class="inline-error" role="alert">
+      <app-icon name="alert" [size]="16" /> {{ 'tool.result.rescueFailed' | transloco }}
+      <button class="btn ghost icon sm" type="button" (click)="rescueFailed.set(false)" [attr.aria-label]="'common.close' | transloco"><app-icon name="x" [size]="14" /></button>
+    </div>
+  }
+
+  <section class="card group">
+    <div class="tabs" role="tablist" [attr.aria-label]="'tool.result.settings' | transloco">
+      <button id="tab-background" type="button" role="tab" [attr.aria-selected]="tab() === 'background'" aria-controls="panel-background" [tabindex]="tab() === 'background' ? 0 : -1" (click)="tab.set('background')" (keydown)="onTabKey($event)">
+        <app-icon name="palette" [size]="17" /> {{ 'tool.result.tabs.background' | transloco }}
+      </button>
+      <button id="tab-retouch" type="button" role="tab" [attr.aria-selected]="tab() === 'retouch'" aria-controls="panel-retouch" [tabindex]="tab() === 'retouch' ? 0 : -1" (click)="tab.set('retouch')" (keydown)="onTabKey($event)">
+        <app-icon name="brush" [size]="17" /> {{ 'tool.result.tabs.retouch' | transloco }}
+      </button>
+    </div>
+
+    @if (tab() === 'background') {
+      <div id="panel-background" role="tabpanel" aria-labelledby="tab-background" class="tab-panel">
+        <div class="kinds" role="group" [attr.aria-label]="'tool.result.tabs.background' | transloco">
+          @for (k of kinds; track k.id) {
+            <button type="button" [class.active]="panel() === k.id" [attr.aria-pressed]="panel() === k.id" (click)="openKind(k.id)">
+              <app-icon [name]="k.icon" [size]="20" />
+              <span>{{ 'tool.background.' + k.id | transloco }}</span>
+            </button>
+          }
+        </div>
+
+        @switch (panel()) {
+          @case ('transparent') {
+            <p class="faint help">{{ 'tool.background.transparentHelp' | transloco }}</p>
+          }
+          @case ('color') {
+            <div class="swatches" role="group" [attr.aria-label]="'tool.background.color' | transloco">
+              @for (c of colors; track c) {
+                <button type="button" class="swatch" [style.background]="c" [class.active]="bg().kind === 'color' && $any(bg()).color === c" [attr.aria-label]="c" [attr.aria-pressed]="bg().kind === 'color' && $any(bg()).color === c" [title]="c" (click)="setColor(c)"></button>
+              }
+              <label class="swatch custom" [title]="'tool.background.custom' | transloco">
+                <span class="sr-only">{{ 'tool.background.custom' | transloco }}</span>
+                <input type="color" [value]="$any(bg()).color ?? '#ffffff'" (input)="setColor(value($event))" />
+              </label>
+            </div>
+          }
+          @case ('gradient') {
+            <div class="swatches" role="group" [attr.aria-label]="'tool.background.gradient' | transloco">
+              @for (g of gradients; track $index) {
+                <button
+                  type="button"
+                  class="swatch"
+                  [style.background]="'linear-gradient(135deg,' + g[0] + ',' + g[1] + ')'"
+                  [class.active]="$any(bg()).from === g[0] && $any(bg()).to === g[1]"
+                  [attr.aria-label]="('tool.background.gradient' | transloco) + ' ' + ($index + 1)"
+                  (click)="setGradient(g[0], g[1])"
+                ></button>
+              }
+            </div>
+            @if (bg(); as b) {
+              @if (b.kind === 'gradient') {
+                <div class="pair">
+                  <label>{{ 'tool.background.from' | transloco }} <input type="color" [value]="b.from" (input)="setGradient(value($event), b.to)" /></label>
+                  <label>{{ 'tool.background.to' | transloco }} <input type="color" [value]="b.to" (input)="setGradient(b.from, value($event))" /></label>
+                </div>
+              }
+            }
+          }
+          @case ('image') {
+            <input #bgPicker class="sr-only" type="file" tabindex="-1" aria-hidden="true" [accept]="accept" (change)="onBackgroundPick(bgPicker)" />
+            <button class="btn block" type="button" (click)="bgPicker.click()"><app-icon name="upload" [size]="17" /> {{ 'tool.background.choose' | transloco }}</button>
+            @if (bg(); as b) {
+              @if (b.kind === 'image') {
+                <p class="faint help file">{{ b.name }}</p>
+              }
+            }
+          }
+          @case ('blur') {
+            @if (bg(); as b) {
+              @if (b.kind === 'blur') {
+                <div class="field">
+                  <label for="blur">{{ 'tool.background.amount' | transloco }} <span class="value">{{ b.amount }} %</span></label>
+                  <input id="blur" type="range" min="0" max="100" step="1" [value]="b.amount" (input)="setBlur(+value($event))" />
+                </div>
+              }
+            }
+          }
+        }
+        <p class="faint help">{{ 'tool.background.batchNote' | transloco }}</p>
+      </div>
+    } @else {
+      <div id="panel-retouch" role="tabpanel" aria-labelledby="tab-retouch" class="tab-panel">
+        <div class="tool-grid four" role="group" [attr.aria-label]="'tool.result.tabs.retouch' | transloco">
+          @for (t of tools; track t.id) {
+            <button class="tool-btn" type="button" [class.on]="tool() === t.id" [attr.aria-pressed]="tool() === t.id" [disabled]="t.id !== 'move' && !canRetouch()" [title]="('tool.retouch.' + t.id | transloco) + ' (' + t.key + ')'" (click)="setTool(t.id)">
+              <app-icon [name]="t.icon" [size]="20" />
+              <span>{{ 'tool.retouch.' + t.id | transloco }}</span>
+            </button>
+          }
+        </div>
+
+        @if (tool() === 'rescue') {
+          <p class="help">{{ 'tool.retouch.rescueHelp' | transloco }}</p>
+          @if (area()) {
+            <div class="row">
+              <button class="btn dark sm" type="button" (click)="rescue()"><app-icon name="sparkles" [size]="16" /> {{ 'tool.retouch.rescueGo' | transloco }}</button>
+              <button class="btn ghost sm" type="button" (click)="area.set(null)">{{ 'tool.retouch.cancel' | transloco }}</button>
+            </div>
+          }
+        } @else {
+          <div class="field">
+            <label for="brush">{{ 'tool.retouch.size' | transloco }} <span class="value">{{ brush() }} px</span></label>
+            <input id="brush" type="range" min="4" max="200" step="2" [value]="brush()" (input)="brush.set(+value($event))" />
+          </div>
+          <p class="faint help">{{ 'tool.retouch.help' | transloco }}</p>
+        }
+        <button class="btn ghost sm" type="button" [disabled]="!it.undo.length" (click)="store.resetMask(it.id)"><app-icon name="restore" [size]="15" /> {{ 'tool.retouch.reset' | transloco }}</button>
+      </div>
+    }
+  </section>
+
+  <section class="card group export">
+    <h2>{{ 'tool.export.title' | transloco }}</h2>
+    <div class="segmented" role="group" [attr.aria-label]="'tool.export.format' | transloco">
+      @for (f of formats; track f) {
+        <button type="button" [class.active]="format() === f" [attr.aria-pressed]="format() === f" (click)="format.set(f)">{{ f.toUpperCase() }}</button>
+      }
+    </div>
+    @if (format() === 'jpg' && bg().kind === 'transparent') {
+      <p class="faint help">{{ 'tool.export.jpgNote' | transloco }}</p>
+    }
+    <button class="btn primary lg block" type="button" [disabled]="!done() || saving()" (click)="download()">
+      <app-icon name="download" [size]="19" /> {{ 'tool.export.download' | transloco }}
+    </button>
+    <p class="faint help center">{{ 'tool.export.full' | transloco: { width: it.width, height: it.height } }}</p>
+    <div class="row two">
+      <button class="btn sm" type="button" [disabled]="!done()" (click)="copy()">
+        <app-icon [name]="copied() === 'ok' ? 'check' : 'copy'" [size]="16" />
+        {{ (copied() === 'ok' ? 'tool.export.copied' : copied() === 'error' ? 'tool.export.copyError' : 'tool.export.copy') | transloco }}
+      </button>
+      @if (store.doneCount() > 1) {
+        <button class="btn sm" type="button" [disabled]="saving()" (click)="downloadAll()">
+          <app-icon name="archive" [size]="16" /> {{ 'tool.export.all' | transloco: { count: store.doneCount() } }}
+        </button>
+      }
+    </div>
+    <span class="sr-only" role="status">{{ copied() === 'ok' ? ('tool.export.copied' | transloco) : '' }}</span>
+  </section>
+</aside>

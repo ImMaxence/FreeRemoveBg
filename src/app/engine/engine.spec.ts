@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { blurRadius, coverRect } from './compose';
 import { exportName, isImageFile, megapixels } from './files';
 import { alphaFromScores, halfToFloat, maskSize, pixelsToInput, workingSize } from './mask';
+import { areaBetween, scaleRect, turnedSize } from './prepare';
 import { crc32, uniqueNames, zip } from './zip';
 
 describe('mask', () => {
@@ -47,6 +48,30 @@ describe('compose', () => {
   it('scales the blur with the picture', () => {
     expect(blurRadius(0, 1000, 500)).toBe(0);
     expect(blurRadius(50, 2000, 1000)).toBe(2 * blurRadius(50, 1000, 500));
+  });
+});
+
+describe('prepare', () => {
+  it('builds an area from two points, in any order and clamped to the picture', () => {
+    expect(areaBetween(0.25, 0.5, 0.75, 1, 800, 600)).toEqual({ x: 200, y: 300, width: 400, height: 300 });
+    expect(areaBetween(0.75, 1, 0.25, 0.5, 800, 600)).toEqual({ x: 200, y: 300, width: 400, height: 300 });
+    expect(areaBetween(-0.2, -0.1, 0.5, 0.5, 800, 600)).toEqual({ x: 0, y: 0, width: 400, height: 300 });
+    expect(areaBetween(0.5, 0.5, 1.4, 1.2, 800, 600)).toEqual({ x: 400, y: 300, width: 400, height: 300 });
+  });
+
+  it('ignores an area too small to be meant', () => {
+    expect(areaBetween(0.5, 0.5, 0.505, 0.9, 800, 600)).toBeNull();
+    expect(areaBetween(0.5, 0.5, 0.5, 0.5, 800, 600)).toBeNull();
+  });
+
+  it('scales an area to a copy of the picture', () => {
+    expect(scaleRect({ x: 200, y: 300, width: 400, height: 300 }, 800, 600, 400, 300)).toEqual({ x: 100, y: 150, width: 200, height: 150 });
+  });
+
+  it('swaps the sides of a picture turned by a quarter', () => {
+    expect(turnedSize(800, 600, 1)).toEqual({ width: 600, height: 800 });
+    expect(turnedSize(800, 600, -1)).toEqual({ width: 600, height: 800 });
+    expect(turnedSize(800, 600, 2)).toEqual({ width: 800, height: 600 });
   });
 });
 

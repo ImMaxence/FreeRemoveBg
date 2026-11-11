@@ -6,8 +6,10 @@
  * - `mean` / `std`: how the pixels are normalised before the model reads them
  * - `dtypes`: the precisions its repository offers (fp16 needs a graphics card that supports it)
  *
- * Tried and left out, with ONNX Runtime Web 1.31: BiRefNet lite (WebGPU refuses one of its
- * operations, WebAssembly runs out of memory) and BEN2 (WebGPU cannot allocate its buffers).
+ * Tried and left out, with ONNX Runtime Web 1.31 (worth trying again when it moves on):
+ * - BiRefNet lite: on WebGPU one operation needs 17 storage buffers where graphics cards offer
+ *   16 at most, even on a device created with every limit raised; WebAssembly runs out of memory.
+ * - BEN2: its LayerNorm shader is refused by WebGPU, and its only weights are fp16.
  */
 export const MODELS = {
   isnet: {

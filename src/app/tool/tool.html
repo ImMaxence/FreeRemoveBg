@@ -1,0 +1,124 @@
+<div class="tool container">
+  <h1 class="sr-only">{{ 'tool.title' | transloco }}</h1>
+  <input #picker class="sr-only" type="file" multiple tabindex="-1" aria-hidden="true" [accept]="accept" (change)="onPick(picker)" />
+
+  <ol class="stepper" [attr.aria-label]="'tool.steps.label' | transloco">
+    @for (s of steps(); track s.id; let i = $index) {
+      <li [class]="s.state" [attr.aria-current]="s.state === 'current' ? 'step' : null">
+        <span class="num" aria-hidden="true">
+          @if (s.state === 'done') {
+            <app-icon name="check" [size]="16" />
+          } @else {
+            {{ i + 1 }}
+          }
+        </span>
+        <span class="label">
+          <b>{{ 'tool.steps.' + s.id | transloco }}</b>
+          @if (s.id === 'model') {
+            <small>{{ modelNote() }}</small>
+          } @else {
+            <small>{{ 'tool.steps.' + s.id + 'Note' | transloco }}</small>
+          }
+        </span>
+        @if (s.state === 'done') {
+          <span class="sr-only">{{ 'tool.steps.doneLabel' | transloco }}</span>
+        }
+      </li>
+    }
+  </ol>
+
+  @if (store.rejected().length) {
+    <div class="notice" role="alert">
+      <app-icon name="alert" [size]="18" />
+      <span>{{ 'tool.rejected' | transloco: { files: store.rejected().join(', ') } }}</span>
+      <button class="btn ghost icon sm" type="button" (click)="store.rejected.set([])" [attr.aria-label]="'common.close' | transloco">
+        <app-icon name="x" [size]="16" />
+      </button>
+    </div>
+  }
+
+  @switch (view()) {
+    @case ('checking') {
+      <div class="checking" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        {{ 'tool.checking' | transloco }}
+      </div>
+    }
+    @case ('model') {
+      <app-model-step (agree)="agree()" (continue)="continue()" (decline)="decline()" />
+    }
+    @case ('images') {
+      <section class="images">
+        <div class="images-copy">
+          <span class="eyebrow">{{ 'tool.images.eyebrow' | transloco }}</span>
+          <h2>{{ 'tool.images.title' | transloco }}</h2>
+          <p class="muted">{{ 'tool.images.text' | transloco }}</p>
+        </div>
+        <app-dropzone (files)="add($event)" (sample)="addSample($event)" />
+        <p class="private"><app-icon name="lock" [size]="16" /> {{ 'tool.private' | transloco }}</p>
+      </section>
+    }
+    @default {
+      <div class="workspace">
+        <section class="strip" [attr.aria-label]="'tool.images.list' | transloco">
+          <ul>
+            @for (i of store.items(); track i.id) {
+              <li [class.active]="i.id === store.selectedId()">
+                <button
+                  type="button"
+                  class="thumb"
+                  [attr.aria-current]="i.id === store.selectedId() ? 'true' : null"
+                  [attr.aria-label]="i.name + ' — ' + (stateKey(i.status) | transloco)"
+                  [title]="i.name"
+                  (click)="store.selectedId.set(i.id)"
+                >
+                  @if (i.thumb) {
+                    <img [src]="i.thumb" alt="" />
+                  }
+                  <span class="badge" [class]="i.status" aria-hidden="true">
+                    @switch (i.status) {
+                      @case ('done') {
+                        <app-icon name="check" [size]="12" />
+                      }
+                      @case ('error') {
+                        <app-icon name="alert" [size]="12" />
+                      }
+                      @case ('draft') {
+                        <app-icon name="crop" [size]="12" />
+                      }
+                      @default {
+                        <span class="dot-spin"></span>
+                      }
+                    }
+                  </span>
+                </button>
+                <button type="button" class="remove" (click)="store.remove(i.id)" [attr.aria-label]="'tool.remove' | transloco: { name: i.name }" [title]="'tool.remove' | transloco: { name: i.name }">
+                  <app-icon name="x" [size]="12" />
+                </button>
+              </li>
+            }
+            <li>
+              <button type="button" class="thumb add" (click)="picker.click()" [attr.aria-label]="'tool.add' | transloco" [title]="'tool.add' | transloco">
+                <app-icon name="plus" [size]="22" />
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        @if (store.selected(); as it) {
+          @if (view() === 'prepare') {
+            <app-prepare-view [item]="it" />
+          } @else {
+            <app-result-view [item]="it" />
+          }
+        }
+      </div>
+    }
+  }
+
+  @if (dragging()) {
+    <div class="drop-overlay" aria-hidden="true">
+      <div><app-icon name="upload" [size]="40" /> {{ 'tool.dropHere' | transloco }}</div>
+    </div>
+  }
+</div>

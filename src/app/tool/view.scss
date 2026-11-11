@@ -1,0 +1,644 @@
+/* The "Prepare" and "Result" views: the picture on the left, its tools on the right. */
+:host {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 364px;
+  gap: 18px;
+  align-items: start;
+  min-width: 0;
+}
+
+/* Stage ------------------------------------------------------------------------------------- */
+
+.stage {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.stage-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 4px;
+  flex-wrap: wrap;
+  .file {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 650;
+  }
+  .size {
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .spacer {
+    flex: 1;
+  }
+  .divider {
+    width: 1.5px;
+    height: 22px;
+    margin: 0 6px;
+    background: var(--line-soft);
+  }
+  .zoom-value {
+    min-width: 64px;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.segmented.compact {
+  min-width: 220px;
+}
+
+.viewport {
+  position: relative;
+  display: grid;
+  height: min(68dvh, 740px);
+  border-radius: var(--r);
+  /* A cutting mat: a fine grid on the deep paper. */
+  background:
+    linear-gradient(var(--line-soft) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px) 0 0 / 28px 28px,
+    var(--paper-deep);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.frame {
+  position: relative;
+  grid-area: 1 / 1;
+  margin: auto;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  background: var(--card);
+  &.done {
+    background: var(--checker);
+  }
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  &.brush {
+    cursor: none;
+    /* The finger draws instead of scrolling the page. */
+    touch-action: none;
+  }
+  &.select {
+    cursor: crosshair;
+    touch-action: none;
+  }
+}
+
+.note,
+.meta {
+  padding: 0 4px;
+  font-size: 13px;
+}
+
+.meta {
+  display: flex;
+  gap: 6px 18px;
+  flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.busy {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--paper-deep) 60%, transparent);
+}
+
+.spinner {
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--line-soft);
+  border-top-color: var(--ink);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  &.small {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Crop frame ---------------------------------------------------------------------------------- */
+
+.crop {
+  position: absolute;
+  border: 2px solid #fff;
+  outline: 1.5px solid rgb(0 0 0 / 0.65);
+  /* Everything around the frame is dimmed. */
+  box-shadow: 0 0 0 9999px rgb(10 9 7 / 0.55);
+  cursor: move;
+  touch-action: none;
+  &:focus-visible {
+    outline: 3px solid var(--yellow);
+  }
+}
+
+.thirds {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent calc(33.33% - 0.5px), rgb(255 255 255 / 0.55) calc(33.33% - 0.5px) calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px) calc(66.66% - 0.5px), rgb(255 255 255 / 0.55) calc(66.66% - 0.5px) calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px)),
+    linear-gradient(transparent calc(33.33% - 0.5px), rgb(255 255 255 / 0.55) calc(33.33% - 0.5px) calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px) calc(66.66% - 0.5px), rgb(255 255 255 / 0.55) calc(66.66% - 0.5px) calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px));
+  pointer-events: none;
+}
+
+.crop-size {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgb(10 9 7 / 0.75);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.handle {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  margin: -9px;
+  border: 2px solid #16140f;
+  border-radius: 5px;
+  background: #ffd60a;
+  /* A larger area to grab than to see, for fingers. */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -10px;
+  }
+  &.nw {
+    left: 0;
+    top: 0;
+    cursor: nwse-resize;
+  }
+  &.n {
+    left: 50%;
+    top: 0;
+    cursor: ns-resize;
+  }
+  &.ne {
+    left: 100%;
+    top: 0;
+    cursor: nesw-resize;
+  }
+  &.e {
+    left: 100%;
+    top: 50%;
+    cursor: ew-resize;
+  }
+  &.se {
+    left: 100%;
+    top: 100%;
+    cursor: nwse-resize;
+  }
+  &.s {
+    left: 50%;
+    top: 100%;
+    cursor: ns-resize;
+  }
+  &.sw {
+    left: 0;
+    top: 100%;
+    cursor: nesw-resize;
+  }
+  &.w {
+    left: 0;
+    top: 50%;
+    cursor: ew-resize;
+  }
+}
+
+/* Result overlays ------------------------------------------------------------------------------ */
+
+.selection {
+  position: absolute;
+  border: 2px dashed #fff;
+  outline: 1.5px solid rgb(0 0 0 / 0.65);
+  box-shadow: 0 0 0 9999px rgb(10 9 7 / 0.45);
+  pointer-events: none;
+}
+
+.brush-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.7),
+    inset 0 0 0 1px rgb(0 0 0 / 0.7);
+  pointer-events: none;
+  &.erase {
+    border-style: dashed;
+  }
+}
+
+/* The AI at work: a yellow band sweeps the picture. */
+.scan {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgb(255 214 10 / 0.45) 47%, rgb(255 255 255 / 0.85) 50%, transparent 53%);
+  background-size: 100% 220%;
+  animation: scan 1.7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes scan {
+  from {
+    background-position: 0 120%;
+  }
+  to {
+    background-position: 0 -20%;
+  }
+}
+
+.working {
+  position: sticky;
+  bottom: 16px;
+  left: 0;
+  z-index: 2;
+  grid-area: 1 / 1;
+  place-self: end center;
+  display: grid;
+  gap: 10px;
+  width: min(380px, calc(100% - 32px));
+  margin: 16px;
+  padding: 16px 18px;
+  font-size: 14.5px;
+  b {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  &.error b {
+    color: var(--danger);
+  }
+  code {
+    font-size: 12px;
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+    max-height: 64px;
+    overflow: auto;
+  }
+}
+
+/* Side panel ------------------------------------------------------------------------------------ */
+
+.side {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.side-top {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.group {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  h2 {
+    font-size: 26px;
+  }
+  .muted {
+    font-size: 15px;
+  }
+}
+
+.export h2 {
+  font-size: 22px;
+}
+
+.help {
+  font-size: 13.5px;
+  &.center {
+    text-align: center;
+    margin-top: -4px;
+  }
+  &.file {
+    overflow-wrap: anywhere;
+  }
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  &.two > .btn {
+    flex: 1 1 140px;
+  }
+}
+
+.mini-label {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.tool-btn {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 76px;
+  padding: 10px 4px;
+  border: 2px solid var(--line-soft);
+  border-radius: var(--r);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    transform 0.12s var(--ease),
+    box-shadow 0.12s var(--ease),
+    background 0.15s;
+  &:hover:not(:disabled) {
+    border-color: var(--line);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-sm);
+  }
+  &.on {
+    border-color: var(--line);
+    background: var(--yellow);
+    color: var(--on-yellow);
+    box-shadow: var(--shadow-sm);
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.crop-options {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1.5px dashed var(--line-soft);
+  border-radius: var(--r);
+}
+
+.ratios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip-btn {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1.5px solid var(--line-soft);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover {
+    border-color: var(--line);
+  }
+  &.active {
+    border-color: var(--line);
+    background: var(--ink);
+    color: var(--paper);
+  }
+}
+
+.restore {
+  justify-self: start;
+}
+
+.go {
+  display: grid;
+  gap: 10px;
+}
+
+.model-wait {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--r);
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.waiting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  border: 2px solid var(--line);
+  border-radius: var(--r);
+  background: var(--yellow-soft);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.inline-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 12px;
+  border: 2px solid var(--danger);
+  border-radius: var(--r);
+  color: var(--danger);
+  font-size: 13.5px;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border: 1.5px solid var(--line-soft);
+  border-radius: 999px;
+  background: var(--paper);
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    border: 1.5px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink-muted);
+    font-weight: 650;
+    font-size: 14.5px;
+    cursor: pointer;
+    &[aria-selected='true'] {
+      border-color: var(--line);
+      background: var(--card);
+      color: var(--ink);
+      box-shadow: var(--shadow-sm);
+    }
+  }
+}
+
+.tab-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.kinds {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  button {
+    display: grid;
+    justify-items: center;
+    gap: 5px;
+    min-width: 0;
+    padding: 10px 2px 8px;
+    border: 2px solid var(--line-soft);
+    border-radius: 14px;
+    background: var(--card);
+    color: var(--ink-muted);
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    span {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    &:hover {
+      color: var(--ink);
+      border-color: var(--line);
+    }
+    &.active {
+      border-color: var(--line);
+      background: var(--yellow);
+      color: var(--on-yellow);
+    }
+  }
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.swatch {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.12s var(--ease);
+  &:hover {
+    transform: scale(1.1);
+  }
+  &.active {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+  &.custom {
+    position: relative;
+    display: block;
+    background: conic-gradient(#ff6b4a, #ffd60a, #3fb37f, #7cc6fe, #5b6cff, #ff8fb1, #ff6b4a);
+    overflow: hidden;
+    input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    &:focus-within {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.pair {
+  display: flex;
+  gap: 18px;
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+}
+
+/* Smaller screens ------------------------------------------------------------------------------ */
+
+@media (max-width: 1100px) {
+  :host {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .viewport {
+    height: min(58dvh, 600px);
+  }
+}
+
+@media (max-width: 520px) {
+  .viewport {
+    height: min(50dvh, 460px);
+  }
+  .stage {
+    padding: 8px;
+  }
+  .segmented.compact {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+  .stage-head .spacer {
+    display: none;
+  }
+  .tool-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .group {
+    padding: 16px;
+  }
+}

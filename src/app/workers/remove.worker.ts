@@ -49,13 +49,32 @@ async function pickTarget(): Promise<WorkerTarget> {
   return { model: id, device: 'wasm', dtype: 'fp32', size: MODELS[id].size };
 }
 
-async function load(onProgress: (p: RemoveProgress) => void): Promise<WorkerTarget> {
+/** The model being fetched and prepared: asked twice at once, it is still loaded once. */
+let loading: Promise<WorkerTarget> | null = null;
+/** Everyone waiting for the model hears its progress. */
+const listeners = new Set<(p: RemoveProgress) => void>();
+
+function load(onProgress: (p: RemoveProgress) => void): Promise<WorkerTarget> {
+  listeners.add(onProgress);
+  loading ??= prepare((p) => listeners.forEach((listener) => listener(p))).finally(() => {
+    loading = null;
+    listeners.clear();
+  });
+  return loading;
+}
+
+async function weightsCached(target: WorkerTarget): Promise<boolean> {
+  const { repo, revision } = MODELS[target.model];
+  return modelIsCached(repo, revision, target.dtype === 'fp16' ? '/onnx/model_fp16.onnx' : '/onnx/model.onnx');
+}
+
+async function prepare(onProgress: (p: RemoveProgress) => void): Promise<WorkerTarget> {
   const target = await (picked ??= pickTarget());
   if (model && loaded === target) return target;
   // Preparing the model on the graphics card can take many seconds, with no signal from it.
   onProgress({ stage: 'load', progress: 0 });
   const { repo, revision } = MODELS[target.model];
-  const fromCache = await modelIsCached(repo, revision, target.dtype === 'fp16' ? '/onnx/model_fp16.onnx' : '/onnx/model.onnx');
+  const fromCache = await weightsCached(target);
   model = await AutoModel.from_pretrained(repo, {
     revision,
     device: target.device,
@@ -92,6 +111,14 @@ const api: RemoveWorkerApi = {
 
   target() {
     return (picked ??= pickTarget());
+  },
+
+  async isCached() {
+    return weightsCached(await (picked ??= pickTarget()));
+  },
+
+  async load(onProgress) {
+    return load(onProgress);
   },
 
   async remove(image, onProgress) {

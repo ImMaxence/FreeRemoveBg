@@ -1,85 +1,133 @@
-.page {
-  max-width: 860px;
-  padding-top: 40px;
+:host {
+  display: block;
 }
 
+.page {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
+  max-width: 1080px;
+  padding-top: 64px;
+}
+
+/* The four documents, as a sticky list of tabs. */
 .tabs {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 32px;
+  position: sticky;
+  top: 120px;
+  display: grid;
+  gap: 8px;
   a {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid var(--line-soft);
     border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--bg-elev);
-    color: var(--text-muted);
-    font-size: 14px;
+    color: var(--ink-muted);
     font-weight: 600;
+    font-size: 15px;
     text-decoration: none;
     transition:
-      color 0.15s,
       border-color 0.15s,
-      background 0.15s;
+      color 0.15s;
     &:hover {
-      color: var(--text);
+      border-color: var(--line);
+      color: var(--ink);
     }
     &.active {
-      color: var(--accent);
-      border-color: var(--accent);
-      background: var(--accent-soft);
+      border-color: var(--line);
+      background: var(--yellow);
+      color: var(--on-yellow);
+      box-shadow: var(--shadow-sm);
     }
   }
 }
 
 .doc {
   display: grid;
-  gap: 28px;
+  gap: 40px;
+  max-width: 720px;
   header {
     display: grid;
-    gap: 10px;
+    gap: 14px;
+    padding-bottom: 32px;
+    border-bottom: 2px solid var(--line);
   }
   h1 {
-    font-size: clamp(30px, 4.2vw, 44px);
-    font-weight: 800;
+    font-size: clamp(40px, 5.5vw, 64px);
   }
   .updated {
-    font-size: 13px;
+    font-size: 14px;
   }
   .intro {
-    font-size: 17px;
-    color: var(--text-muted);
+    font-size: 18.5px;
+    color: var(--ink-muted);
   }
   section {
     display: grid;
-    gap: 10px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
+    gap: 12px;
   }
   h2 {
-    font-size: 19px;
+    font-size: 26px;
+    letter-spacing: -0.025em;
   }
   p {
-    font-size: 15.5px;
+    font-size: 16px;
     line-height: 1.7;
-    overflow-wrap: anywhere;
+  }
+  a {
+    font-weight: 600;
+    text-decoration-color: var(--yellow);
+    text-decoration-thickness: 3px;
+    &:hover {
+      background: var(--yellow-soft);
+    }
   }
 }
 
 .contact {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 20px;
-  color: var(--accent);
+  gap: 16px;
+  padding: 20px 22px;
+  border: 2px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  app-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 11px;
+    border: 2px solid var(--line);
+    border-radius: 50%;
+    background: var(--yellow);
+    color: var(--on-yellow);
+  }
   div {
     display: grid;
-    font-size: 14px;
+    gap: 2px;
   }
-  b {
-    color: var(--text);
+}
+
+@media (max-width: 860px) {
+  .page {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    padding-top: 40px;
+  }
+  .tabs {
+    position: static;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    a {
+      flex: none;
+      padding: 9px 14px;
+      font-size: 14px;
+    }
   }
 }

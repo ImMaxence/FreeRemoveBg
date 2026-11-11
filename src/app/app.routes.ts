@@ -15,7 +15,7 @@ const publicPages: Routes = [
 
 export const routes: Routes = [
   // The tool: one URL, in the language chosen by the user, never indexed.
-  { path: 'app', loadComponent: () => import('./editor/editor').then((m) => m.Editor), data: { seo: 'app', noindex: true } },
+  { path: 'app', loadComponent: () => import('./tool/tool').then((m) => m.Tool), data: { seo: 'app', noindex: true } },
   // Public pages: /fr/… and English at the root.
   { path: ':lang', canMatch: [languageSegment], resolve: { language: languageResolver }, children: publicPages },
   { path: '', resolve: { language: languageResolver }, children: publicPages },

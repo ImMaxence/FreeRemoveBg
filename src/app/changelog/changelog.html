@@ -4,7 +4,7 @@
     <h1>{{ 'changelog.title' | transloco }}</h1>
     <p class="muted">{{ 'changelog.lead' | transloco }}</p>
     <div class="meta">
-      <span class="badge current"><app-icon name="sparkles" [size]="14" /> {{ 'changelog.current' | transloco }} <code>v{{ version }}</code></span>
+      <span class="chip yellow"><app-icon name="sparkles" [size]="14" /> {{ 'changelog.current' | transloco }} v{{ version }}</span>
       <a class="btn sm" [href]="changelogUrl" target="_blank" rel="noopener">
         <app-icon name="github" [size]="15" /> {{ 'changelog.github' | transloco }}
       </a>
@@ -30,7 +30,7 @@
               <header>
                 <h2>v{{ r.version }}</h2>
                 @if (first) {
-                  <span class="badge latest-badge">{{ 'changelog.latest' | transloco }}</span>
+                  <span class="chip latest-badge">{{ 'changelog.latest' | transloco }}</span>
                 }
                 <time class="faint">{{ r.date }}</time>
               </header>

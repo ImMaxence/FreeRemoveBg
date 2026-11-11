@@ -3,17 +3,30 @@ import * as Comlink from 'comlink';
 import { type Background, alphaToImageData, compose } from '../engine/compose';
 import { EXPORT_FORMATS, type ExportFormat, exportName, isImageFile } from '../engine/files';
 import { maskSize, workingSize } from '../engine/mask';
+import { type Rect, drawTurned, scaleRect, turnedSize } from '../engine/prepare';
 import { uniqueNames, zip } from '../engine/zip';
 import type { ModelId } from './models';
 import type { AiDevice, RemoveProgress, RemoveResult, RemoveWorkerApi, WorkerOptions } from '../workers/worker-types';
 
-export type ItemStatus = 'queued' | 'working' | 'done' | 'error';
+/**
+ * Where a picture is in the flow: `draft` waits for the user (preparing it is optional),
+ * `queued` waits for the AI, `working` is being cut out, then `done` or `error`.
+ */
+export type ItemStatus = 'draft' | 'queued' | 'working' | 'done' | 'error';
+
+/**
+ * The AI model: `checking` while the browser cache is looked at, `missing` until the user
+ * agrees to download it, then `downloading` and `preparing` (loading it on the device).
+ */
+export type ModelState = 'checking' | 'missing' | 'downloading' | 'preparing' | 'ready' | 'error';
 
 export interface Item {
   id: number;
   name: string;
   /** The picture as worked on and saved: full size, shrunk only above the pixel limit. */
   source: ImageBitmap;
+  /** The picture as it was given, to come back to after turning or cropping it. */
+  original: ImageBitmap;
   width: number;
   height: number;
   /** The original was larger than the limit and has been shrunk. */
@@ -23,24 +36,25 @@ export interface Item {
   aiMask: ImageData | null;
   /** White where the subject is: what the brush edits. Changed in place, see `revision`. */
   mask: HTMLCanvasElement | null;
-  /** Changes whenever the mask does, so views redraw. */
+  /** Changes whenever the picture or its mask does, so views redraw. */
   revision: number;
   undo: ImageData[];
   redo: ImageData[];
-  /** Small preview of the result (object URL). */
+  /** Small preview (object URL): the picture while it is a draft, the cutout afterwards. */
   thumb: string | null;
   error: string | null;
 }
 
 /** Pictures above this are shrunk: canvases have limits, tighter on iPhone and iPad. */
-const MAX_PIXELS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent) ? 16e6 : 25e6;
+export const MAX_PIXELS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent) ? 16e6 : 25e6;
 const UNDO_STEPS = 12;
 const THUMB_SIDE = 192;
 
 /**
- * The pictures of the session, their masks and the chosen background. Everything stays in the
- * page's memory: nothing is stored, nothing is sent. The AI runs in a worker created on first
- * use, so the public pages never pay for it.
+ * The pictures of the session, their masks, the chosen background and the AI model.
+ * Everything stays in the page's memory: nothing is stored, nothing is sent. The AI runs in a
+ * worker created on first use, so the public pages never pay for it, and its model is only
+ * downloaded once the user has agreed to it.
  */
 @Injectable({ providedIn: 'root' })
 export class ImagesStore {
@@ -55,6 +69,15 @@ export class ImagesStore {
   readonly engine = signal<{ model: ModelId; device: AiDevice; ms: number } | null>(null);
   /** Files that could not be read (wrong format), to tell the user. */
   readonly rejected = signal<string[]>([]);
+
+  readonly modelState = signal<ModelState>('checking');
+  /** Bytes of the model received so far, while it downloads. */
+  readonly modelDownload = signal<{ progress: number; loaded?: number; total?: number } | null>(null);
+  readonly modelError = signal<string | null>(null);
+  /** The user agreed to the model (or already had it): pictures may be cut out. */
+  readonly modelAllowed = computed(() => ['downloading', 'preparing', 'ready'].includes(this.modelState()));
+
+  readonly drafts = computed(() => this.items().filter((i) => i.status === 'draft'));
   readonly doneCount = computed(() => this.items().filter((i) => i.status === 'done').length);
   readonly busy = computed(() => this.items().some((i) => i.status === 'queued' || i.status === 'working'));
 
@@ -64,6 +87,7 @@ export class ImagesStore {
   private remote?: Comlink.Remote<RemoveWorkerApi>;
   private options: WorkerOptions = {};
   private scratch?: HTMLCanvasElement;
+  private pending: Promise<unknown> = Promise.resolve();
 
   private get ai(): Comlink.Remote<RemoveWorkerApi> {
     if (!this.remote) {
@@ -79,11 +103,75 @@ export class ImagesStore {
     this.options = options;
     this.worker?.terminate();
     this.worker = this.remote = undefined;
+    // The new worker loads the model again, from the browser cache.
+    if (this.modelState() === 'ready') this.modelState.set('preparing');
   }
 
-  /** Adds pictures and starts cutting them out, one after the other. */
+  // --- The model -------------------------------------------------------------------------
+
+  /**
+   * Looks whether the browser already holds the model. If it does, nothing needs asking: it is
+   * loaded right away, so the first picture is as fast as the next ones.
+   */
+  async checkModel(): Promise<void> {
+    if (this.modelState() !== 'checking') return;
+    let cached = false;
+    try {
+      cached = await this.ai.isCached();
+    } catch {
+      // No cache (private window, blocked storage): the model has to be downloaded.
+    }
+    if (!cached) {
+      this.modelState.set('missing');
+      return;
+    }
+    await this.loadModel();
+  }
+
+  /** The user agreed: the model is downloaded (once), then prepared on the device. */
+  async downloadModel(): Promise<void> {
+    if (this.modelAllowed()) return;
+    this.modelDownload.set({ progress: 0 });
+    await this.loadModel();
+  }
+
+  private async loadModel(): Promise<void> {
+    this.modelError.set(null);
+    this.modelState.set(this.modelState() === 'checking' ? 'preparing' : 'downloading');
+    const onProgress = (p: RemoveProgress) => {
+      if (p.stage === 'download') {
+        this.modelState.set('downloading');
+        this.modelDownload.set({ progress: p.progress, loaded: p.loaded, total: p.total });
+      } else if (p.stage === 'load') {
+        this.modelState.set('preparing');
+      }
+    };
+    try {
+      try {
+        await this.serial(() => this.ai.load(Comlink.proxy(onProgress)));
+      } catch (e) {
+        // A graphics card that cannot run the model: the processor takes over, same weights.
+        if ((await this.ai.target().catch(() => null))?.device !== 'webgpu') throw e;
+        console.warn('The model could not be prepared on WebGPU, switching to WebAssembly', e);
+        this.configure({ ...this.options, device: 'wasm', model: undefined });
+        await this.serial(() => this.ai.load(Comlink.proxy(onProgress)));
+      }
+      this.modelState.set('ready');
+      this.modelDownload.set(null);
+      void this.run();
+    } catch (e) {
+      console.error(e);
+      this.modelState.set('error');
+      this.modelError.set(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  // --- Pictures ---------------------------------------------------------------------------
+
+  /** Adds pictures as drafts: nothing happens to them until the user asks for the cutout. */
   async add(files: Iterable<File>): Promise<void> {
     const rejected: string[] = [];
+    let first: number | null = null;
     for (const file of files) {
       if (!isImageFile(file)) {
         rejected.push(file.name);
@@ -95,10 +183,11 @@ export class ImagesStore {
           id: this.nextId++,
           name: file.name || 'image.png',
           source: bitmap,
+          original: bitmap,
           width: bitmap.width,
           height: bitmap.height,
           resized,
-          status: 'queued',
+          status: 'draft',
           aiMask: null,
           mask: null,
           revision: 0,
@@ -108,13 +197,15 @@ export class ImagesStore {
           error: null,
         };
         this.items.update((items) => [...items, item]);
-        if (this.selectedId() === null) this.selectedId.set(item.id);
+        first ??= item.id;
+        void this.refreshThumb(item.id);
       } catch {
         rejected.push(file.name);
       }
     }
     this.rejected.set(rejected);
-    void this.run();
+    // The first new picture is shown, ready to be prepared.
+    if (first !== null) this.selectedId.set(first);
   }
 
   /** Loads a picture served by the site (the samples) as if it had been dropped. */
@@ -130,6 +221,7 @@ export class ImagesStore {
     this.items.update((items) => items.filter((i) => i.id !== id));
     // A picture being worked on is still read by the worker: it is released with the page.
     if (item.status !== 'working') item.source.close();
+    if (item.original !== item.source) item.original.close();
     if (item.thumb) URL.revokeObjectURL(item.thumb);
     if (this.selectedId() === id) {
       const rest = this.items();
@@ -142,12 +234,94 @@ export class ImagesStore {
     this.rejected.set([]);
   }
 
-  retry(id: number): void {
-    this.patch(id, { status: 'queued', error: null });
+  /** Asks for the cutout of these drafts (all of them when none is named). */
+  start(ids?: number[]): void {
+    const wanted = new Set(ids ?? this.drafts().map((i) => i.id));
+    this.items.update((items) => items.map((i) => (wanted.has(i.id) && (i.status === 'draft' || i.status === 'error') ? { ...i, status: 'queued', error: null } : i)));
     void this.run();
   }
 
+  /** Back to the "Prepare" step: the cutout and its retouches are dropped. */
+  backToPrepare(id: number): void {
+    const item = this.find(id);
+    if (!item || item.status === 'working' || item.status === 'queued') return;
+    this.patch(id, { status: 'draft', aiMask: null, mask: null, undo: [], redo: [], error: null });
+    this.touch(id, true);
+  }
+
+  // --- Preparing --------------------------------------------------------------------------
+
+  /** Turns the picture by a quarter turn (1: clockwise, -1: counterclockwise). */
+  async rotate(id: number, quarter: 1 | -1): Promise<void> {
+    const item = this.find(id);
+    if (!item) return;
+    const canvas = document.createElement('canvas');
+    Object.assign(canvas, turnedSize(item.width, item.height, 1));
+    drawTurned(canvas.getContext('2d')!, item.source, item.width, item.height, quarter);
+    await this.replaceSource(item, await createImageBitmap(canvas));
+  }
+
+  /** Mirrors the picture left to right. */
+  async flip(id: number): Promise<void> {
+    const item = this.find(id);
+    if (!item) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = item.width;
+    canvas.height = item.height;
+    const ctx = canvas.getContext('2d')!;
+    ctx.translate(item.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(item.source, 0, 0);
+    await this.replaceSource(item, await createImageBitmap(canvas));
+  }
+
+  /** Keeps an area of the picture only. */
+  async crop(id: number, area: Rect): Promise<void> {
+    const item = this.find(id);
+    if (!item) return;
+    await this.replaceSource(item, await createImageBitmap(item.source, area.x, area.y, area.width, area.height));
+  }
+
+  /** Back to the picture as it was given, before any turn or crop. */
+  async restoreOriginal(id: number): Promise<void> {
+    const item = this.find(id);
+    if (item && item.source !== item.original) await this.replaceSource(item, item.original);
+  }
+
+  private async replaceSource(previous: Item, source: ImageBitmap): Promise<void> {
+    // The picture given first is kept, to come back to it.
+    if (previous.source !== previous.original && previous.source !== source) previous.source.close();
+    this.patch(previous.id, { source, width: source.width, height: source.height, status: 'draft', aiMask: null, mask: null, undo: [], redo: [], error: null });
+    this.touch(previous.id, true);
+  }
+
   // --- Retouching -------------------------------------------------------------------------
+
+  /**
+   * Looks for the subject inside an area only and adds what it finds to the result: an object
+   * the first pass missed, like something held at arm's length. Undoable like a brush stroke.
+   */
+  async rescue(id: number, area: Rect): Promise<void> {
+    const item = this.find(id);
+    if (!item?.mask || item.status !== 'done') return;
+    this.patch(id, { status: 'working' });
+    try {
+      const result = await this.cutOut(item, area);
+      this.engine.set({ model: result.model, device: result.device, ms: result.ms });
+      const current = this.find(id);
+      // Removed or prepared again meanwhile: the answer is about another picture.
+      if (!current?.mask || current.source !== item.source) return;
+      this.beginStroke(id);
+      const ctx = current.mask.getContext('2d')!;
+      const target = scaleRect(area, item.width, item.height, current.mask.width, current.mask.height);
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(squareOf(alphaToImageData(result.alpha, result.size)), target.x, target.y, target.width, target.height);
+      this.touch(id, true);
+    } finally {
+      this.progress.set(null);
+      if (this.find(id)?.status === 'working') this.patch(id, { status: 'done' });
+    }
+  }
 
   /** Before a brush stroke: remembers the mask so the stroke can be undone. */
   beginStroke(id: number): void {
@@ -157,7 +331,7 @@ export class ImagesStore {
     this.patch(id, { undo: [...item.undo.slice(-(UNDO_STEPS - 1)), snapshot], redo: [] });
   }
 
-  /** The mask changed (brush moved, undo…): views redraw. `final` also refreshes the thumbnail. */
+  /** The picture or its mask changed: views redraw. `final` also refreshes the thumbnail. */
   touch(id: number, final = false): void {
     const item = this.find(id);
     if (!item) return;
@@ -235,7 +409,8 @@ export class ImagesStore {
   // --- AI ---------------------------------------------------------------------------------
 
   private async run(): Promise<void> {
-    if (this.running) return;
+    // Nothing reaches the AI before the user agreed to its model.
+    if (this.running || !this.modelAllowed()) return;
     this.running = true;
     try {
       for (let item = this.nextQueued(); item; item = this.nextQueued()) {
@@ -244,11 +419,14 @@ export class ImagesStore {
         try {
           const result = await this.cutOut(item);
           this.engine.set({ model: result.model, device: result.device, ms: result.ms });
-          if (!this.find(id)) {
+          const current = this.find(id);
+          if (!current) {
             // Removed while the AI was working.
             item.source.close();
             continue;
           }
+          // Prepared again while the AI was working: its new version waits for the user.
+          if (current.source !== item.source || current.status !== 'working') continue;
           const aiMask = alphaToImageData(result.alpha, result.size);
           const mask = document.createElement('canvas');
           Object.assign(mask, maskSize(item.width, item.height));
@@ -257,7 +435,7 @@ export class ImagesStore {
           this.touch(id, true);
         } catch (e) {
           console.error(e);
-          this.patch(id, { status: 'error', error: e instanceof Error ? e.message : String(e) });
+          if (this.find(id)?.source === item.source) this.patch(id, { status: 'error', error: e instanceof Error ? e.message : String(e) });
         } finally {
           this.progress.set(null);
         }
@@ -268,14 +446,18 @@ export class ImagesStore {
   }
 
   /**
-   * Asks the worker for the subject of a picture. A failure on the graphics card (driver,
-   * memory, unsupported operation) leaves ONNX Runtime unusable: the worker is replaced by a
-   * new one kept on the processor, and the picture is tried again there.
+   * Asks the worker for the subject of a picture (or of an area of it). A failure on the
+   * graphics card (driver, memory, unsupported operation) leaves ONNX Runtime unusable: the
+   * worker is replaced by a new one kept on the processor, and the picture is tried again there.
    */
-  private async cutOut(item: Item): Promise<RemoveResult> {
+  private cutOut(item: Item, area: Rect = { x: 0, y: 0, width: item.width, height: item.height }): Promise<RemoveResult> {
+    return this.serial(() => this.ask(item, area));
+  }
+
+  private async ask(item: Item, area: Rect): Promise<RemoveResult> {
     const attempt = async () => {
       const { size } = await this.ai.target();
-      const input = await createImageBitmap(item.source, { resizeWidth: size, resizeHeight: size, resizeQuality: 'high' });
+      const input = await createImageBitmap(item.source, area.x, area.y, area.width, area.height, { resizeWidth: size, resizeHeight: size, resizeQuality: 'high' });
       return this.ai.remove(
         Comlink.transfer(input, [input]),
         Comlink.proxy((p: RemoveProgress) => this.progress.set(p)),
@@ -288,8 +470,17 @@ export class ImagesStore {
       if (failed?.device !== 'webgpu') throw e;
       console.warn('Background removal failed on WebGPU, switching to WebAssembly', e);
       this.configure({ ...this.options, device: 'wasm', model: undefined });
-      return attempt();
+      const result = await attempt();
+      this.modelState.set('ready');
+      return result;
     }
+  }
+
+  /** The worker answers one request at a time: the others wait for their turn. */
+  private serial<T>(task: () => Promise<T>): Promise<T> {
+    const next = this.pending.then(task, task);
+    this.pending = next.catch(() => undefined);
+    return next;
   }
 
   private nextQueued(): Item | undefined {
@@ -300,7 +491,7 @@ export class ImagesStore {
 
   private async refreshThumb(id: number): Promise<void> {
     const item = this.find(id);
-    if (!item?.mask) return;
+    if (!item) return;
     const revision = item.revision;
     const scale = Math.min(1, THUMB_SIDE / Math.max(item.width, item.height));
     const canvas = document.createElement('canvas');
@@ -337,12 +528,18 @@ function snapshotOf(mask: HTMLCanvasElement): ImageData {
   return mask.getContext('2d', { willReadFrequently: true })!.getImageData(0, 0, mask.width, mask.height);
 }
 
-/** Stretches the square answer of the AI back to the shape of the picture. */
-function drawAiMask(mask: HTMLCanvasElement, aiMask: ImageData): void {
+/** The answer of the AI as something a canvas can draw. */
+function squareOf(aiMask: ImageData): HTMLCanvasElement {
   const square = document.createElement('canvas');
   square.width = aiMask.width;
   square.height = aiMask.height;
   square.getContext('2d')!.putImageData(aiMask, 0, 0);
+  return square;
+}
+
+/** Stretches the square answer of the AI back to the shape of the picture. */
+function drawAiMask(mask: HTMLCanvasElement, aiMask: ImageData): void {
+  const square = squareOf(aiMask);
   const ctx = mask.getContext('2d', { willReadFrequently: true })!;
   ctx.globalCompositeOperation = 'copy';
   ctx.imageSmoothingQuality = 'high';

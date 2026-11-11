@@ -7,7 +7,7 @@
 // The texts come from the same translation files and lists as the pages.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { LANGUAGES } from '../src/app/core/languages.ts';
-import { BROWSERS, COMPARE, FAQ, FEATURES, PRIVACY_POINTS, STEPS } from '../src/app/core/landing-content.ts';
+import { AI_FACTS, BROWSERS, COMPARE, FAQ, FEATURES, PRIVACY_POINTS, STEPS } from '../src/app/core/landing-content.ts';
 import { MODELS } from '../src/app/core/models.ts';
 
 const SITE = 'https://freeremovebg.mbonnici.fr';
@@ -45,42 +45,36 @@ const sections = (...blocks) => blocks.flat().filter(Boolean).join('\n\n');
 // --- The pages ------------------------------------------------------------------------------
 
 function home(t) {
+  const model = MODELS.isnet;
   return sections(
-    `## ${t('landing.hero.title1')} ${t('landing.hero.title2')}`,
-    `${t('landing.hero.badgeFree')} · ${t('landing.hero.badgeLocal')} · ${t('landing.hero.badgeOpen')}`,
+    `## ${t('landing.hero.title1')} ${t('landing.hero.title2')} ${t('landing.hero.title3')}`,
+    `${t('landing.hero.ai')} **${model.name}** · ${['free', 'noUpload', 'fullSize'].map((p) => t(`landing.hero.proof.${p}`)).join(' · ')}`,
     t('landing.hero.lead'),
-    `[${t('nav.open')}](${SITE}/app) · [GitHub](${REPO})`,
-    t('landing.hero.hint'),
-    [`- **100 %** ${t('landing.stats.free')}`, `- **0** ${t('landing.stats.upload')}`, `- **25 MP** ${t('landing.stats.hd')}`, `- **0** ${t('landing.stats.account')}`].join('\n'),
+    `[${t('landing.hero.cta')}](${SITE}/app) · [GitHub](${REPO})`,
+    `## ${t('landing.ai.title1')} ${t('landing.ai.title2')}`,
+    t('landing.ai.lead'),
+    ['precise', 'local', 'open'].map((p) => `- **${t(`landing.ai.points.${p}.title`)}**: ${t(`landing.ai.points.${p}.text`)}`).join('\n'),
+    [`| ${t('landing.ai.specKicker')} | ${model.name} |`, '|---|---|', ...AI_FACTS.map((f) => `| ${t(`landing.ai.facts.${f}.label`)} | ${t(`landing.ai.facts.${f}.value`)} |`)].join('\n'),
+    `[${t('landing.ai.paper')}](https://arxiv.org/abs/2203.03041) · [${t('landing.ai.code')}](${model.url}) · [${t('landing.ai.hub')}](https://huggingface.co/${model.repo})`,
     `## ${t('landing.how.title')}`,
     t('landing.how.lead'),
     STEPS.map((step, i) => `### ${i + 1}. ${t(`landing.how.${step}.title`)}\n\n${t(`landing.how.${step}.text`)}`),
     `## ${t('landing.features.title')}`,
-    t('landing.features.lead'),
     FEATURES.map((f) => `### ${t(`landing.features.${f.key}.title`)}\n\n${t(`landing.features.${f.key}.text`)}`),
-    `## ${t('landing.showcase.title')}`,
-    t('landing.showcase.text'),
+    `## ${t('landing.privacy.title')}`,
+    t('landing.privacy.lead'),
+    PRIVACY_POINTS.map((p) => `- ${t(`landing.privacy.${p}`)}`).join('\n'),
     `## ${t('landing.compare.title')}`,
     t('landing.compare.lead'),
     [`| | ${NAME} | ${t('landing.compare.them')} |`, '|---|---|---|', ...COMPARE.map((row) => `| ${t(`landing.compare.rows.${row.key}`)} | ${t('landing.compare.yes')} | ${t(`landing.compare.${row.them}`)} |`)].join('\n'),
     t('landing.compare.note'),
-    `## ${t('landing.privacy.title')}`,
-    t('landing.privacy.lead'),
-    PRIVACY_POINTS.map((p) => `- ${t(`landing.privacy.${p}`)}`).join('\n'),
-    `## ${t('landing.ai.title')}`,
-    t('landing.ai.lead'),
-    [
-      ...Object.entries(MODELS).map(([id, m]) => `- **[${m.name}](${m.url})** (${m.maker}, ${m.license}, ${m.download}): ${t(`landing.ai.${id}`)}`),
-      `- **${t('landing.ai.gpuTitle')}**: ${t('landing.ai.gpu')}`,
-      `- **${t('landing.ai.cpuTitle')}**: ${t('landing.ai.cpu')}`,
-    ].join('\n'),
     `## ${t('landing.support.title')}`,
     BROWSERS.map((b) => `- **${b.name}** (${t(`landing.support.${b.level}`)}): ${t(`landing.support.${b.key}`)}`).join('\n'),
     `## ${t('landing.faq.title')}`,
     FAQ.map((q) => `### ${t(`landing.faq.${q}.q`)}\n\n${t(`landing.faq.${q}.a`)}`),
     `## ${t('landing.final.title')}`,
     t('landing.final.text'),
-    `[${t('landing.final.cta')}](${SITE}/app)`,
+    `[${t('landing.hero.cta')}](${SITE}/app)`,
   );
 }
 
@@ -142,17 +136,19 @@ ${NAME} is a web app (installable as a PWA, works offline), version ${version}, 
 
 ## What it does
 
-- Removes the background of a picture automatically with the ${model.name} segmentation model (${model.license}), for people, animals, products, vehicles and objects
+- Removes the background of a picture automatically with the ${model.name} segmentation model (Qin et al., "Highly Accurate Dichotomous Image Segmentation", ECCV 2022; ${model.license}), run in the browser by ONNX Runtime Web and Transformers.js
+- Asks before downloading the model (${model.download}, once, from Hugging Face); nothing else is downloaded and no picture is uploaded
+- Optional preparation before the cutout: turn, mirror, crop with preset proportions
 - Replaces the background: transparent, a color, a gradient, another picture, or the original blurred
-- Erase and restore brush to fix the cutout by hand, with zoom, undo and redo
+- Erase and restore brush, and "rescue": draw around an object the AI missed so it looks again
 - Batch processing: several pictures at once, the same background for all, one ZIP download
-- Full-resolution download, up to 25 megapixels, as PNG or WebP (transparent) or JPG; copy to the clipboard
-- Input formats: PNG, JPG, WebP, AVIF, GIF, BMP (and HEIC where the browser reads it)
+- Download at the photo's own size (up to about 6,000 × 4,000 pixels) as PNG or WebP (transparent) or JPG; copy to the clipboard
+- Accepts every picture the browser can open: JPG, PNG, WebP, AVIF, GIF, BMP, and HEIC in Safari
 
 ## Requirements
 
 - A recent browser. With WebGPU (Chrome, Edge, recent Firefox and Safari) a picture takes about a second; without it the processor is used (WebAssembly) and a picture takes a few seconds
-- The AI model (${model.download}) is downloaded once from Hugging Face on first use, then kept by the browser
+- The AI model (${model.download}) is downloaded once from Hugging Face, after the user agrees to it, then kept by the browser
 
 ## Pages
 

@@ -2,47 +2,60 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ImagesStore } from '../core/images.store';
-import { BROWSERS, COMPARE, FAQ, FEATURES, PRIVACY_POINTS, STEPS } from '../core/landing-content';
-import { MODELS, MODEL_IDS } from '../core/models';
-import type { Sample } from '../core/samples';
+import { AI_FACTS, BROWSERS, COMPARE, FAQ, FEATURES, PRIVACY_POINTS, STEPS } from '../core/landing-content';
+import { MODELS } from '../core/models';
+import { SAMPLES } from '../core/samples';
 import { REPO_URL } from '../core/version';
-import { Dropzone } from '../shared/dropzone';
 import { Icon } from '../shared/icon';
 import { Reveal } from '../shared/reveal';
 
-/** The home page: presents the project, and takes pictures straight into the tool. */
+type ArtMode = 'photo' | 'cutout' | 'background';
+
+/** The home page: what the tool does, with which AI, and how private it is. */
 @Component({
   selector: 'app-landing',
-  imports: [RouterLink, TranslocoPipe, Icon, Reveal, Dropzone],
+  imports: [RouterLink, TranslocoPipe, Icon, Reveal],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '(document:paste)': 'onPaste($event)' },
+  host: {
+    '[class.dragging]': 'dragging()',
+    '(document:paste)': 'onPaste($event)',
+    '(dragover)': 'onDragOver($event)',
+    '(dragleave)': 'onDragLeave($event)',
+    '(drop)': 'onDrop($event)',
+  },
 })
 export class Landing {
   private readonly store = inject(ImagesStore);
   private readonly router = inject(Router);
 
   protected readonly repoUrl = REPO_URL;
-  protected readonly features = FEATURES;
+  protected readonly model = MODELS.isnet;
+  protected readonly paperUrl = 'https://arxiv.org/abs/2203.03041';
   protected readonly steps = STEPS;
+  protected readonly facts = AI_FACTS;
+  protected readonly features = FEATURES;
   protected readonly compareRows = COMPARE;
   protected readonly privacyPoints = PRIVACY_POINTS;
   protected readonly browsers = BROWSERS;
   protected readonly faq = FAQ;
-  protected readonly models = MODEL_IDS.map((id) => ({ id, ...MODELS[id] }));
-  protected readonly engines = ['gpu', 'cpu'];
-  protected readonly showcase = ['transparent', 'color', 'gradient', 'photo'];
-  /** Position of the before / after divider of the demo, in percent. */
-  protected readonly split = signal(50);
+  protected readonly modes: ArtMode[] = ['photo', 'cutout', 'background'];
+  protected readonly ticker = ['free', 'ai', 'noUpload', 'fullSize', 'batch', 'offline', 'noAccount'];
+  protected readonly aiPoints = ['precise', 'local', 'open'];
 
-  protected open(files: File[]): void {
-    void this.store.add(files);
+  /** What the hero picture shows: the photo, the cutout, or the cutout on a new background. */
+  protected readonly mode = signal<ArtMode>('cutout');
+  protected readonly dragging = signal(false);
+
+  protected trySample(): void {
+    const sample = SAMPLES[0];
+    void this.store.addFromUrl(sample.url, sample.name);
     void this.router.navigateByUrl('/app');
   }
 
-  protected openSample(sample: Sample): void {
-    void this.store.addFromUrl(sample.url, sample.name);
+  private open(files: File[]): void {
+    void this.store.add(files);
     void this.router.navigateByUrl('/app');
   }
 
@@ -53,7 +66,20 @@ export class Landing {
     this.open(files);
   }
 
-  protected value(event: Event): number {
-    return +(event.target as HTMLInputElement).value;
+  protected onDragOver(event: DragEvent): void {
+    if (!event.dataTransfer?.types.includes('Files')) return;
+    event.preventDefault();
+    this.dragging.set(true);
+  }
+
+  protected onDragLeave(event: DragEvent): void {
+    if (!(event.currentTarget as HTMLElement).contains(event.relatedTarget as Node | null)) this.dragging.set(false);
+  }
+
+  protected onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.dragging.set(false);
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    if (files.length) this.open(files);
   }
 }

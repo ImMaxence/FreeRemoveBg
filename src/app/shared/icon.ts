@@ -50,6 +50,13 @@ const ICONS: Record<string, string> = {
   accessibility: '<circle cx="12" cy="4.5" r="1.5"/><path d="M4 8.5c2.5 1 5.2 1.5 8 1.5s5.500-.5 8-1.5M12 10v5M12 15l-3.500 6M12 15l3.500 6"/>',
   images: '<rect x="7" y="3" width="14" height="14" rx="2"/><path d="M3 8v11a2 2 0 0 0 2 2h11"/><circle cx="12" cy="8" r="1.500"/><path d="m21 13-2.600-2.600a2 2 0 0 0-2.800 0L10 17"/>',
   code: '<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',
+  'rotate-cw': '<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>',
+  'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+  select: '<path d="M5 3a2 2 0 0 0-2 2M19 3a2 2 0 0 1 2 2M21 19a2 2 0 0 1-2 2M5 21a2 2 0 0 1-2-2M9 3h1M14 3h1M9 21h1M14 21h1M3 9v1M3 14v1M21 9v1M21 14v1"/>',
+  flip: '<path d="M12 3v18"/><path d="M8 7 3 12l5 5V7z"/><path d="m16 7 5 5-5 5V7z"/>',
+  gradient: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 15c4-1 6-5 9-6s6 0 9-1"/><path d="M3 20c5-2 8-6 18-7"/>',
+  chip: '<rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>',
+  book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
   crop: '<path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>',
 };
 

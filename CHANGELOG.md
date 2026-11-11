@@ -2,6 +2,21 @@
 
 All notable changes to FreeRemoveBg. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning: [SemVer](https://semver.org/) — `MAJOR.MINOR.PATCH`: MAJOR for changes that break how the app is used or hosted, MINOR for new features, PATCH for fixes.
 
+## [2.0.0] - 2026-11-11
+
+### Changed
+- The tool works in four steps: the AI model is downloaded only after you agree to it (once), pictures wait to be prepared instead of being cut out as soon as they are added, then the cutout and the export
+- New look of its own: warm paper, black ink and yellow, Bricolage Grotesque and Geist fonts, a new logo (a sticker peeling off), new icons and sharing picture
+- Home page rebuilt, with the AI it uses, IS-Net, presented right after the top: spec sheet, paper, license, links
+- Navigation bar: four links with room between them; language and theme are one button each
+- Every picture the browser can open is accepted; sizes are given in pixels ("up to about 6,000 × 4,000") rather than megapixels
+
+### Added
+- "Prepare" step, optional: turn, mirror, crop with set proportions (free, original, square, 4:5, 3:2, 16:9), also with the keyboard, and back to the original
+- "Rescue" tool: draw around an object the AI missed, it looks there again and adds it
+- The model keeps downloading while pictures are added and prepared; it is ready at once on the next visits
+- Questions answered on the home page: which AI is used, why a model is downloaded, does it work on iPhone
+
 ## [1.0.0] - 2026-11-11
 
 ### Added

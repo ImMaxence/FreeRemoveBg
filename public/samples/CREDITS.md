@@ -4,7 +4,7 @@ The pictures offered to try FreeRemoveBg, and shown on its home page, were publi
 
 | File | Picture | Author | Source |
 | --- | --- | --- | --- |
-| `dog.jpg` | Dog on a log | Christal Yuen | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Dog_on_a_log_(Unsplash).jpg) |
+| `dog.jpg`, `hero.jpg` | Dog on a log (two crops) | Christal Yuen | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Dog_on_a_log_(Unsplash).jpg) |
 | `cat.jpg` | Cat in green grass | Raphael Schaller | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Cat_in_green_grass_(Unsplash).jpg) |
 | `plant.jpg` | Rubber Plant | Scott Webb | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Rubber_Plant_(Unsplash).jpg) |
 

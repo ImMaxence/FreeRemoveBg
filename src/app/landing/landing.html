@@ -1,45 +1,108 @@
+<!-- Hero ----------------------------------------------------------------------------------- -->
 <section class="hero">
-  <div class="glow" aria-hidden="true"></div>
   <div class="container hero-grid">
     <div class="hero-copy">
-      <ul class="pills" [attr.aria-label]="'landing.hero.badges' | transloco">
-        <li class="badge strong"><app-icon name="check" [size]="14" /> {{ 'landing.hero.badgeFree' | transloco }}</li>
-        <li class="badge"><app-icon name="lock" [size]="14" /> {{ 'landing.hero.badgeLocal' | transloco }}</li>
-        <li class="badge"><app-icon name="code" [size]="14" /> {{ 'landing.hero.badgeOpen' | transloco }}</li>
-      </ul>
+      <a class="ai-pill" href="#ai">
+        <span class="pulse" aria-hidden="true"></span>
+        {{ 'landing.hero.ai' | transloco }} <b>{{ model.name }}</b>
+        <app-icon name="arrow-right" [size]="15" />
+      </a>
       <h1>
         {{ 'landing.hero.title1' | transloco }}
-        <span class="gradient">{{ 'landing.hero.title2' | transloco }}</span>
+        <span class="line"><span class="mark">{{ 'landing.hero.title2' | transloco }}</span> {{ 'landing.hero.title3' | transloco }}</span>
       </h1>
       <p class="lead">{{ 'landing.hero.lead' | transloco }}</p>
-      <app-dropzone class="hero-drop" (files)="open($event)" (sample)="openSample($event)" />
-      <p class="hint faint"><app-icon name="shield" [size]="15" /> {{ 'landing.hero.hint' | transloco }}</p>
+      <div class="ctas">
+        <a class="btn primary lg" routerLink="/app">{{ 'landing.hero.cta' | transloco }} <app-icon name="arrow-right" [size]="19" /></a>
+        <button class="btn lg" type="button" (click)="trySample()">{{ 'landing.hero.sample' | transloco }}</button>
+      </div>
+      <ul class="proof">
+        @for (p of ['free', 'noUpload', 'fullSize']; track p) {
+          <li><app-icon name="check" [size]="16" /> {{ 'landing.hero.proof.' + p | transloco }}</li>
+        }
+      </ul>
     </div>
 
-    <!-- Before / after: the same picture, the original on the left of the divider. -->
-    <figure class="demo" [style.--split.%]="split()">
-      <div class="demo-frame">
-        <img class="after" src="/samples/dog-cutout.webp" width="960" height="1200" [alt]="'landing.hero.afterAlt' | transloco" fetchpriority="high" />
-        <img class="before" src="/samples/dog.jpg" width="960" height="1200" [alt]="'landing.hero.beforeAlt' | transloco" fetchpriority="high" />
-        <span class="tag tag-before" aria-hidden="true">{{ 'landing.hero.before' | transloco }}</span>
-        <span class="tag tag-after" aria-hidden="true">{{ 'landing.hero.after' | transloco }}</span>
-        <span class="divider" aria-hidden="true"><i><app-icon name="arrow-left" [size]="13" /><app-icon name="arrow-right" [size]="13" /></i></span>
-        <input type="range" min="0" max="100" step="1" [value]="split()" (input)="split.set(value($event))" [attr.aria-label]="'landing.hero.compare' | transloco" />
+    <figure class="art" [class]="'art mode-' + mode()">
+      <div class="art-stage">
+        <div class="frame">
+          <img class="photo" src="/samples/hero.jpg" width="1040" height="1300" alt="" fetchpriority="high" />
+        </div>
+        <img class="pop" src="/samples/hero-cutout.webp" width="1040" height="1300" [alt]="'landing.hero.artAlt' | transloco" fetchpriority="high" />
+        <span class="tag tag-ai" aria-hidden="true"><app-icon name="chip" [size]="14" /> {{ model.name }}</span>
+        <span class="tag tag-local" aria-hidden="true"><app-icon name="lock" [size]="14" /> {{ 'landing.hero.tagLocal' | transloco }}</span>
+      </div>
+      <div class="segmented modes" role="group" [attr.aria-label]="'landing.hero.modes' | transloco">
+        @for (m of modes; track m) {
+          <button type="button" [class.active]="mode() === m" [attr.aria-pressed]="mode() === m" (click)="mode.set(m)">{{ 'landing.hero.mode.' + m | transloco }}</button>
+        }
       </div>
       <figcaption class="faint">{{ 'landing.hero.caption' | transloco }}</figcaption>
     </figure>
   </div>
+</section>
 
-  <div class="container">
-    <dl class="stats" appReveal>
-      <div><dt>100 %</dt><dd>{{ 'landing.stats.free' | transloco }}</dd></div>
-      <div><dt>0</dt><dd>{{ 'landing.stats.upload' | transloco }}</dd></div>
-      <div><dt>25 MP</dt><dd>{{ 'landing.stats.hd' | transloco }}</dd></div>
-      <div><dt>0</dt><dd>{{ 'landing.stats.account' | transloco }}</dd></div>
-    </dl>
+<!-- Ticker --------------------------------------------------------------------------------- -->
+<div class="ticker" aria-hidden="true">
+  <div class="track">
+    @for (round of [0, 1]; track round) {
+      @for (t of ticker; track t) {
+        <span>{{ 'landing.ticker.' + t | transloco }}</span>
+        <span class="star">✦</span>
+      }
+    }
+  </div>
+</div>
+
+<!-- The AI --------------------------------------------------------------------------------- -->
+<section id="ai" class="section ai">
+  <div class="container ai-grid">
+    <div class="ai-copy" appReveal>
+      <span class="eyebrow">{{ 'landing.ai.eyebrow' | transloco }}</span>
+      <h2>
+        {{ 'landing.ai.title1' | transloco }}
+        <span class="mark">{{ 'landing.ai.title2' | transloco }}</span>
+      </h2>
+      <p class="lead">{{ 'landing.ai.lead' | transloco }}</p>
+      <ul class="ai-points">
+        @for (p of aiPoints; track p) {
+          <li>
+            <b>{{ 'landing.ai.points.' + p + '.title' | transloco }}</b>
+            <span>{{ 'landing.ai.points.' + p + '.text' | transloco }}</span>
+          </li>
+        }
+      </ul>
+      <div class="links">
+        <a class="btn sm" [href]="paperUrl" target="_blank" rel="noopener"><app-icon name="book" [size]="16" /> {{ 'landing.ai.paper' | transloco }}</a>
+        <a class="btn sm" [href]="model.url" target="_blank" rel="noopener"><app-icon name="github" [size]="16" /> {{ 'landing.ai.code' | transloco }}</a>
+        <a class="btn sm" [href]="'https://huggingface.co/' + model.repo" target="_blank" rel="noopener"><app-icon name="external" [size]="16" /> {{ 'landing.ai.hub' | transloco }}</a>
+      </div>
+    </div>
+
+    <article class="spec" [appReveal]="1" [attr.aria-label]="'landing.ai.specLabel' | transloco">
+      <header>
+        <span class="spec-kicker">{{ 'landing.ai.specKicker' | transloco }}</span>
+        <h3>{{ model.name }}</h3>
+        <p>Highly Accurate Dichotomous Image Segmentation</p>
+        <span class="license">{{ model.license }}</span>
+      </header>
+      <dl>
+        @for (f of facts; track f) {
+          <div [class.zero]="f === 'sent'">
+            <dt>{{ 'landing.ai.facts.' + f + '.label' | transloco }}</dt>
+            <dd>{{ 'landing.ai.facts.' + f + '.value' | transloco }}</dd>
+          </div>
+        }
+      </dl>
+      <footer aria-hidden="true">
+        <span class="barcode"></span>
+        <span>{{ model.repo }}</span>
+      </footer>
+    </article>
   </div>
 </section>
 
+<!-- How it works ----------------------------------------------------------------------------- -->
 <section id="how" class="section">
   <div class="container">
     <header class="section-head" appReveal>
@@ -49,8 +112,11 @@
     </header>
     <ol class="steps">
       @for (s of steps; track s; let i = $index) {
-        <li class="card" [appReveal]="i">
+        <li [appReveal]="i">
           <span class="num" aria-hidden="true">{{ i + 1 }}</span>
+          @if (s === 'model' || s === 'prepare') {
+            <span class="chip" [class.yellow]="s === 'prepare'">{{ 'landing.how.' + s + '.tag' | transloco }}</span>
+          }
           <h3>{{ 'landing.how.' + s + '.title' | transloco }}</h3>
           <p class="muted">{{ 'landing.how.' + s + '.text' | transloco }}</p>
         </li>
@@ -59,44 +125,76 @@
   </div>
 </section>
 
+<!-- Features ------------------------------------------------------------------------------- -->
 <section id="features" class="section">
   <div class="container">
     <header class="section-head" appReveal>
       <span class="eyebrow">{{ 'landing.features.eyebrow' | transloco }}</span>
       <h2>{{ 'landing.features.title' | transloco }}</h2>
-      <p class="muted">{{ 'landing.features.lead' | transloco }}</p>
     </header>
-    <ul class="features">
+    <ul class="bento">
       @for (f of features; track f.key; let i = $index) {
-        <li class="card" [appReveal]="i % 4">
+        <li [class]="'bento-' + f.size + ' feature-' + f.key" [appReveal]="i % 4">
           <span class="ico" aria-hidden="true"><app-icon [name]="f.icon" [size]="22" /></span>
           <h3>{{ 'landing.features.' + f.key + '.title' | transloco }}</h3>
           <p class="muted">{{ 'landing.features.' + f.key + '.text' | transloco }}</p>
+          @if (f.key === 'cutout') {
+            <div class="stickers" aria-hidden="true">
+              <img src="/samples/hero-cutout.webp" alt="" loading="lazy" decoding="async" />
+              <img src="/samples/cat-cutout.webp" alt="" loading="lazy" decoding="async" />
+              <img src="/samples/plant-cutout.webp" alt="" loading="lazy" decoding="async" />
+            </div>
+          }
+          @if (f.key === 'background') {
+            <div class="swaps" aria-hidden="true">
+              @for (b of ['checker', 'yellow', 'sky', 'ink']; track b) {
+                <span [class]="'swap ' + b"><img src="/samples/plant-cutout.webp" alt="" loading="lazy" decoding="async" /></span>
+              }
+            </div>
+          }
         </li>
       }
     </ul>
   </div>
 </section>
 
-<section class="section showcase-section">
-  <div class="container split">
-    <div appReveal>
-      <span class="eyebrow">{{ 'landing.showcase.eyebrow' | transloco }}</span>
-      <h2>{{ 'landing.showcase.title' | transloco }}</h2>
-      <p class="muted">{{ 'landing.showcase.text' | transloco }}</p>
-      <a class="btn primary lg" routerLink="/app">{{ 'landing.showcase.cta' | transloco }} <app-icon name="arrow-right" [size]="17" /></a>
+<!-- Privacy ---------------------------------------------------------------------------------- -->
+<section id="privacy" class="section">
+  <div class="container">
+    <div class="privacy" appReveal>
+      <div class="privacy-copy">
+        <span class="eyebrow">{{ 'landing.privacy.eyebrow' | transloco }}</span>
+        <h2>{{ 'landing.privacy.title' | transloco }}</h2>
+        <p class="lead">{{ 'landing.privacy.lead' | transloco }}</p>
+        <ul class="checks">
+          @for (p of privacyPoints; track p) {
+            <li><span class="tick" aria-hidden="true"><app-icon name="check" [size]="14" /></span> {{ 'landing.privacy.' + p | transloco }}</li>
+          }
+        </ul>
+      </div>
+      <figure class="flow" [attr.aria-label]="'landing.privacy.diagramLabel' | transloco">
+        <div class="device">
+          <span class="device-label">{{ 'landing.privacy.device' | transloco }}</span>
+          <div class="chain">
+            <span class="node"><app-icon name="image" [size]="18" /> {{ 'landing.privacy.yourImages' | transloco }}</span>
+            <span class="arrow" aria-hidden="true">↓</span>
+            <span class="node ai-node"><app-icon name="chip" [size]="18" /> {{ model.name }}</span>
+            <span class="arrow" aria-hidden="true">↓</span>
+            <span class="node"><app-icon name="download" [size]="18" /> {{ 'landing.privacy.result' | transloco }}</span>
+          </div>
+          <span class="no-way">{{ 'landing.privacy.nothingLeaves' | transloco }}</span>
+        </div>
+        <div class="hub">
+          <span class="hub-arrow" aria-hidden="true"><app-icon name="arrow-left" [size]="22" /></span>
+          <span class="node hub-node">Hugging Face</span>
+          <small>{{ 'landing.privacy.once' | transloco }}</small>
+        </div>
+      </figure>
     </div>
-    <ul class="showcase">
-      @for (s of showcase; track s; let i = $index) {
-        <li [class]="'bg-' + s" [appReveal]="i">
-          <img src="/samples/plant-cutout.webp" width="960" height="1200" alt="" loading="lazy" decoding="async" />
-          <span>{{ 'landing.showcase.' + s | transloco }}</span>
-        </li>
-      }
-    </ul>
   </div>
 </section>
 
+<!-- Comparison ------------------------------------------------------------------------------- -->
 <section class="section">
   <div class="container">
     <header class="section-head" appReveal>
@@ -119,9 +217,7 @@
               <th scope="row">{{ 'landing.compare.rows.' + r.key | transloco }}</th>
               <td class="us"><span class="yes"><app-icon name="check" [size]="16" /> {{ 'landing.compare.yes' | transloco }}</span></td>
               <td>
-                <span [class]="r.them">
-                  <app-icon [name]="r.them === 'no' ? 'x' : 'minus'" [size]="16" /> {{ 'landing.compare.' + r.them | transloco }}
-                </span>
+                <span [class]="r.them"><app-icon [name]="r.them === 'no' ? 'x' : 'minus'" [size]="16" /> {{ 'landing.compare.' + r.them | transloco }}</span>
               </td>
             </tr>
           }
@@ -129,60 +225,13 @@
       </table>
     </div>
     <p class="note faint">{{ 'landing.compare.note' | transloco }}</p>
-  </div>
-</section>
 
-<section id="privacy" class="section">
-  <div class="container split">
-    <div appReveal>
-      <span class="eyebrow">{{ 'landing.privacy.eyebrow' | transloco }}</span>
-      <h2>{{ 'landing.privacy.title' | transloco }}</h2>
-      <p class="muted">{{ 'landing.privacy.lead' | transloco }}</p>
-    </div>
-    <ul class="checks card" appReveal>
-      @for (p of privacyPoints; track p) {
-        <li><span class="tick" aria-hidden="true"><app-icon name="check" [size]="15" /></span> {{ 'landing.privacy.' + p | transloco }}</li>
-      }
-    </ul>
-  </div>
-</section>
-
-<section id="ai" class="section">
-  <div class="container">
-    <header class="section-head" appReveal>
-      <span class="eyebrow">{{ 'landing.ai.eyebrow' | transloco }}</span>
-      <h2>{{ 'landing.ai.title' | transloco }}</h2>
-      <p class="muted">{{ 'landing.ai.lead' | transloco }}</p>
-    </header>
-    <ul class="models">
-      @for (m of models; track m.id; let i = $index) {
-        <li class="card" [appReveal]="i">
-          <span class="ico" aria-hidden="true"><app-icon [name]="m.icon" [size]="22" /></span>
-          <div>
-            <h3>
-              <a [href]="m.url" target="_blank" rel="noopener">{{ m.name }}</a>
-            </h3>
-            <p class="faint">{{ m.maker }} · {{ m.license }} · {{ m.download }}</p>
-            <p class="muted">{{ 'landing.ai.' + m.id | transloco }}</p>
-          </div>
-        </li>
-      }
-      @for (e of engines; track e; let i = $index) {
-        <li class="card" [appReveal]="i + 1">
-          <span class="ico" aria-hidden="true"><app-icon [name]="e === 'gpu' ? 'zap' : 'cpu'" [size]="22" /></span>
-          <div>
-            <h3>{{ 'landing.ai.' + e + 'Title' | transloco }}</h3>
-            <p class="muted">{{ 'landing.ai.' + e | transloco }}</p>
-          </div>
-        </li>
-      }
-    </ul>
     <h3 class="sub">{{ 'landing.support.title' | transloco }}</h3>
     <ul class="browsers">
       @for (b of browsers; track b.name) {
-        <li class="card">
+        <li class="panel">
           <b>{{ b.name }}</b>
-          <span class="badge" [class.ok]="b.level === 'ok'">{{ 'landing.support.' + b.level | transloco }}</span>
+          <span class="chip" [class.yellow]="b.level === 'ok'">{{ 'landing.support.' + b.level | transloco }}</span>
           <p class="muted">{{ 'landing.support.' + b.key | transloco }}</p>
         </li>
       }
@@ -190,18 +239,20 @@
   </div>
 </section>
 
+<!-- FAQ ---------------------------------------------------------------------------------- -->
 <section id="faq" class="section">
-  <div class="container narrow">
-    <header class="section-head" appReveal>
+  <div class="container faq-grid">
+    <header class="section-head left" appReveal>
       <span class="eyebrow">FAQ</span>
       <h2>{{ 'landing.faq.title' | transloco }}</h2>
+      <p class="muted">{{ 'landing.faq.lead' | transloco }}</p>
     </header>
     <div class="faq">
       @for (q of faq; track q) {
-        <details class="card">
+        <details>
           <summary>
             <h3>{{ 'landing.faq.' + q + '.q' | transloco }}</h3>
-            <app-icon name="chevron" [size]="18" />
+            <span class="plus" aria-hidden="true"></span>
           </summary>
           <p class="muted">{{ 'landing.faq.' + q + '.a' | transloco }}</p>
         </details>
@@ -210,15 +261,23 @@
   </div>
 </section>
 
+<!-- Final call ------------------------------------------------------------------------------- -->
 <section class="section final">
   <div class="container">
     <div class="final-card" appReveal>
+      <img class="final-sticker" src="/samples/hero-cutout.webp" alt="" loading="lazy" decoding="async" />
       <h2>{{ 'landing.final.title' | transloco }}</h2>
       <p>{{ 'landing.final.text' | transloco }}</p>
       <div class="ctas">
-        <a class="btn lg light" routerLink="/app">{{ 'landing.final.cta' | transloco }} <app-icon name="arrow-right" [size]="17" /></a>
-        <a class="btn lg outline" [href]="repoUrl" target="_blank" rel="noopener"><app-icon name="github" [size]="17" /> {{ 'landing.final.github' | transloco }}</a>
+        <a class="btn dark lg" routerLink="/app">{{ 'landing.hero.cta' | transloco }} <app-icon name="arrow-right" [size]="19" /></a>
+        <a class="btn lg" [href]="repoUrl" target="_blank" rel="noopener"><app-icon name="github" [size]="18" /> {{ 'landing.final.github' | transloco }}</a>
       </div>
     </div>
   </div>
 </section>
+
+@if (dragging()) {
+  <div class="drop-overlay" aria-hidden="true">
+    <div><app-icon name="upload" [size]="40" /> {{ 'tool.dropHere' | transloco }}</div>
+  </div>
+}

@@ -8,15 +8,15 @@
     "main": "Main",
     "mobile": "Menu",
     "footer": "Footer",
-    "features": "Features",
     "how": "How it works",
+    "ai": "The AI",
     "privacy": "Privacy",
     "faq": "FAQ",
     "changelog": "Changelog",
     "language": "Language",
     "install": "Install the app",
     "open": "Remove a background",
-    "openShort": "Open",
+    "openShort": "Start",
     "menu": "Open the menu",
     "close": "Close the menu"
   },
@@ -27,7 +27,9 @@
     "dark": "Dark"
   },
   "footer": {
-    "tagline": "A free, open source background remover that runs entirely in your browser. Your pictures never leave your device",
+    "tagline": "A free, open source background remover that runs entirely in your browser. Your pictures never leave your device.",
+    "powered": "Powered by",
+    "project": "Project",
     "issues": "Report a problem",
     "noTracking": "No cookies, no tracking",
     "product": "Product",
@@ -38,8 +40,9 @@
     "reload": "Reload"
   },
   "drop": {
-    "choose": "Choose images",
-    "hint": "or drop them here, or paste with Ctrl + V. Several at once work too",
+    "choose": "Choose pictures",
+    "hint": "or drop them here, or paste with Ctrl + V. Several at once work too.",
+    "formats": "Any picture your browser can open: JPG, PNG, WebP, AVIF, GIF, BMP, HEIC on iPhone…",
     "samples": "No picture at hand? Try one of these",
     "sample": {
       "dog": "Try with the dog",
@@ -49,95 +52,171 @@
   },
   "landing": {
     "hero": {
-      "badges": "In short",
-      "badgeFree": "100 % free",
-      "badgeLocal": "No upload",
-      "badgeOpen": "Open source",
-      "title1": "Remove image backgrounds.",
-      "title2": "Free, private, full resolution.",
-      "lead": "An AI cuts your subject out in seconds, right in your browser. New background, eraser brush, batch processing and full-size download: no account, no credits, no watermark.",
-      "hint": "Your pictures are never uploaded: the AI runs on your device",
-      "before": "Before",
-      "after": "After",
-      "beforeAlt": "Original photo with its background",
-      "afterAlt": "The same photo with its background removed",
-      "compare": "Compare before and after",
-      "caption": "Drag the divider to compare. Cut out by FreeRemoveBg, untouched"
+      "ai": "On-device AI:",
+      "title1": "Cut out any picture.",
+      "title2": "Without",
+      "title3": "uploading it.",
+      "lead": "An open source AI isolates the subject of your photos right in your browser. New background, retouching, batches, download at full size: free, no account, no watermark.",
+      "cta": "Remove a background",
+      "sample": "Try with an example",
+      "proof": {
+        "free": "Free and unlimited",
+        "noUpload": "No picture uploaded",
+        "fullSize": "Your photo's full size"
+      },
+      "artAlt": "A dog cut out from its forest background, breaking out of its frame",
+      "tagLocal": "On your device",
+      "modes": "Compare",
+      "mode": {
+        "photo": "Photo",
+        "cutout": "Cut out",
+        "background": "New background"
+      },
+      "caption": "Cut out by FreeRemoveBg in the browser, untouched"
     },
-    "stats": {
-      "free": "free, without credits",
-      "upload": "pictures uploaded",
-      "hd": "full-resolution downloads",
-      "account": "accounts to create"
+    "ticker": {
+      "free": "Free",
+      "ai": "Open source AI: IS-Net",
+      "noUpload": "Nothing uploaded",
+      "fullSize": "Full size",
+      "batch": "Batch processing",
+      "offline": "Works offline",
+      "noAccount": "No account"
+    },
+    "ai": {
+      "eyebrow": "The AI inside",
+      "title1": "IS-Net, a research model",
+      "title2": "running on your device",
+      "lead": "FreeRemoveBg uses IS-Net, a segmentation model presented by researchers at the ECCV 2022 conference and designed for highly accurate cutouts. Your browser downloads it once from Hugging Face (179 MB), then runs it itself: on your graphics card with WebGPU, or on your processor with WebAssembly.",
+      "points": {
+        "precise": {
+          "title": "Precise",
+          "text": "Trained to follow fine outlines: hair, fur, leaves, thin objects."
+        },
+        "local": {
+          "title": "Local",
+          "text": "It computes on your device. The server never sees your pictures."
+        },
+        "open": {
+          "title": "Open",
+          "text": "Public code and weights under the Apache-2.0 license; commercial use allowed."
+        }
+      },
+      "paper": "Read the paper",
+      "code": "Model code",
+      "hub": "Model on Hugging Face",
+      "specLabel": "Spec sheet of the IS-Net model",
+      "specKicker": "Spec sheet",
+      "facts": {
+        "task": {
+          "label": "Task",
+          "value": "Dichotomous image segmentation (DIS)"
+        },
+        "paper": {
+          "label": "Paper",
+          "value": "Qin et al., ECCV 2022"
+        },
+        "input": {
+          "label": "Analysis",
+          "value": "1024 × 1024 px"
+        },
+        "weights": {
+          "label": "Weights",
+          "value": "179 MB, downloaded once"
+        },
+        "runtime": {
+          "label": "Engine",
+          "value": "ONNX Runtime Web + Transformers.js"
+        },
+        "compute": {
+          "label": "Computing",
+          "value": "WebGPU or WebAssembly"
+        },
+        "sent": {
+          "label": "Data sent",
+          "value": "0 bytes"
+        }
+      }
     },
     "how": {
       "eyebrow": "How it works",
-      "title": "A transparent background in three steps",
-      "lead": "No sign-up, no setup: open the page and drop a picture",
+      "title": "Four steps, the first one only once",
+      "lead": "No sign-up, no install: everything happens in this page.",
+      "model": {
+        "tag": "Only once",
+        "title": "Allow the AI model",
+        "text": "The first time, the page asks before downloading the AI (179 MB). After that, everything starts right away, even offline."
+      },
       "drop": {
-        "title": "Drop your images",
-        "text": "Choose, drop or paste one or several pictures: PNG, JPG, WebP, AVIF, GIF or BMP, up to 25 megapixels each"
+        "title": "Add your pictures",
+        "text": "Choose, drop or paste one picture or a whole batch: anything your browser can open."
       },
-      "ai": {
-        "title": "The AI cuts the subject out",
-        "text": "A segmentation model finds the person, the animal or the object and removes everything around it, on your graphics card or your processor"
+      "prepare": {
+        "tag": "Optional",
+        "title": "Prepare them if needed",
+        "text": "Turn, mirror or crop around the subject to help the AI. Or go straight on."
       },
-      "save": {
-        "title": "Adjust and download",
-        "text": "Pick a new background, fix details with the brush, then download in full resolution as PNG, JPG or WebP, or everything as a ZIP"
+      "export": {
+        "title": "Cut out and download",
+        "text": "Pick a background, retouch with the brush, then download as PNG, WebP or JPG, at your photo's full size."
       }
     },
     "features": {
       "eyebrow": "Features",
-      "title": "Everything you need, nothing to pay",
-      "lead": "The tools of a paid background remover, running on your own device",
+      "title": "What paid removers do. For free.",
       "cutout": {
-        "title": "AI cutout",
-        "text": "People, animals, products, cars, objects: the IS-Net model keeps fur, hair and fine details"
+        "title": "Automatic cutout",
+        "text": "People, animals, products, objects: the subject is isolated in seconds, fine outlines included."
       },
       "background": {
-        "title": "New background",
-        "text": "Keep it transparent, or pick a color, a gradient, one of your own pictures or the original blurred"
+        "title": "A new background in one click",
+        "text": "Transparent, a color, a gradient, one of your pictures or the original blurred. The same background applies to a whole batch."
+      },
+      "prepare": {
+        "title": "Prepare first",
+        "text": "Turn, mirror, crop with ready-made proportions (square, 4:5, 16:9…)."
       },
       "brush": {
-        "title": "Erase and restore brush",
-        "text": "Remove what the AI kept or bring back what it removed, with zoom, undo and redo"
+        "title": "Brush and rescue",
+        "text": "Erase or restore by hand, or draw around an object the AI missed so it looks again."
       },
       "batch": {
-        "title": "Batch processing",
-        "text": "Drop dozens of pictures at once: they are processed one after the other and downloaded as a single ZIP"
+        "title": "Batches",
+        "text": "Dozens of pictures at once, downloaded in a single ZIP."
       },
       "hd": {
-        "title": "Full resolution",
-        "text": "The download has the size of your original, up to 25 megapixels. No low-resolution preview, no watermark"
+        "title": "Full size",
+        "text": "The result has the size of your photo, up to about 6,000 × 4,000 pixels. No reduced copy."
       },
       "formats": {
-        "title": "PNG, JPG, WebP",
-        "text": "Transparent PNG or WebP, JPG with a background, or copy the result straight to the clipboard"
+        "title": "All your pictures",
+        "text": "In: anything your browser opens (JPG, PNG, WebP, AVIF, HEIC…). Out: transparent PNG or WebP, or JPG."
       },
       "offline": {
-        "title": "Works offline",
-        "text": "Install it as an app: once the AI model is downloaded, no connection is needed any more"
-      },
-      "open": {
-        "title": "Open source",
-        "text": "MIT-licensed code on GitHub, models under free licenses. Read it, host it, improve it"
+        "title": "Offline",
+        "text": "Install the app: once the model is downloaded, no connection is needed."
       }
     },
-    "showcase": {
-      "eyebrow": "Backgrounds",
-      "title": "One cutout, any background",
-      "text": "Product photo on white, profile picture on a color, visual for a post: change the background in one click and compare live. The same choice applies to every picture of a batch.",
-      "cta": "Try it now",
-      "transparent": "Transparent",
-      "color": "Color",
-      "gradient": "Gradient",
-      "photo": "Your picture"
+    "privacy": {
+      "eyebrow": "Privacy",
+      "title": "Your pictures never leave your device",
+      "lead": "There is no processing server: the page does everything itself. The only thing that travels is the AI model, the other way round, once.",
+      "upload": "No upload: your pictures are opened, cut out and saved by your browser, in memory.",
+      "model": "The model (179 MB) comes from Hugging Face once, and only if you agree to it.",
+      "account": "No account, no e-mail address, no payment.",
+      "tracking": "No cookies, no analytics, no ads; the server keeps no access logs.",
+      "verify": "Verifiable: a strict security policy stops the page from contacting anything but this site and Hugging Face.",
+      "diagramLabel": "Diagram: your pictures go through IS-Net on your device and come out as the result; only the model comes from Hugging Face, once.",
+      "device": "Your device",
+      "yourImages": "Your pictures",
+      "result": "The result",
+      "nothingLeaves": "Nothing leaves this box",
+      "once": "the model, once (179 MB)"
     },
     "compare": {
       "eyebrow": "Comparison",
-      "title": "What online background removers charge for",
-      "lead": "Most of them work the same way: your picture goes to their servers, and the full-size result costs credits",
+      "title": "What online removers charge for",
+      "lead": "Most of them work the same way: your picture goes to their servers, and the full-size result costs credits.",
       "them": "Online removers",
       "yes": "Yes",
       "no": "No",
@@ -145,7 +224,7 @@
       "sometimes": "Sometimes",
       "note": "General comparison with online background removal services at the time of writing; offers vary from one service to another.",
       "rows": {
-        "hd": "Full-resolution download",
+        "hd": "Full-size download",
         "unlimited": "Unlimited pictures",
         "batch": "Batch processing",
         "account": "Works without an account",
@@ -154,59 +233,49 @@
         "open": "Open source"
       }
     },
-    "privacy": {
-      "eyebrow": "Privacy",
-      "title": "Your pictures stay yours",
-      "lead": "ID photos, family pictures, unreleased products: nothing is sent anywhere, because there is nowhere to send it. The whole tool is a web page that computes on your device.",
-      "upload": "No upload: pictures are read, cut out and saved by your browser, in memory",
-      "account": "No account, no e-mail address, no payment",
-      "tracking": "No cookies, no analytics, no ads; the server keeps no access logs",
-      "verify": "Verifiable: a strict security policy forbids the page from contacting anything but this site and the model's host"
-    },
-    "ai": {
-      "eyebrow": "Under the hood",
-      "title": "An open AI model, on your device",
-      "lead": "The model is downloaded once from Hugging Face, kept by your browser, and then runs locally",
-      "isnet": "A general-purpose segmentation model for highly accurate cutouts (Dichotomous Image Segmentation), trained to follow thin structures",
-      "gpuTitle": "Graphics card (WebGPU)",
-      "gpu": "Used whenever your browser offers it: about a second per picture",
-      "cpuTitle": "Processor (WebAssembly)",
-      "cpu": "The automatic fallback, on every browser: a few seconds per picture, same result"
-    },
     "support": {
       "title": "Browsers",
       "ok": "Full",
-      "partial": "Limited by memory",
+      "partial": "Slower",
       "gpu": "Graphics card (WebGPU), installable as an app",
       "firefox": "WebGPU on recent versions, processor otherwise",
       "safari": "WebGPU from Safari 26 on Mac, processor otherwise",
-      "mobile": "Works on recent phones; very large pictures may run out of memory"
+      "mobile": "Recent phones work, more slowly: the AI uses the processor and a lot of memory"
     },
     "faq": {
-      "title": "Frequently asked questions",
+      "title": "Questions",
+      "lead": "Something else? Ask on GitHub.",
       "free": {
         "q": "Is FreeRemoveBg really free?",
-        "a": "Yes. There are no credits, no subscription, no watermark and no limit on the number or the size of downloads. The computing is done by your own device, so each picture costs nothing to run, and the code is open source under the MIT license."
+        "a": "Yes. No credits, no subscription, no watermark, no limit on the number or the size of downloads. Your own device does the computing, so each picture costs nothing to run, and the code is open source under the MIT license."
+      },
+      "model": {
+        "q": "Which AI is used?",
+        "a": "IS-Net, a segmentation model presented by Xuebin Qin and his co-authors at the ECCV 2022 conference (\"Highly Accurate Dichotomous Image Segmentation\"). Its ONNX version, under the Apache-2.0 license, is run in your browser by ONNX Runtime Web and Transformers.js."
+      },
+      "download": {
+        "q": "Why does a model have to be downloaded?",
+        "a": "Because the AI runs on your device, not on a server. Before the first cutout, FreeRemoveBg asks you before downloading the model (179 MB) from Hugging Face. Your browser then keeps it: next time nothing is downloaded again, and everything works even offline."
       },
       "alternative": {
         "q": "Is it an alternative to remove.bg?",
-        "a": "Yes. FreeRemoveBg does the same job, removing the background of a picture automatically, with a background editor, an erase and restore brush and batch processing. The differences: it is free in full resolution, it needs no account, and pictures are processed in your browser instead of being uploaded. FreeRemoveBg is an independent project, not affiliated with remove.bg."
+        "a": "Yes. FreeRemoveBg does the same job, removing the background of a picture automatically, with a background editor, a brush and batch processing. The differences: it is free at full size, it needs no account, and pictures are processed in your browser instead of being uploaded. FreeRemoveBg is an independent project, not affiliated with remove.bg."
       },
       "quality": {
-        "q": "How good is the cutout, and at what resolution?",
-        "a": "The IS-Net model is used: it handles fur, hair and thin details well on people, animals, products and vehicles. The picture is analysed at 1024 px, then the result is saved at the size of the original, up to 25 megapixels (16 on iPhone and iPad). Hard cases can be fixed with the brush."
+        "q": "How good is the cutout, and at what size?",
+        "a": "IS-Net handles hair, fur and fine details well on people, animals, products and objects. The picture is analysed at 1024 pixels, then the result is saved at the size of your photo, up to about 6,000 × 4,000 pixels (4,900 × 3,300 on iPhone and iPad). Cropping around a small subject before the cutout helps the AI; an object it missed can be rescued by drawing around it."
       },
       "privacy": {
         "q": "Are my pictures uploaded to a server?",
         "a": "No. Pictures are opened, processed and saved by your browser, on your device. The site only delivers the application files, and the AI model is downloaded once from Hugging Face. You can check it in your browser's developer tools: no request carries a picture."
       },
       "formats": {
-        "q": "Which formats are supported?",
-        "a": "In: PNG, JPG, WebP, AVIF, GIF and BMP, plus HEIC on browsers that can read it (Safari). Out: PNG or WebP with transparency, JPG with a background, or a copy to the clipboard."
+        "q": "Which formats are accepted?",
+        "a": "In: every picture your browser can open, which means JPG, PNG, WebP, AVIF, GIF and BMP everywhere, and HEIC on iPhone and Mac with Safari. Out: PNG or WebP with transparency, JPG with a background, or a copy to the clipboard."
       },
       "batch": {
         "q": "Can I process several pictures at once?",
-        "a": "Yes. Drop or select as many pictures as you want: they are cut out one after the other, the chosen background applies to all of them, and one button downloads everything as a ZIP archive."
+        "a": "Yes. Add as many pictures as you want, prepare each one if you like, then cut them all out in one click. The chosen background applies to all of them, and one button downloads everything as a ZIP archive."
       },
       "commercial": {
         "q": "Can I use the results commercially?",
@@ -214,113 +283,187 @@
       },
       "offline": {
         "q": "Does it work offline?",
-        "a": "Yes, after the first use. Once the application and the AI model are in your browser's cache, everything runs without a connection. You can also install FreeRemoveBg as an app from your browser."
+        "a": "Yes, after the first use. Once the application and the AI model are in your browser, everything runs without a connection. You can also install FreeRemoveBg as an app from your browser."
       },
-      "slow": {
-        "q": "Why does the first picture take longer?",
-        "a": "The AI model (179 MB) is downloaded the first time, then kept by your browser. The following pictures take about a second with a graphics card, a few seconds on the processor."
+      "iphone": {
+        "q": "Does it work on iPhone?",
+        "a": "Yes, on recent iPhones and iPads, but more slowly than on a computer: the AI uses the processor there and needs a lot of memory (close to 1 GB) during a cutout. On older models Safari may close the tab for lack of memory; a computer remains the most comfortable."
       }
     },
     "final": {
-      "title": "Remove your first background now",
+      "title": "Ready to cut out?",
       "text": "Free, without an account, and your pictures stay on your device.",
-      "cta": "Open FreeRemoveBg",
       "github": "Source code on GitHub"
     }
   },
-  "editor": {
+  "tool": {
     "title": "Background remover",
     "private": "Your pictures stay on your device: nothing is uploaded",
-    "rejected": "These files could not be read as pictures: {{ files }}",
-    "dropHere": "Drop your images here",
-    "images": "Your images",
-    "add": "Add images",
-    "clear": "Remove everything",
+    "rejected": "These files could not be opened as pictures: {{ files }}",
+    "dropHere": "Drop your pictures here",
+    "add": "Add pictures",
     "remove": "Remove {{ name }}",
-    "preview": "Picture",
-    "settings": "Background, retouching and download",
-    "undo": "Undo",
-    "redo": "Redo",
-    "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
-    "zoomFit": "Fit to the screen",
-    "resized": "Shrunk to fit the size limit",
-    "empty": {
-      "title": "Remove a background",
-      "text": "Choose one or several pictures: the subject is cut out automatically, on your device"
+    "resized": "Shrunk to the size limit (about 6,000 × 4,000 pixels)",
+    "checking": "Looking for the AI model on this device…",
+    "steps": {
+      "label": "Steps",
+      "model": "AI model",
+      "images": "Pictures",
+      "prepare": "Prepare",
+      "result": "Cut out",
+      "modelNote": "179 MB, once",
+      "imagesNote": "Choose or drop",
+      "prepareNote": "Optional",
+      "resultNote": "Background and export",
+      "preparing": "preparing…",
+      "ready": "ready",
+      "doneLabel": "done"
     },
     "state": {
+      "draft": "to prepare",
       "queued": "waiting",
-      "working": "being processed",
+      "working": "being cut out",
       "done": "background removed",
       "error": "failed"
     },
     "status": {
-      "empty": "No picture yet",
       "download": "Downloading the AI model",
       "load": "Preparing the AI",
       "run": "Removing the background",
       "done": "Background removed",
       "error": "The background could not be removed"
     },
-    "view": {
-      "label": "View",
+    "images": {
+      "eyebrow": "Step 2",
+      "title": "Add your pictures",
+      "text": "One picture or a whole batch. Nothing is sent: your browser opens them itself.",
+      "list": "Your pictures"
+    },
+    "model": {
+      "eyebrow": "Step 1 · only once",
+      "title": "First, the AI model",
+      "text": "FreeRemoveBg cuts out your pictures on your device, not on a server. For that, your browser needs to download the IS-Net model once, from Hugging Face. It then keeps it: next time, everything starts right away, even offline.",
+      "agree": "Download the model (179 MB)",
+      "retry": "Try the download again",
+      "decline": "Not now",
+      "mobile": "On a phone, prefer Wi-Fi: 179 MB is a large download.",
+      "downloading": "Downloading the model…",
+      "preparing": "Preparing the model on your device…",
+      "continue": "Continue to my pictures",
+      "continueHint": "You can carry on while it downloads: the cutout starts as soon as the model is ready.",
+      "error": "The model could not be downloaded",
+      "waiting": "Your pictures are waiting here: none has been sent.",
+      "facts": {
+        "model": "Model",
+        "size": "Size",
+        "sizeValue": "179 MB, once",
+        "source": "Comes from",
+        "license": "License",
+        "runs": "Runs on",
+        "runsValue": "Your device",
+        "sent": "Pictures sent",
+        "sentValue": "None"
+      }
+    },
+    "prepare": {
+      "preview": "Picture to prepare",
+      "alt": "{{ name }}, before the cutout",
+      "cropFrame": "Crop frame. Arrows move it, Shift + arrows resize it, Enter applies",
+      "eyebrow": "Step 3 · optional",
+      "title": "Prepare the picture?",
+      "text": "Straighten it, or crop around the subject: the AI will see it bigger and cut it out more precisely. Otherwise, go straight to the cutout.",
+      "tools": "Preparation tools",
+      "rotateLeft": "Turn left",
+      "rotateRight": "Turn right",
+      "flip": "Mirror",
+      "crop": "Crop",
+      "ratio": "Proportions",
+      "ratios": {
+        "free": "Free",
+        "original": "Original",
+        "square": "Square",
+        "portrait": "4:5",
+        "photo": "3:2",
+        "wide": "16:9"
+      },
+      "cropHelp": "Drag the frame or its handles. With the keyboard: arrows move it, Shift + arrows resize it.",
+      "apply": "Apply the crop",
+      "cancel": "Cancel",
+      "original": "Back to the original picture",
+      "modelWait": "The model is downloading ({{ percent }} %): the cutout starts as soon as it is ready.",
+      "go": "Cut out this picture",
+      "goAll": "Cut out all {{ count }} pictures",
+      "skipHint": "Nothing is sent: the cutout happens on your device."
+    },
+    "result": {
+      "preview": "Result",
+      "view": "View",
       "original": "Original",
-      "result": "Result"
-    },
-    "alt": {
-      "original": "{{ name }}, original picture",
-      "result": "{{ name }}, background removed"
-    },
-    "progress": {
+      "result": "Result",
+      "undo": "Undo",
+      "redo": "Redo",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "zoomFit": "Fit to the screen",
+      "altOriginal": "{{ name }}, original picture",
+      "altResult": "{{ name }}, background removed",
+      "waitModel": "Waiting for the AI model…",
+      "loading": "Preparing the AI…",
       "queued": "Waiting for its turn…",
-      "download": "Downloading the AI model…",
-      "once": "Only the first time: it is then kept by your browser",
-      "load": "Preparing the AI…",
-      "run": "Removing the background…"
-    },
-    "error": {
-      "title": "The background could not be removed",
-      "text": "Your device may be short of memory. Close other tabs and try again, or try a smaller picture",
+      "working": "Removing the background…",
+      "error": "The background could not be removed",
+      "errorText": "Your device may be short of memory. Close other tabs and try again, or crop the picture first.",
       "retry": "Try again",
-      "report": "Report on GitHub"
-    },
-    "device": {
+      "back": "Back to preparing",
+      "backConfirm": "Going back drops this cutout and its retouches. Continue?",
+      "report": "Report on GitHub",
       "gpu": "graphics card",
-      "cpu": "processor"
+      "cpu": "processor",
+      "settings": "Background, retouching and download",
+      "waiting": "Pictures still to prepare: {{ count }}",
+      "prepareNext": "Prepare the next one",
+      "rescueFailed": "The area could not be analysed. Try again, or use the brush.",
+      "tabs": {
+        "background": "Background",
+        "retouch": "Retouch"
+      }
     },
     "background": {
-      "title": "Background",
       "transparent": "None",
       "color": "Color",
       "gradient": "Gradient",
       "image": "Image",
       "blur": "Blur",
+      "transparentHelp": "Transparent background: a PNG or a WebP keeps it.",
       "custom": "Custom color",
       "from": "From",
       "to": "To",
       "choose": "Choose a picture",
-      "amount": "Blur of the original background"
+      "amount": "Blur of the original background",
+      "batchNote": "The same background applies to every picture of the batch."
     },
     "retouch": {
-      "title": "Retouch",
       "move": "Move",
       "erase": "Erase",
       "restore": "Restore",
+      "rescue": "Rescue",
       "size": "Brush size",
-      "help": "Erase what should go, restore what should stay. Zoom in for details: the brush keeps its size on screen",
+      "help": "Erase what should go, restore what should stay. Zoom in for details: the brush keeps its size on screen.",
+      "rescueHelp": "The AI missed something, like an object held at arm's length? Draw a rectangle around it: the AI looks there again and adds what it finds.",
+      "rescueGo": "Rescue this area",
+      "cancel": "Cancel",
       "reset": "Back to the AI result"
     },
-    "download": {
+    "export": {
       "title": "Download",
       "format": "Format",
-      "jpgNote": "JPG has no transparency: the background will be white",
-      "one": "Download",
-      "full": "Full resolution: {{ width }} × {{ height }} px",
-      "copy": "Copy to the clipboard",
+      "jpgNote": "JPG has no transparency: the background will be white.",
+      "download": "Download",
+      "full": "Full size: {{ width }} × {{ height }} px",
+      "copy": "Copy",
       "copied": "Copied",
-      "copyError": "Copy is not available here",
-      "all": "Download all as ZIP ({{ count }})"
+      "copyError": "Copy unavailable",
+      "all": "All as ZIP ({{ count }})"
     }
   },
   "changelog": {
@@ -419,7 +562,7 @@
           "title": "Third parties",
           "body": [
             "Cloudflare: every request to this site goes through Cloudflare, which protects the server and encrypts the connection. Like any network intermediary, it processes your IP address and your browser's standard information to route the pages, and may keep technical logs for security purposes; it never receives your pictures, which never leave your device. See its [privacy policy](https://www.cloudflare.com/privacypolicy/).",
-            "Hugging Face: the AI model is downloaded straight from huggingface.co the first time you remove a background, then kept by your browser. Hugging Face then receives your IP address and your browser's usual information, but never your pictures. See its [privacy policy](https://huggingface.co/privacy).",
+            "Hugging Face: the AI model is downloaded straight from huggingface.co once you agree to it, before your first cutout, then kept by your browser. Hugging Face then receives your IP address and your browser's usual information, but never your pictures. See its [privacy policy](https://huggingface.co/privacy).",
             "GitHub: only if you follow a link to the source code repository.",
             "No other third party is contacted: a strict Content-Security-Policy technically prevents the page from connecting anywhere else."
           ]
@@ -477,7 +620,7 @@
           "title": "Open source and third-party components",
           "body": [
             "The source code is available under the MIT license on [GitHub](https://github.com/ImMaxence/FreeRemoveBg).",
-            "FreeRemoveBg relies on: the [IS-Net](https://github.com/xuebinqin/DIS) model (Apache-2.0), in its [ONNX version](https://huggingface.co/BritishWerewolf/IS-Net), Transformers.js (Apache-2.0), ONNX Runtime (MIT), Angular (MIT), Transloco (MIT), Comlink (Apache-2.0) and the Inter font (SIL Open Font License).",
+            "FreeRemoveBg relies on: the [IS-Net](https://github.com/xuebinqin/DIS) model (Apache-2.0), in its [ONNX version](https://huggingface.co/BritishWerewolf/IS-Net), Transformers.js (Apache-2.0), ONNX Runtime (MIT), Angular (MIT), Transloco (MIT), Comlink (Apache-2.0) and the Bricolage Grotesque and Geist fonts (SIL Open Font License).",
             "The sample pictures are used under the licenses listed in the [credits](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md)."
           ]
         },
@@ -508,7 +651,7 @@
         {
           "title": "What is in place",
           "body": [
-            "Every function of the public pages and the main path of the tool (choosing pictures, removing the background, choosing a background, downloading) work with the keyboard alone, with a visible focus and a link to skip to the content.",
+            "Every function of the public pages and the main path of the tool (agreeing to the model, choosing pictures, turning, mirroring and cropping them, removing the background, choosing a background, downloading) work with the keyboard alone, with a visible focus and a link to skip to the content.",
             "Pages are structured with headings and landmarks, buttons and fields have names, and the progress and the result of the processing are announced to screen readers.",
             "Text and controls meet AA contrast in both the light and the dark theme, the layout adapts down to 320 px wide and to 200 % zoom, and animations are disabled when your system asks for reduced motion.",
             "The site is available in English and in French, and each page declares its language."
@@ -517,7 +660,7 @@
         {
           "title": "Content that is not accessible",
           "body": [
-            "The erase and restore brush needs a pointer (mouse, finger or stylus): it has no keyboard equivalent. The automatic cutout, the backgrounds and the downloads do not depend on it.",
+            "The erase and restore brush and the rescue of an area need a pointer (mouse, finger or stylus): they have no keyboard equivalent. The automatic cutout, preparing the picture, the backgrounds and the downloads do not depend on them.",
             "The preview of a picture is a drawing surface described by a short text only (the name of the file and its state): the content of your own pictures cannot be described automatically.",
             "The changelog is written in English only, including on the French version of the site.",
             "Dropping files and pasting from the clipboard are shortcuts; the \"Choose images\" button always offers the same function."
@@ -532,7 +675,7 @@
         {
           "title": "About this statement",
           "body": [
-            "This statement was written on 11 November 2026, for version 1.0.0 of the site. It is updated when the site changes."
+            "This statement was written on 11 November 2026, for version 2.0.0 of the site. It is updated when the site changes."
           ]
         }
       ]
@@ -540,8 +683,8 @@
   },
   "seo": {
     "home": {
-      "title": "FreeRemoveBg — Free background remover, no upload, full HD",
-      "description": "Remove the background of any image for free, in your browser: AI cutout, new background, erase brush, batch and full-resolution PNG. No upload, no account. A free remove.bg alternative"
+      "title": "FreeRemoveBg — Free background remover, no upload",
+      "description": "Remove the background of any picture for free, in your browser, with the open source IS-Net AI: new background, brush, batches, full-size PNG. No upload, no account. A free remove.bg alternative"
     },
     "changelog": {
       "title": "Changelog — FreeRemoveBg",
