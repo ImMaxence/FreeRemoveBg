@@ -1,0 +1,21 @@
+# Every page may be read, by search engines and AI assistants alike (see /llms.txt).
+# The tool itself (/app) has nothing to index: it answers "X-Robots-Tag: noindex".
+User-agent: *
+Allow: /
+
+# Assistants and AI search engines are welcome too.
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bingbot
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://freeremovebg.mbonnici.fr/sitemap.xml

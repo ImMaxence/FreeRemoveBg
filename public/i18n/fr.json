@@ -1,0 +1,571 @@
+{
+  "common": {
+    "close": "Fermer",
+    "downloadStats": "{{ done }} sur {{ total }} · {{ speed }} · reste {{ left }}"
+  },
+  "nav": {
+    "skip": "Aller au contenu",
+    "main": "Principale",
+    "mobile": "Menu",
+    "footer": "Pied de page",
+    "features": "Fonctionnalités",
+    "how": "Comment ça marche",
+    "privacy": "Confidentialité",
+    "faq": "FAQ",
+    "changelog": "Nouveautés",
+    "language": "Langue",
+    "install": "Installer l'app",
+    "open": "Supprimer un fond",
+    "openShort": "Ouvrir",
+    "menu": "Ouvrir le menu",
+    "close": "Fermer le menu"
+  },
+  "theme": {
+    "label": "Thème",
+    "system": "Système",
+    "light": "Clair",
+    "dark": "Sombre"
+  },
+  "footer": {
+    "tagline": "Un outil gratuit et open source pour supprimer le fond des images, qui fonctionne entièrement dans votre navigateur. Vos images ne quittent jamais votre appareil",
+    "issues": "Signaler un problème",
+    "noTracking": "Ni cookies, ni pistage",
+    "product": "Produit",
+    "legal": "Légal"
+  },
+  "pwa": {
+    "update": "Une nouvelle version est disponible",
+    "reload": "Recharger"
+  },
+  "drop": {
+    "choose": "Choisir des images",
+    "hint": "ou déposez-les ici, ou collez avec Ctrl + V. Plusieurs à la fois, c'est possible",
+    "samples": "Pas d'image sous la main ? Essayez avec celles-ci",
+    "sample": {
+      "dog": "Essayer avec le chien",
+      "cat": "Essayer avec le chat",
+      "plant": "Essayer avec la plante"
+    }
+  },
+  "landing": {
+    "hero": {
+      "badges": "En bref",
+      "badgeFree": "100 % gratuit",
+      "badgeLocal": "Sans envoi",
+      "badgeOpen": "Open source",
+      "title1": "Supprimez le fond de vos images.",
+      "title2": "Gratuit, privé, en pleine résolution.",
+      "lead": "Une IA détoure votre sujet en quelques secondes, directement dans votre navigateur. Nouveau fond, pinceau de retouche, traitement par lot et téléchargement en taille réelle : sans compte, sans crédits, sans filigrane.",
+      "hint": "Vos images ne sont jamais envoyées : l'IA tourne sur votre appareil",
+      "before": "Avant",
+      "after": "Après",
+      "beforeAlt": "Photo d'origine avec son arrière-plan",
+      "afterAlt": "La même photo, arrière-plan supprimé",
+      "compare": "Comparer avant et après",
+      "caption": "Faites glisser le séparateur pour comparer. Détouré par FreeRemoveBg, sans retouche"
+    },
+    "stats": {
+      "free": "gratuit, sans crédits",
+      "upload": "image envoyée",
+      "hd": "en pleine résolution",
+      "account": "compte à créer"
+    },
+    "how": {
+      "eyebrow": "Comment ça marche",
+      "title": "Un fond transparent en trois étapes",
+      "lead": "Ni inscription, ni installation : ouvrez la page et déposez une image",
+      "drop": {
+        "title": "Déposez vos images",
+        "text": "Choisissez, déposez ou collez une ou plusieurs images : PNG, JPG, WebP, AVIF, GIF ou BMP, jusqu'à 25 mégapixels chacune"
+      },
+      "ai": {
+        "title": "L'IA détoure le sujet",
+        "text": "Un modèle de segmentation repère la personne, l'animal ou l'objet et retire tout ce qui l'entoure, sur votre carte graphique ou votre processeur"
+      },
+      "save": {
+        "title": "Ajustez et téléchargez",
+        "text": "Choisissez un nouveau fond, corrigez les détails au pinceau, puis téléchargez en pleine résolution en PNG, JPG ou WebP, ou le tout en ZIP"
+      }
+    },
+    "features": {
+      "eyebrow": "Fonctionnalités",
+      "title": "Tout ce qu'il faut, rien à payer",
+      "lead": "Les outils d'un service payant de suppression de fond, sur votre propre appareil",
+      "cutout": {
+        "title": "Détourage par IA",
+        "text": "Personnes, animaux, produits, voitures, objets : le modèle IS-Net conserve les poils, les cheveux et les détails fins"
+      },
+      "background": {
+        "title": "Nouveau fond",
+        "text": "Gardez la transparence, ou choisissez une couleur, un dégradé, l'une de vos images ou l'original flouté"
+      },
+      "brush": {
+        "title": "Pinceau effacer et restaurer",
+        "text": "Retirez ce que l'IA a gardé ou faites revenir ce qu'elle a retiré, avec zoom, annuler et rétablir"
+      },
+      "batch": {
+        "title": "Traitement par lot",
+        "text": "Déposez des dizaines d'images d'un coup : elles sont traitées l'une après l'autre et téléchargées dans un seul ZIP"
+      },
+      "hd": {
+        "title": "Pleine résolution",
+        "text": "Le téléchargement a la taille de votre original, jusqu'à 25 mégapixels. Pas d'aperçu en basse résolution, pas de filigrane"
+      },
+      "formats": {
+        "title": "PNG, JPG, WebP",
+        "text": "PNG ou WebP transparent, JPG avec un fond, ou copie directe du résultat dans le presse-papiers"
+      },
+      "offline": {
+        "title": "Fonctionne hors ligne",
+        "text": "Installez-le comme une application : une fois le modèle d'IA téléchargé, plus besoin de connexion"
+      },
+      "open": {
+        "title": "Open source",
+        "text": "Code sous licence MIT sur GitHub, modèles sous licences libres. Lisez-le, hébergez-le, améliorez-le"
+      }
+    },
+    "showcase": {
+      "eyebrow": "Fonds",
+      "title": "Un détourage, tous les fonds",
+      "text": "Photo produit sur fond blanc, photo de profil sur une couleur, visuel pour une publication : changez de fond en un clic et comparez en direct. Le même choix s'applique à toutes les images d'un lot.",
+      "cta": "Essayer maintenant",
+      "transparent": "Transparent",
+      "color": "Couleur",
+      "gradient": "Dégradé",
+      "photo": "Votre image"
+    },
+    "compare": {
+      "eyebrow": "Comparatif",
+      "title": "Ce que les services en ligne font payer",
+      "lead": "La plupart fonctionnent de la même façon : votre image part sur leurs serveurs, et le résultat en taille réelle coûte des crédits",
+      "them": "Services en ligne",
+      "yes": "Oui",
+      "no": "Non",
+      "paid": "Payant",
+      "sometimes": "Parfois",
+      "note": "Comparaison générale avec les services en ligne de suppression de fond à la date de rédaction ; les offres varient d'un service à l'autre.",
+      "rows": {
+        "hd": "Téléchargement en pleine résolution",
+        "unlimited": "Images illimitées",
+        "batch": "Traitement par lot",
+        "account": "Fonctionne sans compte",
+        "upload": "Les images restent sur votre appareil",
+        "offline": "Fonctionne hors ligne",
+        "open": "Open source"
+      }
+    },
+    "privacy": {
+      "eyebrow": "Confidentialité",
+      "title": "Vos images restent les vôtres",
+      "lead": "Photos d'identité, photos de famille, produits pas encore sortis : rien n'est envoyé, parce qu'il n'y a nulle part où l'envoyer. Tout l'outil est une page web qui calcule sur votre appareil.",
+      "upload": "Aucun envoi : les images sont lues, détourées et enregistrées par votre navigateur, en mémoire",
+      "account": "Pas de compte, pas d'adresse e-mail, pas de paiement",
+      "tracking": "Ni cookies, ni mesure d'audience, ni publicité ; le serveur ne conserve aucun journal d'accès",
+      "verify": "Vérifiable : une politique de sécurité stricte interdit à la page de contacter autre chose que ce site et l'hébergeur du modèle"
+    },
+    "ai": {
+      "eyebrow": "Sous le capot",
+      "title": "Un modèle d'IA ouvert, sur votre appareil",
+      "lead": "Le modèle est téléchargé une seule fois depuis Hugging Face, conservé par votre navigateur, puis exécuté en local",
+      "isnet": "Un modèle de segmentation généraliste conçu pour des détourages très précis (Dichotomous Image Segmentation), entraîné à suivre les structures fines",
+      "gpuTitle": "Carte graphique (WebGPU)",
+      "gpu": "Utilisée dès que votre navigateur la propose : une seconde environ par image",
+      "cpuTitle": "Processeur (WebAssembly)",
+      "cpu": "Le repli automatique, sur tous les navigateurs : quelques secondes par image, même résultat"
+    },
+    "support": {
+      "title": "Navigateurs",
+      "ok": "Complet",
+      "partial": "Limité par la mémoire",
+      "gpu": "Carte graphique (WebGPU), installable comme application",
+      "firefox": "WebGPU sur les versions récentes, processeur sinon",
+      "safari": "WebGPU à partir de Safari 26 sur Mac, processeur sinon",
+      "mobile": "Fonctionne sur les téléphones récents ; les très grandes images peuvent manquer de mémoire"
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "free": {
+        "q": "FreeRemoveBg est-il vraiment gratuit ?",
+        "a": "Oui. Il n'y a ni crédits, ni abonnement, ni filigrane, ni limite sur le nombre ou la taille des téléchargements. Le calcul est fait par votre propre appareil, donc chaque image ne coûte rien à traiter, et le code est open source sous licence MIT."
+      },
+      "alternative": {
+        "q": "Est-ce une alternative à remove.bg ?",
+        "a": "Oui. FreeRemoveBg fait le même travail, supprimer automatiquement le fond d'une image, avec un éditeur de fond, un pinceau effacer et restaurer et le traitement par lot. Les différences : il est gratuit en pleine résolution, il ne demande pas de compte, et les images sont traitées dans votre navigateur au lieu d'être envoyées. FreeRemoveBg est un projet indépendant, sans lien avec remove.bg."
+      },
+      "quality": {
+        "q": "Quelle est la qualité du détourage, et à quelle résolution ?",
+        "a": "C'est le modèle IS-Net qui est utilisé : il gère bien les poils, les cheveux et les détails fins, sur les personnes, les animaux, les produits et les véhicules. L'image est analysée en 1024 px, puis le résultat est enregistré à la taille de l'original, jusqu'à 25 mégapixels (16 sur iPhone et iPad). Les cas difficiles se corrigent au pinceau."
+      },
+      "privacy": {
+        "q": "Mes images sont-elles envoyées sur un serveur ?",
+        "a": "Non. Les images sont ouvertes, traitées et enregistrées par votre navigateur, sur votre appareil. Le site ne fait que distribuer les fichiers de l'application, et le modèle d'IA est téléchargé une seule fois depuis Hugging Face. Vous pouvez le vérifier dans les outils de développement de votre navigateur : aucune requête ne transporte d'image."
+      },
+      "formats": {
+        "q": "Quels formats sont pris en charge ?",
+        "a": "En entrée : PNG, JPG, WebP, AVIF, GIF et BMP, ainsi que HEIC sur les navigateurs qui savent le lire (Safari). En sortie : PNG ou WebP avec transparence, JPG avec un fond, ou copie dans le presse-papiers."
+      },
+      "batch": {
+        "q": "Puis-je traiter plusieurs images à la fois ?",
+        "a": "Oui. Déposez ou sélectionnez autant d'images que vous voulez : elles sont détourées l'une après l'autre, le fond choisi s'applique à toutes, et un bouton télécharge le tout dans une archive ZIP."
+      },
+      "commercial": {
+        "q": "Puis-je utiliser les résultats à des fins commerciales ?",
+        "a": "Oui. Vous gardez tous les droits sur vos images, et le modèle utilisé (IS-Net, sous licence Apache-2.0) autorise l'usage commercial. Il vous faut seulement les droits sur les images d'origine."
+      },
+      "offline": {
+        "q": "Est-ce que ça marche hors ligne ?",
+        "a": "Oui, après la première utilisation. Une fois l'application et le modèle d'IA dans le cache de votre navigateur, tout fonctionne sans connexion. Vous pouvez aussi installer FreeRemoveBg comme une application depuis votre navigateur."
+      },
+      "slow": {
+        "q": "Pourquoi la première image est-elle plus longue ?",
+        "a": "Le modèle d'IA (179 Mo) est téléchargé la première fois, puis conservé par votre navigateur. Les images suivantes prennent environ une seconde avec une carte graphique, quelques secondes sur le processeur."
+      }
+    },
+    "final": {
+      "title": "Supprimez votre premier fond maintenant",
+      "text": "Gratuit, sans compte, et vos images restent sur votre appareil.",
+      "cta": "Ouvrir FreeRemoveBg",
+      "github": "Code source sur GitHub"
+    }
+  },
+  "editor": {
+    "title": "Suppression de fond",
+    "private": "Vos images restent sur votre appareil : rien n'est envoyé",
+    "rejected": "Ces fichiers n'ont pas pu être lus comme des images : {{ files }}",
+    "dropHere": "Déposez vos images ici",
+    "images": "Vos images",
+    "add": "Ajouter des images",
+    "clear": "Tout retirer",
+    "remove": "Retirer {{ name }}",
+    "preview": "Image",
+    "settings": "Fond, retouche et téléchargement",
+    "undo": "Annuler",
+    "redo": "Rétablir",
+    "zoomIn": "Zoomer",
+    "zoomOut": "Dézoomer",
+    "zoomFit": "Ajuster à l'écran",
+    "resized": "Réduite pour respecter la taille maximale",
+    "empty": {
+      "title": "Supprimer un fond",
+      "text": "Choisissez une ou plusieurs images : le sujet est détouré automatiquement, sur votre appareil"
+    },
+    "state": {
+      "queued": "en attente",
+      "working": "en cours de traitement",
+      "done": "fond supprimé",
+      "error": "échec"
+    },
+    "status": {
+      "empty": "Aucune image pour l'instant",
+      "download": "Téléchargement du modèle d'IA",
+      "load": "Préparation de l'IA",
+      "run": "Suppression du fond en cours",
+      "done": "Fond supprimé",
+      "error": "Le fond n'a pas pu être supprimé"
+    },
+    "view": {
+      "label": "Affichage",
+      "original": "Original",
+      "result": "Résultat"
+    },
+    "alt": {
+      "original": "{{ name }}, image d'origine",
+      "result": "{{ name }}, fond supprimé"
+    },
+    "progress": {
+      "queued": "En attente de son tour…",
+      "download": "Téléchargement du modèle d'IA…",
+      "once": "Seulement la première fois : il est ensuite conservé par votre navigateur",
+      "load": "Préparation de l'IA…",
+      "run": "Suppression du fond…"
+    },
+    "error": {
+      "title": "Le fond n'a pas pu être supprimé",
+      "text": "Votre appareil manque peut-être de mémoire. Fermez d'autres onglets et réessayez, ou essayez une image plus petite",
+      "retry": "Réessayer",
+      "report": "Signaler sur GitHub"
+    },
+    "device": {
+      "gpu": "carte graphique",
+      "cpu": "processeur"
+    },
+    "background": {
+      "title": "Fond",
+      "transparent": "Aucun",
+      "color": "Couleur",
+      "gradient": "Dégradé",
+      "image": "Image",
+      "blur": "Flou",
+      "custom": "Couleur personnalisée",
+      "from": "De",
+      "to": "À",
+      "choose": "Choisir une image",
+      "amount": "Flou du fond d'origine"
+    },
+    "retouch": {
+      "title": "Retouche",
+      "move": "Déplacer",
+      "erase": "Effacer",
+      "restore": "Restaurer",
+      "size": "Taille du pinceau",
+      "help": "Effacez ce qui doit partir, restaurez ce qui doit rester. Zoomez pour les détails : le pinceau garde sa taille à l'écran",
+      "reset": "Revenir au résultat de l'IA"
+    },
+    "download": {
+      "title": "Téléchargement",
+      "format": "Format",
+      "jpgNote": "Le JPG n'a pas de transparence : le fond sera blanc",
+      "one": "Télécharger",
+      "full": "Pleine résolution : {{ width }} × {{ height }} px",
+      "copy": "Copier dans le presse-papiers",
+      "copied": "Copié",
+      "copyError": "La copie n'est pas disponible ici",
+      "all": "Tout télécharger en ZIP ({{ count }})"
+    }
+  },
+  "changelog": {
+    "eyebrow": "Versions",
+    "title": "Nouveautés",
+    "lead": "Toutes les versions de FreeRemoveBg, de la plus récente à la plus ancienne",
+    "current": "Vous utilisez la",
+    "github": "Voir sur GitHub",
+    "releases": "Releases GitHub",
+    "latest": "Dernière",
+    "error": "Impossible de charger le changelog"
+  },
+  "legal": {
+    "updated": "Dernière mise à jour : 11 novembre 2026",
+    "contact": "Contact",
+    "nav": {
+      "notice": "Mentions légales",
+      "privacy": "Confidentialité",
+      "terms": "Conditions d'utilisation",
+      "accessibility": "Accessibilité"
+    },
+    "notice": {
+      "title": "Mentions légales",
+      "intro": "Informations requises par l'article 6 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN), concernant l'éditeur et l'hébergeur de ce site.",
+      "sections": [
+        {
+          "title": "Éditeur",
+          "body": [
+            "Le site freeremovebg.mbonnici.fr (« FreeRemoveBg ») est édité par Maxence Bonnici, particulier, à titre non commercial.",
+            "Directeur de la publication : Maxence Bonnici.",
+            "Contact : maxence.bonnici@outlook.com"
+          ]
+        },
+        {
+          "title": "Hébergement",
+          "body": [
+            "Le site est auto-hébergé par son éditeur, Maxence Bonnici, sur un serveur personnel situé en France, et déployé avec la plateforme Coolify.",
+            "Les requêtes vers le site passent par le réseau de Cloudflare, Inc. (101 Townsend St, San Francisco, CA 94107, États-Unis), qui protège le serveur et chiffre la connexion.",
+            "Contact : maxence.bonnici@outlook.com"
+          ]
+        },
+        {
+          "title": "Propriété intellectuelle",
+          "body": [
+            "Le code source de FreeRemoveBg est open source et publié sous licence MIT sur [GitHub](https://github.com/ImMaxence/FreeRemoveBg).",
+            "Les composants tiers, modèles d'IA et polices utilisés par l'application restent la propriété de leurs auteurs et sont utilisés selon leurs propres licences, listées dans les [conditions d'utilisation](/terms). Les images d'exemple et leurs auteurs sont listés dans les [crédits](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md).",
+            "Les marques citées (remove.bg, Hugging Face, Chrome, Edge, Firefox, Safari…) appartiennent à leurs propriétaires. FreeRemoveBg est un projet indépendant, sans lien avec remove.bg ni son éditeur."
+          ]
+        },
+        {
+          "title": "Responsabilité",
+          "body": [
+            "L'éditeur s'efforce d'assurer la disponibilité du site et l'exactitude de ses informations, sans pouvoir les garantir. L'utilisation de l'application est régie par les [conditions d'utilisation](/terms)."
+          ]
+        },
+        {
+          "title": "Données personnelles",
+          "body": [
+            "FreeRemoveBg ne collecte aucune donnée personnelle : les images sont traitées uniquement sur votre appareil. Les détails figurent dans la [politique de confidentialité](/privacy)."
+          ]
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "intro": "FreeRemoveBg est conçu pour que vos images ne quittent jamais votre appareil. Cette page explique simplement ce qui est traité, et où.",
+      "sections": [
+        {
+          "title": "En résumé",
+          "body": [
+            "Aucun envoi : vos images et leurs résultats sont traités dans votre navigateur et ne sont jamais transmis à l'éditeur ni à quiconque.",
+            "Pas de compte, pas de cookies, pas de mesure d'audience, pas de publicité."
+          ]
+        },
+        {
+          "title": "Ce qui reste sur votre appareil",
+          "body": [
+            "Les images que vous ouvrez sont lues par votre navigateur. La recherche du sujet (le modèle d'IA), le changement de fond, la retouche et l'enregistrement sont tous calculés localement, sur votre carte graphique ou votre processeur.",
+            "Les images et les résultats ne sont gardés que dans la mémoire de la page : ils ne sont pas stockés, et disparaissent dès que vous fermez ou rechargez l'onglet. Téléchargez ce que vous voulez conserver."
+          ]
+        },
+        {
+          "title": "Stockage local",
+          "body": [
+            "L'application enregistre vos préférences d'interface (langue, thème) dans le stockage local de votre navigateur, et conserve ses propres fichiers ainsi que le modèle d'IA téléchargé dans le cache du navigateur pour fonctionner hors ligne. Ces éléments sont strictement nécessaires au service, ne servent jamais à vous suivre et ne nécessitent donc pas de bandeau de consentement.",
+            "Vous pouvez les effacer à tout moment en supprimant les données de ce site dans les réglages de votre navigateur."
+          ]
+        },
+        {
+          "title": "Serveur",
+          "body": [
+            "Le serveur se contente de distribuer les fichiers de l'application et ne conserve aucun journal d'accès. Comme tout serveur web, il reçoit techniquement votre adresse IP pour répondre aux requêtes, mais ne la stocke pas."
+          ]
+        },
+        {
+          "title": "Tiers",
+          "body": [
+            "Cloudflare : toutes les requêtes vers ce site passent par Cloudflare, qui protège le serveur et chiffre la connexion. Comme tout intermédiaire réseau, il traite votre adresse IP et les informations standard de votre navigateur pour acheminer les pages, et peut conserver des journaux techniques à des fins de sécurité ; il ne reçoit jamais vos images, qui ne quittent jamais votre appareil. Voir sa [politique de confidentialité](https://www.cloudflare.com/privacypolicy/).",
+            "Hugging Face : le modèle d'IA est téléchargé directement depuis huggingface.co la première fois que vous supprimez un fond, puis conservé par votre navigateur. Hugging Face reçoit alors votre adresse IP et les informations habituelles de votre navigateur, mais jamais vos images. Consultez sa [politique de confidentialité](https://huggingface.co/privacy).",
+            "GitHub : uniquement si vous suivez un lien vers le dépôt du code source.",
+            "Aucun autre tiers n'est contacté : une Content-Security-Policy stricte empêche techniquement la page de se connecter ailleurs."
+          ]
+        },
+        {
+          "title": "Vos droits",
+          "body": [
+            "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et d'opposition. L'éditeur ne détenant aucune donnée vous concernant, il n'y a en général rien à consulter, mais vous pouvez poser toute question à maxence.bonnici@outlook.com. Vous pouvez aussi introduire une réclamation auprès de la CNIL ([cnil.fr](https://www.cnil.fr))."
+          ]
+        },
+        {
+          "title": "Évolutions",
+          "body": [
+            "Cette politique peut être mise à jour lorsque l'application évolue. La date de dernière mise à jour figure en haut de cette page."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "intro": "En utilisant FreeRemoveBg, vous acceptez ces conditions. Elles sont courtes, car le service est simple : un outil gratuit qui fonctionne dans votre navigateur.",
+      "sections": [
+        {
+          "title": "Service",
+          "body": [
+            "FreeRemoveBg est une application gratuite qui supprime le fond des images et fonctionne entièrement dans votre navigateur web. Elle est fournie gratuitement, sans compte, et peut évoluer, être interrompue ou arrêtée à tout moment, sans préavis."
+          ]
+        },
+        {
+          "title": "Vos contenus",
+          "body": [
+            "Vous restez seul propriétaire et seul responsable des images que vous traitez et de l'usage que vous faites des résultats. Vous devez disposer des droits nécessaires (droits d'auteur, droit à l'image des personnes représentées).",
+            "L'application ne doit pas être utilisée à des fins illicites, notamment pour tromper sur une personne ou porter atteinte aux droits d'autrui."
+          ]
+        },
+        {
+          "title": "Résultats automatiques",
+          "body": [
+            "Le détourage est produit automatiquement par un modèle d'IA et peut contenir des erreurs (parties manquantes, restes de fond). Vérifiez le résultat, et corrigez-le au pinceau si besoin, avant de l'utiliser."
+          ]
+        },
+        {
+          "title": "Vos fichiers",
+          "body": [
+            "L'application ne modifie jamais vos fichiers d'origine et ne garde aucune copie de vos images : les résultats n'existent que dans l'onglet ouvert. Téléchargez-les avant de le fermer."
+          ]
+        },
+        {
+          "title": "Garantie et responsabilité",
+          "body": [
+            "Le logiciel est fourni « tel quel », sans garantie d'aucune sorte, sous licence MIT. Dans les limites permises par la loi, l'éditeur ne saurait être tenu responsable des dommages résultant de l'utilisation ou de l'impossibilité d'utiliser l'application (perte de données, résultat incorrect, indisponibilité…)."
+          ]
+        },
+        {
+          "title": "Open source et composants tiers",
+          "body": [
+            "Le code source est disponible sous licence MIT sur [GitHub](https://github.com/ImMaxence/FreeRemoveBg).",
+            "FreeRemoveBg s'appuie sur : le modèle [IS-Net](https://github.com/xuebinqin/DIS) (Apache-2.0), dans sa [version ONNX](https://huggingface.co/BritishWerewolf/IS-Net), Transformers.js (Apache-2.0), ONNX Runtime (MIT), Angular (MIT), Transloco (MIT), Comlink (Apache-2.0) et la police Inter (SIL Open Font License).",
+            "Les images d'exemple sont utilisées selon les licences listées dans les [crédits](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md)."
+          ]
+        },
+        {
+          "title": "Marques",
+          "body": [
+            "remove.bg est une marque de son propriétaire. FreeRemoveBg est un projet indépendant, qui n'est ni affilié à remove.bg ou à son éditeur, ni approuvé par eux."
+          ]
+        },
+        {
+          "title": "Droit applicable",
+          "body": [
+            "Ces conditions sont régies par le droit français. Questions : maxence.bonnici@outlook.com."
+          ]
+        }
+      ]
+    },
+    "accessibility": {
+      "title": "Déclaration d'accessibilité",
+      "intro": "FreeRemoveBg cherche à être utilisable par tous, quels que soient l'appareil et la façon de naviguer. Cette déclaration décrit où en est le site par rapport aux règles pour l'accessibilité des contenus web (WCAG) 2.2, niveau AA.",
+      "sections": [
+        {
+          "title": "État de conformité",
+          "body": [
+            "Le site est partiellement conforme aux WCAG 2.2 niveau AA : la plupart des critères sont respectés, et les exceptions sont listées ci-dessous. Cette évaluation a été faite par l'éditeur (vérifications au clavier, au lecteur d'écran et des contrastes) ; ce n'est pas un audit réalisé par un tiers."
+          ]
+        },
+        {
+          "title": "Ce qui est en place",
+          "body": [
+            "Toutes les fonctions des pages publiques et le parcours principal de l'outil (choisir des images, supprimer le fond, choisir un fond, télécharger) fonctionnent au clavier seul, avec un focus visible et un lien pour aller directement au contenu.",
+            "Les pages sont structurées par des titres et des régions, les boutons et les champs ont un nom, et l'avancement comme le résultat du traitement sont annoncés aux lecteurs d'écran.",
+            "Les textes et les commandes respectent les contrastes AA en thème clair comme en thème sombre, la mise en page s'adapte jusqu'à 320 px de large et à un zoom de 200 %, et les animations sont désactivées quand votre système demande de réduire les mouvements.",
+            "Le site est disponible en français et en anglais, et chaque page déclare sa langue."
+          ]
+        },
+        {
+          "title": "Contenus non accessibles",
+          "body": [
+            "Le pinceau effacer et restaurer demande un pointeur (souris, doigt ou stylet) : il n'a pas d'équivalent au clavier. Le détourage automatique, les fonds et les téléchargements n'en dépendent pas.",
+            "L'aperçu d'une image est une surface de dessin décrite par un texte court seulement (le nom du fichier et son état) : le contenu de vos propres images ne peut pas être décrit automatiquement.",
+            "Le journal des nouveautés est rédigé en anglais uniquement, y compris sur la version française du site.",
+            "Le dépôt de fichiers et le collage depuis le presse-papiers sont des raccourcis ; le bouton « Choisir des images » offre toujours la même fonction."
+          ]
+        },
+        {
+          "title": "Retour d'information et contact",
+          "body": [
+            "Si quelque chose vous bloque, écrivez à maxence.bonnici@outlook.com ou ouvrez un ticket sur [GitHub](https://github.com/ImMaxence/FreeRemoveBg/issues) : décrivez la page, ce que vous cherchiez à faire et l'outil que vous utilisez. Une réponse et, quand c'est possible, une correction suivront."
+          ]
+        },
+        {
+          "title": "À propos de cette déclaration",
+          "body": [
+            "Cette déclaration a été rédigée le 11 novembre 2026, pour la version 1.0.0 du site. Elle est mise à jour quand le site évolue."
+          ]
+        }
+      ]
+    }
+  },
+  "seo": {
+    "home": {
+      "title": "FreeRemoveBg — Supprimer le fond d'une image, gratuit et sans envoi",
+      "description": "Supprimez le fond de vos images gratuitement, dans votre navigateur : détourage par IA, nouveau fond, pinceau, traitement par lot et PNG en pleine résolution. Sans envoi, sans compte. Une alternative gratuite à remove.bg"
+    },
+    "changelog": {
+      "title": "Nouveautés — FreeRemoveBg",
+      "description": "Les nouveautés de FreeRemoveBg, version par version"
+    },
+    "legal": {
+      "title": "Mentions légales — FreeRemoveBg",
+      "description": "Éditeur et hébergement de FreeRemoveBg"
+    },
+    "privacy": {
+      "title": "Politique de confidentialité — FreeRemoveBg",
+      "description": "FreeRemoveBg n'envoie rien : vos images sont traitées sur votre appareil et ne sont jamais stockées"
+    },
+    "terms": {
+      "title": "Conditions d'utilisation — FreeRemoveBg",
+      "description": "Conditions d'utilisation de FreeRemoveBg, un outil gratuit et open source de suppression de fond"
+    },
+    "accessibility": {
+      "title": "Déclaration d'accessibilité — FreeRemoveBg",
+      "description": "Où en est FreeRemoveBg par rapport aux WCAG 2.2 niveau AA, ses limites connues et comment signaler un problème"
+    },
+    "app": {
+      "title": "Supprimer un fond — FreeRemoveBg",
+      "description": "Supprimez le fond de vos images, dans votre navigateur"
+    }
+  }
+}

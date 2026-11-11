@@ -1,0 +1,54 @@
+{
+  "name": "freeremovebg",
+  "version": "1.0.0",
+  "description": "Free background remover running 100% in the browser: AI cutout, background replacement, erase/restore brush, batch processing, full-resolution download. Nothing is uploaded.",
+  "license": "MIT",
+  "author": "Maxence Bonnici",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ImMaxence/FreeRemoveBg.git"
+  },
+  "homepage": "https://freeremovebg.mbonnici.fr",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build && npm run seo",
+    "watch": "ng build --watch --configuration development",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.worker.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "seo": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seo.mjs",
+    "check:bots": "node scripts/check-bots.mjs",
+    "screenshots": "node scripts/screenshots.mjs"
+  },
+  "private": true,
+  "packageManager": "npm@11.19.1",
+  "dependencies": {
+    "@angular/common": "^22.2.0",
+    "@angular/compiler": "^22.2.0",
+    "@angular/core": "^22.2.0",
+    "@angular/forms": "^22.2.0",
+    "@angular/platform-browser": "^22.2.0",
+    "@angular/platform-server": "^22.2.4",
+    "@angular/router": "^22.2.0",
+    "@angular/service-worker": "^22.2.0",
+    "@angular/ssr": "^22.2.5",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@huggingface/transformers": "^4.3.2",
+    "@jsverse/transloco": "^8.4.0",
+    "comlink": "^4.4.2",
+    "onnxruntime-web": "1.31.0-dev.20260914-8d85527a0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.2.5",
+    "@angular/cli": "^22.2.5",
+    "@angular/compiler-cli": "^22.2.0",
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
+    "prettier": "^3.8.1",
+    "typescript": "~6.0.2",
+    "vitest": "^5.0.5"
+  }
+}

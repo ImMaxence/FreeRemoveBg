@@ -1,0 +1,4 @@
+# Fins de ligne LF partout : les fichiers sont construits et servis sous Linux (Docker).
+* text=auto eol=lf
+*.png binary
+*.woff2 binary

@@ -1,0 +1,10 @@
+/* The AI web worker (background removal) are type-checked with the worker lib. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/worker",
+    "lib": ["es2024", "es2025.float16", "webworker"],
+    "types": []
+  },
+  "include": ["src/**/*.worker.ts"]
+}

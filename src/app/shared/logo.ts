@@ -1,0 +1,35 @@
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+
+/** The mark: a subject kept whole while half of its background turns into a transparency grid. */
+@Component({
+  selector: 'app-logo',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <svg [attr.width]="size()" [attr.height]="size()" viewBox="0 0 64 64" aria-hidden="true">
+      <defs>
+        <linearGradient [attr.id]="id" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#0fb98a" />
+          <stop offset="0.5" stop-color="#12b5c9" />
+          <stop offset="1" stop-color="#5b7cfa" />
+        </linearGradient>
+        <clipPath [attr.id]="id + '-c'"><rect width="64" height="64" rx="16" /></clipPath>
+      </defs>
+      <g [attr.clip-path]="'url(#' + id + '-c)'">
+        <rect width="64" height="64" [attr.fill]="'url(#' + id + ')'" />
+        <g fill="#fff" fill-opacity="0.3">
+          <rect x="32" y="0" width="16" height="16" />
+          <rect x="48" y="16" width="16" height="16" />
+          <rect x="32" y="32" width="16" height="16" />
+          <rect x="48" y="48" width="16" height="16" />
+        </g>
+        <circle cx="32" cy="24" r="10" fill="#fff" />
+        <path d="M12 64c0-13 9-21 20-21s20 8 20 21z" fill="#fff" />
+      </g>
+    </svg>
+  `,
+  host: { style: 'display:inline-flex' },
+})
+export class Logo {
+  readonly size = input(28);
+  protected readonly id = `frb-g-${Math.random().toString(36).slice(2, 8)}`;
+}

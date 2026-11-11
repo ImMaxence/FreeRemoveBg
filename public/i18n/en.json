@@ -1,0 +1,571 @@
+{
+  "common": {
+    "close": "Close",
+    "downloadStats": "{{ done }} of {{ total }} · {{ speed }} · {{ left }} left"
+  },
+  "nav": {
+    "skip": "Skip to content",
+    "main": "Main",
+    "mobile": "Menu",
+    "footer": "Footer",
+    "features": "Features",
+    "how": "How it works",
+    "privacy": "Privacy",
+    "faq": "FAQ",
+    "changelog": "Changelog",
+    "language": "Language",
+    "install": "Install the app",
+    "open": "Remove a background",
+    "openShort": "Open",
+    "menu": "Open the menu",
+    "close": "Close the menu"
+  },
+  "theme": {
+    "label": "Theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "footer": {
+    "tagline": "A free, open source background remover that runs entirely in your browser. Your pictures never leave your device",
+    "issues": "Report a problem",
+    "noTracking": "No cookies, no tracking",
+    "product": "Product",
+    "legal": "Legal"
+  },
+  "pwa": {
+    "update": "A new version is available",
+    "reload": "Reload"
+  },
+  "drop": {
+    "choose": "Choose images",
+    "hint": "or drop them here, or paste with Ctrl + V. Several at once work too",
+    "samples": "No picture at hand? Try one of these",
+    "sample": {
+      "dog": "Try with the dog",
+      "cat": "Try with the cat",
+      "plant": "Try with the plant"
+    }
+  },
+  "landing": {
+    "hero": {
+      "badges": "In short",
+      "badgeFree": "100 % free",
+      "badgeLocal": "No upload",
+      "badgeOpen": "Open source",
+      "title1": "Remove image backgrounds.",
+      "title2": "Free, private, full resolution.",
+      "lead": "An AI cuts your subject out in seconds, right in your browser. New background, eraser brush, batch processing and full-size download: no account, no credits, no watermark.",
+      "hint": "Your pictures are never uploaded: the AI runs on your device",
+      "before": "Before",
+      "after": "After",
+      "beforeAlt": "Original photo with its background",
+      "afterAlt": "The same photo with its background removed",
+      "compare": "Compare before and after",
+      "caption": "Drag the divider to compare. Cut out by FreeRemoveBg, untouched"
+    },
+    "stats": {
+      "free": "free, without credits",
+      "upload": "pictures uploaded",
+      "hd": "full-resolution downloads",
+      "account": "accounts to create"
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "title": "A transparent background in three steps",
+      "lead": "No sign-up, no setup: open the page and drop a picture",
+      "drop": {
+        "title": "Drop your images",
+        "text": "Choose, drop or paste one or several pictures: PNG, JPG, WebP, AVIF, GIF or BMP, up to 25 megapixels each"
+      },
+      "ai": {
+        "title": "The AI cuts the subject out",
+        "text": "A segmentation model finds the person, the animal or the object and removes everything around it, on your graphics card or your processor"
+      },
+      "save": {
+        "title": "Adjust and download",
+        "text": "Pick a new background, fix details with the brush, then download in full resolution as PNG, JPG or WebP, or everything as a ZIP"
+      }
+    },
+    "features": {
+      "eyebrow": "Features",
+      "title": "Everything you need, nothing to pay",
+      "lead": "The tools of a paid background remover, running on your own device",
+      "cutout": {
+        "title": "AI cutout",
+        "text": "People, animals, products, cars, objects: the IS-Net model keeps fur, hair and fine details"
+      },
+      "background": {
+        "title": "New background",
+        "text": "Keep it transparent, or pick a color, a gradient, one of your own pictures or the original blurred"
+      },
+      "brush": {
+        "title": "Erase and restore brush",
+        "text": "Remove what the AI kept or bring back what it removed, with zoom, undo and redo"
+      },
+      "batch": {
+        "title": "Batch processing",
+        "text": "Drop dozens of pictures at once: they are processed one after the other and downloaded as a single ZIP"
+      },
+      "hd": {
+        "title": "Full resolution",
+        "text": "The download has the size of your original, up to 25 megapixels. No low-resolution preview, no watermark"
+      },
+      "formats": {
+        "title": "PNG, JPG, WebP",
+        "text": "Transparent PNG or WebP, JPG with a background, or copy the result straight to the clipboard"
+      },
+      "offline": {
+        "title": "Works offline",
+        "text": "Install it as an app: once the AI model is downloaded, no connection is needed any more"
+      },
+      "open": {
+        "title": "Open source",
+        "text": "MIT-licensed code on GitHub, models under free licenses. Read it, host it, improve it"
+      }
+    },
+    "showcase": {
+      "eyebrow": "Backgrounds",
+      "title": "One cutout, any background",
+      "text": "Product photo on white, profile picture on a color, visual for a post: change the background in one click and compare live. The same choice applies to every picture of a batch.",
+      "cta": "Try it now",
+      "transparent": "Transparent",
+      "color": "Color",
+      "gradient": "Gradient",
+      "photo": "Your picture"
+    },
+    "compare": {
+      "eyebrow": "Comparison",
+      "title": "What online background removers charge for",
+      "lead": "Most of them work the same way: your picture goes to their servers, and the full-size result costs credits",
+      "them": "Online removers",
+      "yes": "Yes",
+      "no": "No",
+      "paid": "Paid",
+      "sometimes": "Sometimes",
+      "note": "General comparison with online background removal services at the time of writing; offers vary from one service to another.",
+      "rows": {
+        "hd": "Full-resolution download",
+        "unlimited": "Unlimited pictures",
+        "batch": "Batch processing",
+        "account": "Works without an account",
+        "upload": "Pictures stay on your device",
+        "offline": "Works offline",
+        "open": "Open source"
+      }
+    },
+    "privacy": {
+      "eyebrow": "Privacy",
+      "title": "Your pictures stay yours",
+      "lead": "ID photos, family pictures, unreleased products: nothing is sent anywhere, because there is nowhere to send it. The whole tool is a web page that computes on your device.",
+      "upload": "No upload: pictures are read, cut out and saved by your browser, in memory",
+      "account": "No account, no e-mail address, no payment",
+      "tracking": "No cookies, no analytics, no ads; the server keeps no access logs",
+      "verify": "Verifiable: a strict security policy forbids the page from contacting anything but this site and the model's host"
+    },
+    "ai": {
+      "eyebrow": "Under the hood",
+      "title": "An open AI model, on your device",
+      "lead": "The model is downloaded once from Hugging Face, kept by your browser, and then runs locally",
+      "isnet": "A general-purpose segmentation model for highly accurate cutouts (Dichotomous Image Segmentation), trained to follow thin structures",
+      "gpuTitle": "Graphics card (WebGPU)",
+      "gpu": "Used whenever your browser offers it: about a second per picture",
+      "cpuTitle": "Processor (WebAssembly)",
+      "cpu": "The automatic fallback, on every browser: a few seconds per picture, same result"
+    },
+    "support": {
+      "title": "Browsers",
+      "ok": "Full",
+      "partial": "Limited by memory",
+      "gpu": "Graphics card (WebGPU), installable as an app",
+      "firefox": "WebGPU on recent versions, processor otherwise",
+      "safari": "WebGPU from Safari 26 on Mac, processor otherwise",
+      "mobile": "Works on recent phones; very large pictures may run out of memory"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "free": {
+        "q": "Is FreeRemoveBg really free?",
+        "a": "Yes. There are no credits, no subscription, no watermark and no limit on the number or the size of downloads. The computing is done by your own device, so each picture costs nothing to run, and the code is open source under the MIT license."
+      },
+      "alternative": {
+        "q": "Is it an alternative to remove.bg?",
+        "a": "Yes. FreeRemoveBg does the same job, removing the background of a picture automatically, with a background editor, an erase and restore brush and batch processing. The differences: it is free in full resolution, it needs no account, and pictures are processed in your browser instead of being uploaded. FreeRemoveBg is an independent project, not affiliated with remove.bg."
+      },
+      "quality": {
+        "q": "How good is the cutout, and at what resolution?",
+        "a": "The IS-Net model is used: it handles fur, hair and thin details well on people, animals, products and vehicles. The picture is analysed at 1024 px, then the result is saved at the size of the original, up to 25 megapixels (16 on iPhone and iPad). Hard cases can be fixed with the brush."
+      },
+      "privacy": {
+        "q": "Are my pictures uploaded to a server?",
+        "a": "No. Pictures are opened, processed and saved by your browser, on your device. The site only delivers the application files, and the AI model is downloaded once from Hugging Face. You can check it in your browser's developer tools: no request carries a picture."
+      },
+      "formats": {
+        "q": "Which formats are supported?",
+        "a": "In: PNG, JPG, WebP, AVIF, GIF and BMP, plus HEIC on browsers that can read it (Safari). Out: PNG or WebP with transparency, JPG with a background, or a copy to the clipboard."
+      },
+      "batch": {
+        "q": "Can I process several pictures at once?",
+        "a": "Yes. Drop or select as many pictures as you want: they are cut out one after the other, the chosen background applies to all of them, and one button downloads everything as a ZIP archive."
+      },
+      "commercial": {
+        "q": "Can I use the results commercially?",
+        "a": "Yes. You keep every right on your pictures, and the model used (IS-Net, under the Apache-2.0 license) allows commercial use. You only need the rights on the original pictures."
+      },
+      "offline": {
+        "q": "Does it work offline?",
+        "a": "Yes, after the first use. Once the application and the AI model are in your browser's cache, everything runs without a connection. You can also install FreeRemoveBg as an app from your browser."
+      },
+      "slow": {
+        "q": "Why does the first picture take longer?",
+        "a": "The AI model (179 MB) is downloaded the first time, then kept by your browser. The following pictures take about a second with a graphics card, a few seconds on the processor."
+      }
+    },
+    "final": {
+      "title": "Remove your first background now",
+      "text": "Free, without an account, and your pictures stay on your device.",
+      "cta": "Open FreeRemoveBg",
+      "github": "Source code on GitHub"
+    }
+  },
+  "editor": {
+    "title": "Background remover",
+    "private": "Your pictures stay on your device: nothing is uploaded",
+    "rejected": "These files could not be read as pictures: {{ files }}",
+    "dropHere": "Drop your images here",
+    "images": "Your images",
+    "add": "Add images",
+    "clear": "Remove everything",
+    "remove": "Remove {{ name }}",
+    "preview": "Picture",
+    "settings": "Background, retouching and download",
+    "undo": "Undo",
+    "redo": "Redo",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "zoomFit": "Fit to the screen",
+    "resized": "Shrunk to fit the size limit",
+    "empty": {
+      "title": "Remove a background",
+      "text": "Choose one or several pictures: the subject is cut out automatically, on your device"
+    },
+    "state": {
+      "queued": "waiting",
+      "working": "being processed",
+      "done": "background removed",
+      "error": "failed"
+    },
+    "status": {
+      "empty": "No picture yet",
+      "download": "Downloading the AI model",
+      "load": "Preparing the AI",
+      "run": "Removing the background",
+      "done": "Background removed",
+      "error": "The background could not be removed"
+    },
+    "view": {
+      "label": "View",
+      "original": "Original",
+      "result": "Result"
+    },
+    "alt": {
+      "original": "{{ name }}, original picture",
+      "result": "{{ name }}, background removed"
+    },
+    "progress": {
+      "queued": "Waiting for its turn…",
+      "download": "Downloading the AI model…",
+      "once": "Only the first time: it is then kept by your browser",
+      "load": "Preparing the AI…",
+      "run": "Removing the background…"
+    },
+    "error": {
+      "title": "The background could not be removed",
+      "text": "Your device may be short of memory. Close other tabs and try again, or try a smaller picture",
+      "retry": "Try again",
+      "report": "Report on GitHub"
+    },
+    "device": {
+      "gpu": "graphics card",
+      "cpu": "processor"
+    },
+    "background": {
+      "title": "Background",
+      "transparent": "None",
+      "color": "Color",
+      "gradient": "Gradient",
+      "image": "Image",
+      "blur": "Blur",
+      "custom": "Custom color",
+      "from": "From",
+      "to": "To",
+      "choose": "Choose a picture",
+      "amount": "Blur of the original background"
+    },
+    "retouch": {
+      "title": "Retouch",
+      "move": "Move",
+      "erase": "Erase",
+      "restore": "Restore",
+      "size": "Brush size",
+      "help": "Erase what should go, restore what should stay. Zoom in for details: the brush keeps its size on screen",
+      "reset": "Back to the AI result"
+    },
+    "download": {
+      "title": "Download",
+      "format": "Format",
+      "jpgNote": "JPG has no transparency: the background will be white",
+      "one": "Download",
+      "full": "Full resolution: {{ width }} × {{ height }} px",
+      "copy": "Copy to the clipboard",
+      "copied": "Copied",
+      "copyError": "Copy is not available here",
+      "all": "Download all as ZIP ({{ count }})"
+    }
+  },
+  "changelog": {
+    "eyebrow": "Releases",
+    "title": "Changelog",
+    "lead": "Every version of FreeRemoveBg, newest first",
+    "current": "You are using",
+    "github": "View on GitHub",
+    "releases": "GitHub releases",
+    "latest": "Latest",
+    "error": "The changelog could not be loaded"
+  },
+  "legal": {
+    "updated": "Last updated: 11 November 2026",
+    "contact": "Contact",
+    "nav": {
+      "notice": "Legal notice",
+      "privacy": "Privacy",
+      "terms": "Terms of use",
+      "accessibility": "Accessibility"
+    },
+    "notice": {
+      "title": "Legal notice",
+      "intro": "Information required by article 6 of French law no. 2004-575 of 21 June 2004 on confidence in the digital economy (LCEN), about the publisher and the host of this site.",
+      "sections": [
+        {
+          "title": "Publisher",
+          "body": [
+            "The site freeremovebg.mbonnici.fr (\"FreeRemoveBg\") is published by Maxence Bonnici, a private individual, on a non-commercial basis.",
+            "Publication director: Maxence Bonnici.",
+            "Contact: maxence.bonnici@outlook.com"
+          ]
+        },
+        {
+          "title": "Hosting",
+          "body": [
+            "The site is self-hosted by its publisher, Maxence Bonnici, on a personal server located in France, and deployed with the Coolify platform.",
+            "Requests to the site go through the network of Cloudflare, Inc. (101 Townsend St, San Francisco, CA 94107, United States), which protects the server and encrypts the connection.",
+            "Contact: maxence.bonnici@outlook.com"
+          ]
+        },
+        {
+          "title": "Intellectual property",
+          "body": [
+            "The source code of FreeRemoveBg is open source and published under the MIT license on [GitHub](https://github.com/ImMaxence/FreeRemoveBg).",
+            "Third-party components, AI models and fonts used by the application remain the property of their authors and are used under their own licenses, listed in the [terms of use](/terms). The sample pictures and their authors are listed in the [credits](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md).",
+            "The trademarks mentioned (remove.bg, Hugging Face, Chrome, Edge, Firefox, Safari…) belong to their owners. FreeRemoveBg is an independent project, not affiliated with remove.bg or its publisher."
+          ]
+        },
+        {
+          "title": "Liability",
+          "body": [
+            "The publisher strives to keep the site available and its information accurate, without being able to guarantee it. The use of the application is governed by the [terms of use](/terms)."
+          ]
+        },
+        {
+          "title": "Personal data",
+          "body": [
+            "FreeRemoveBg collects no personal data: pictures are processed on your device only. Details are in the [privacy policy](/privacy)."
+          ]
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "intro": "FreeRemoveBg is designed so that your pictures never leave your device. This page explains plainly what is processed, and where.",
+      "sections": [
+        {
+          "title": "In short",
+          "body": [
+            "No upload: your pictures and their results are processed in your browser and are never sent to the publisher or to anyone else.",
+            "No account, no cookies, no analytics, no advertising."
+          ]
+        },
+        {
+          "title": "What stays on your device",
+          "body": [
+            "The pictures you open are read by your browser. Finding the subject (the AI model), changing the background, retouching and saving are all computed locally, on your graphics card or your processor.",
+            "Pictures and results are kept in the page's memory only: they are not stored, and they are gone as soon as you close or reload the tab. Download what you want to keep."
+          ]
+        },
+        {
+          "title": "Local storage",
+          "body": [
+            "The application saves your interface preferences (language, theme) in your browser's local storage, and keeps its own files and the downloaded AI model in the browser cache so it can work offline. These items are strictly necessary for the service, are never used to track you and therefore need no consent banner.",
+            "You can erase them at any time by deleting this site's data in your browser's settings."
+          ]
+        },
+        {
+          "title": "Server",
+          "body": [
+            "The server only delivers the application files and keeps no access logs. Like any web server, it technically receives your IP address to answer requests, but does not store it."
+          ]
+        },
+        {
+          "title": "Third parties",
+          "body": [
+            "Cloudflare: every request to this site goes through Cloudflare, which protects the server and encrypts the connection. Like any network intermediary, it processes your IP address and your browser's standard information to route the pages, and may keep technical logs for security purposes; it never receives your pictures, which never leave your device. See its [privacy policy](https://www.cloudflare.com/privacypolicy/).",
+            "Hugging Face: the AI model is downloaded straight from huggingface.co the first time you remove a background, then kept by your browser. Hugging Face then receives your IP address and your browser's usual information, but never your pictures. See its [privacy policy](https://huggingface.co/privacy).",
+            "GitHub: only if you follow a link to the source code repository.",
+            "No other third party is contacted: a strict Content-Security-Policy technically prevents the page from connecting anywhere else."
+          ]
+        },
+        {
+          "title": "Your rights",
+          "body": [
+            "Under the GDPR, you have a right of access, rectification, erasure and objection. As the publisher holds no data about you, there is usually nothing to consult, but you can send any question to maxence.bonnici@outlook.com. You can also lodge a complaint with the French data protection authority, the CNIL ([cnil.fr](https://www.cnil.fr))."
+          ]
+        },
+        {
+          "title": "Changes",
+          "body": [
+            "This policy may be updated when the application evolves. The date of the last update is at the top of this page."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "title": "Terms of use",
+      "intro": "By using FreeRemoveBg, you accept these terms. They are short, because the service is simple: a free tool that runs in your browser.",
+      "sections": [
+        {
+          "title": "Service",
+          "body": [
+            "FreeRemoveBg is a free application that removes the background of pictures and runs entirely in your web browser. It is provided free of charge, without an account, and may change, be interrupted or stopped at any time, without notice."
+          ]
+        },
+        {
+          "title": "Your content",
+          "body": [
+            "You remain the sole owner of, and solely responsible for, the pictures you process and what you do with the results. You must hold the necessary rights (copyright, image rights of the people shown).",
+            "The application must not be used for unlawful purposes, in particular to mislead about a person or to infringe someone's rights."
+          ]
+        },
+        {
+          "title": "Automatic results",
+          "body": [
+            "The cutout is produced automatically by an AI model and may contain errors (missing parts, leftover background). Check the result, and fix it with the brush if needed, before using it."
+          ]
+        },
+        {
+          "title": "Your files",
+          "body": [
+            "The application never modifies your original files and keeps no copy of your pictures: results exist only in the open tab. Download them before closing it."
+          ]
+        },
+        {
+          "title": "Warranty and liability",
+          "body": [
+            "The software is provided \"as is\", without warranty of any kind, under the MIT license. To the extent permitted by law, the publisher cannot be held liable for damage resulting from the use of, or the inability to use, the application (loss of data, incorrect result, unavailability…)."
+          ]
+        },
+        {
+          "title": "Open source and third-party components",
+          "body": [
+            "The source code is available under the MIT license on [GitHub](https://github.com/ImMaxence/FreeRemoveBg).",
+            "FreeRemoveBg relies on: the [IS-Net](https://github.com/xuebinqin/DIS) model (Apache-2.0), in its [ONNX version](https://huggingface.co/BritishWerewolf/IS-Net), Transformers.js (Apache-2.0), ONNX Runtime (MIT), Angular (MIT), Transloco (MIT), Comlink (Apache-2.0) and the Inter font (SIL Open Font License).",
+            "The sample pictures are used under the licenses listed in the [credits](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md)."
+          ]
+        },
+        {
+          "title": "Trademarks",
+          "body": [
+            "remove.bg is a trademark of its owner. FreeRemoveBg is an independent project, not affiliated with, endorsed by or connected to remove.bg or its publisher."
+          ]
+        },
+        {
+          "title": "Governing law",
+          "body": [
+            "These terms are governed by French law. Questions: maxence.bonnici@outlook.com."
+          ]
+        }
+      ]
+    },
+    "accessibility": {
+      "title": "Accessibility statement",
+      "intro": "FreeRemoveBg aims to be usable by everyone, whatever the device or the way of browsing. This statement describes where the site stands against the Web Content Accessibility Guidelines (WCAG) 2.2, level AA.",
+      "sections": [
+        {
+          "title": "Conformance status",
+          "body": [
+            "The site is partially conformant with WCAG 2.2 level AA: most criteria are met, and the exceptions are listed below. This assessment was made by the publisher (keyboard, screen reader and contrast checks); it is not a third-party audit."
+          ]
+        },
+        {
+          "title": "What is in place",
+          "body": [
+            "Every function of the public pages and the main path of the tool (choosing pictures, removing the background, choosing a background, downloading) work with the keyboard alone, with a visible focus and a link to skip to the content.",
+            "Pages are structured with headings and landmarks, buttons and fields have names, and the progress and the result of the processing are announced to screen readers.",
+            "Text and controls meet AA contrast in both the light and the dark theme, the layout adapts down to 320 px wide and to 200 % zoom, and animations are disabled when your system asks for reduced motion.",
+            "The site is available in English and in French, and each page declares its language."
+          ]
+        },
+        {
+          "title": "Content that is not accessible",
+          "body": [
+            "The erase and restore brush needs a pointer (mouse, finger or stylus): it has no keyboard equivalent. The automatic cutout, the backgrounds and the downloads do not depend on it.",
+            "The preview of a picture is a drawing surface described by a short text only (the name of the file and its state): the content of your own pictures cannot be described automatically.",
+            "The changelog is written in English only, including on the French version of the site.",
+            "Dropping files and pasting from the clipboard are shortcuts; the \"Choose images\" button always offers the same function."
+          ]
+        },
+        {
+          "title": "Feedback and contact",
+          "body": [
+            "If something blocks you, write to maxence.bonnici@outlook.com or open an issue on [GitHub](https://github.com/ImMaxence/FreeRemoveBg/issues): describe the page, what you were trying to do and the tool you use. An answer and, when possible, a fix will follow."
+          ]
+        },
+        {
+          "title": "About this statement",
+          "body": [
+            "This statement was written on 11 November 2026, for version 1.0.0 of the site. It is updated when the site changes."
+          ]
+        }
+      ]
+    }
+  },
+  "seo": {
+    "home": {
+      "title": "FreeRemoveBg — Free background remover, no upload, full HD",
+      "description": "Remove the background of any image for free, in your browser: AI cutout, new background, erase brush, batch and full-resolution PNG. No upload, no account. A free remove.bg alternative"
+    },
+    "changelog": {
+      "title": "Changelog — FreeRemoveBg",
+      "description": "What is new in FreeRemoveBg, version by version"
+    },
+    "legal": {
+      "title": "Legal notice — FreeRemoveBg",
+      "description": "Publisher and hosting of FreeRemoveBg"
+    },
+    "privacy": {
+      "title": "Privacy policy — FreeRemoveBg",
+      "description": "FreeRemoveBg uploads nothing: your pictures are processed on your device and are never stored"
+    },
+    "terms": {
+      "title": "Terms of use — FreeRemoveBg",
+      "description": "Terms of use of FreeRemoveBg, a free and open source background remover"
+    },
+    "accessibility": {
+      "title": "Accessibility statement — FreeRemoveBg",
+      "description": "Where FreeRemoveBg stands against WCAG 2.2 level AA, its known limits and how to report a problem"
+    },
+    "app": {
+      "title": "Remove a background — FreeRemoveBg",
+      "description": "Remove the background of your pictures, in your browser"
+    }
+  }
+}
