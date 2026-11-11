@@ -2,11 +2,11 @@ import { Injectable, computed, signal } from '@angular/core';
 import * as Comlink from 'comlink';
 import { type Background, alphaToImageData, compose } from '../engine/compose';
 import { EXPORT_FORMATS, type ExportFormat, exportName, isImageFile } from '../engine/files';
-import { maskSize, workingSize } from '../engine/mask';
+import { maskSize, modelInputSize, workingSize } from '../engine/mask';
 import { type Rect, drawTurned, scaleRect, turnedSize } from '../engine/prepare';
 import { uniqueNames, zip } from '../engine/zip';
-import type { ModelId } from './models';
-import type { AiDevice, RemoveProgress, RemoveResult, RemoveWorkerApi, WorkerOptions } from '../workers/worker-types';
+import { DEFAULT_MODEL, MODELS, type ModelId } from './models';
+import type { AiDevice, CatalogEntry, RemoveProgress, RemoveResult, RemoveWorkerApi, WorkerOptions } from '../workers/worker-types';
 
 /**
  * Where a picture is in the flow: `draft` waits for the user (preparing it is optional),
@@ -32,6 +32,8 @@ export interface Item {
   /** The original was larger than the limit and has been shrunk. */
   resized: boolean;
   status: ItemStatus;
+  /** The model that cut it out. */
+  model: ModelId | null;
   /** What the AI found, kept to undo every retouch at once. */
   aiMask: ImageData | null;
   /** White where the subject is: what the brush edits. Changed in place, see `revision`. */
@@ -48,6 +50,7 @@ export interface Item {
 /** Pictures above this are shrunk: canvases have limits, tighter on iPhone and iPad. */
 export const MAX_PIXELS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent) ? 16e6 : 25e6;
 const UNDO_STEPS = 12;
+const MODEL_KEY = 'frb-model';
 const THUMB_SIDE = 192;
 
 /**
@@ -70,6 +73,20 @@ export class ImagesStore {
   /** Files that could not be read (wrong format), to tell the user. */
   readonly rejected = signal<string[]>([]);
 
+  /** The model the user picked (remembered from one visit to the next). */
+  readonly model = signal<ModelId>(readStoredModel());
+  /** Every model as it would run on this device: its download size, and whether it is already here. */
+  readonly catalog = signal<CatalogEntry[]>([]);
+  /** The model in use before the user picked another one, to go back to it. */
+  readonly previousModel = signal<ModelId | null>(null);
+  /** Download size of a model on this device (bytes), from the catalog, else its largest file. */
+  modelBytes(id: ModelId): number {
+    return this.catalog().find((e) => e.model === id)?.bytes ?? MODELS[id].weights.fp32;
+  }
+  /** Whether the browser already holds a model. */
+  modelCached(id: ModelId): boolean {
+    return !!this.catalog().find((e) => e.model === id)?.cached;
+  }
   readonly modelState = signal<ModelState>('checking');
   /** Bytes of the model received so far, while it downloads. */
   readonly modelDownload = signal<{ progress: number; loaded?: number; total?: number } | null>(null);
@@ -85,9 +102,12 @@ export class ImagesStore {
   private running = false;
   private worker?: Worker;
   private remote?: Comlink.Remote<RemoveWorkerApi>;
-  private options: WorkerOptions = {};
+  private options: WorkerOptions = { model: this.model() };
   private scratch?: HTMLCanvasElement;
   private pending: Promise<unknown> = Promise.resolve();
+  /** Changes with each model picked: answers about a model no longer chosen are ignored. */
+  private generation = 0;
+  private checkedGeneration = -1;
 
   private get ai(): Comlink.Remote<RemoveWorkerApi> {
     if (!this.remote) {
@@ -98,9 +118,9 @@ export class ImagesStore {
     return this.remote;
   }
 
-  /** Imposes the device or the model (tests, broken graphics drivers), from the next picture on. */
+  /** Imposes the processor (tests, broken graphics drivers), from the next picture on. */
   configure(options: WorkerOptions): void {
-    this.options = options;
+    this.options = { ...options, model: options.model ?? this.model() };
     this.worker?.terminate();
     this.worker = this.remote = undefined;
     // The new worker loads the model again, from the browser cache.
@@ -114,13 +134,17 @@ export class ImagesStore {
    * loaded right away, so the first picture is as fast as the next ones.
    */
   async checkModel(): Promise<void> {
-    if (this.modelState() !== 'checking') return;
+    const generation = this.generation;
+    if (this.modelState() !== 'checking' || this.checkedGeneration === generation) return;
+    this.checkedGeneration = generation;
     let cached = false;
     try {
       cached = await this.ai.isCached();
     } catch {
       // No cache (private window, blocked storage): the model has to be downloaded.
     }
+    void this.refreshCatalog();
+    if (generation !== this.generation) return;
     if (!cached) {
       this.modelState.set('missing');
       return;
@@ -136,9 +160,11 @@ export class ImagesStore {
   }
 
   private async loadModel(): Promise<void> {
+    const generation = this.generation;
     this.modelError.set(null);
     this.modelState.set(this.modelState() === 'checking' ? 'preparing' : 'downloading');
     const onProgress = (p: RemoveProgress) => {
+      if (generation !== this.generation) return;
       if (p.stage === 'download') {
         this.modelState.set('downloading');
         this.modelDownload.set({ progress: p.progress, loaded: p.loaded, total: p.total });
@@ -153,16 +179,59 @@ export class ImagesStore {
         // A graphics card that cannot run the model: the processor takes over, same weights.
         if ((await this.ai.target().catch(() => null))?.device !== 'webgpu') throw e;
         console.warn('The model could not be prepared on WebGPU, switching to WebAssembly', e);
-        this.configure({ ...this.options, device: 'wasm', model: undefined });
+        this.configure({ ...this.options, device: 'wasm' });
         await this.serial(() => this.ai.load(Comlink.proxy(onProgress)));
       }
+      if (generation !== this.generation) return;
       this.modelState.set('ready');
       this.modelDownload.set(null);
+      this.previousModel.set(null);
+      void this.refreshCatalog();
       void this.run();
     } catch (e) {
       console.error(e);
+      if (generation !== this.generation) return;
       this.modelState.set('error');
       this.modelError.set(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  /**
+   * The user picks another model: a new worker is made for it, and it is looked for in the
+   * browser. Already there, it is loaded at once; otherwise the user is asked before downloading.
+   */
+  selectModel(id: ModelId): void {
+    if (id === this.model()) return;
+    if (this.modelAllowed()) this.previousModel.set(this.model());
+    this.model.set(id);
+    try {
+      localStorage.setItem(MODEL_KEY, id);
+    } catch {
+      // Private mode: the choice simply is not remembered.
+    }
+    this.generation++;
+    this.configure({ ...this.options, model: id });
+    this.modelError.set(null);
+    this.modelDownload.set(null);
+    this.modelState.set('checking');
+    void this.checkModel();
+  }
+
+  /** Cuts a picture out again with another model, to compare: its retouches are dropped. */
+  redoWith(id: number, model: ModelId): void {
+    const item = this.find(id);
+    if (!item || item.status === 'working' || item.status === 'queued') return;
+    this.patch(id, { status: 'queued', model: null, aiMask: null, mask: null, undo: [], redo: [], error: null });
+    this.touch(id, true);
+    if (model === this.model()) void this.run();
+    else this.selectModel(model);
+  }
+
+  private async refreshCatalog(): Promise<void> {
+    try {
+      this.catalog.set(await this.ai.catalog());
+    } catch {
+      // The catalog only informs the choice: without it, sizes are simply not shown.
     }
   }
 
@@ -188,6 +257,7 @@ export class ImagesStore {
           height: bitmap.height,
           resized,
           status: 'draft',
+          model: null,
           aiMask: null,
           mask: null,
           revision: 0,
@@ -245,7 +315,7 @@ export class ImagesStore {
   backToPrepare(id: number): void {
     const item = this.find(id);
     if (!item || item.status === 'working' || item.status === 'queued') return;
-    this.patch(id, { status: 'draft', aiMask: null, mask: null, undo: [], redo: [], error: null });
+    this.patch(id, { status: 'draft', model: null, aiMask: null, mask: null, undo: [], redo: [], error: null });
     this.touch(id, true);
   }
 
@@ -291,7 +361,7 @@ export class ImagesStore {
   private async replaceSource(previous: Item, source: ImageBitmap): Promise<void> {
     // The picture given first is kept, to come back to it.
     if (previous.source !== previous.original && previous.source !== source) previous.source.close();
-    this.patch(previous.id, { source, width: source.width, height: source.height, status: 'draft', aiMask: null, mask: null, undo: [], redo: [], error: null });
+    this.patch(previous.id, { source, width: source.width, height: source.height, status: 'draft', model: null, aiMask: null, mask: null, undo: [], redo: [], error: null });
     this.touch(previous.id, true);
   }
 
@@ -315,12 +385,29 @@ export class ImagesStore {
       const ctx = current.mask.getContext('2d')!;
       const target = scaleRect(area, item.width, item.height, current.mask.width, current.mask.height);
       ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(squareOf(alphaToImageData(result.alpha, result.size)), target.x, target.y, target.width, target.height);
+      ctx.drawImage(squareOf(alphaToImageData(result.alpha, result.width, result.height)), target.x, target.y, target.width, target.height);
       this.touch(id, true);
     } finally {
       this.progress.set(null);
       if (this.find(id)?.status === 'working') this.patch(id, { status: 'done' });
     }
+  }
+
+  /**
+   * Adds an object to the cutout, or takes it away, from opacities covering the whole picture
+   * (the "Click" tool's selection). Undoable like a brush stroke.
+   */
+  applySelection(id: number, alpha: Uint8ClampedArray, width: number, height: number, mode: 'add' | 'remove'): void {
+    const item = this.find(id);
+    if (!item?.mask || item.status !== 'done') return;
+    this.beginStroke(id);
+    const ctx = item.mask.getContext('2d')!;
+    ctx.save();
+    ctx.globalCompositeOperation = mode === 'add' ? 'source-over' : 'destination-out';
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(squareOf(alphaToImageData(alpha, width, height)), 0, 0, item.mask.width, item.mask.height);
+    ctx.restore();
+    this.touch(id, true);
   }
 
   /** Before a brush stroke: remembers the mask so the stroke can be undone. */
@@ -427,11 +514,11 @@ export class ImagesStore {
           }
           // Prepared again while the AI was working: its new version waits for the user.
           if (current.source !== item.source || current.status !== 'working') continue;
-          const aiMask = alphaToImageData(result.alpha, result.size);
+          const aiMask = alphaToImageData(result.alpha, result.width, result.height);
           const mask = document.createElement('canvas');
           Object.assign(mask, maskSize(item.width, item.height));
           drawAiMask(mask, aiMask);
-          this.patch(id, { status: 'done', aiMask, mask, undo: [], redo: [] });
+          this.patch(id, { status: 'done', model: result.model, aiMask, mask, undo: [], redo: [] });
           this.touch(id, true);
         } catch (e) {
           console.error(e);
@@ -456,8 +543,9 @@ export class ImagesStore {
 
   private async ask(item: Item, area: Rect): Promise<RemoveResult> {
     const attempt = async () => {
-      const { size } = await this.ai.target();
-      const input = await createImageBitmap(item.source, area.x, area.y, area.width, area.height, { resizeWidth: size, resizeHeight: size, resizeQuality: 'high' });
+      const target = await this.ai.target();
+      const size = modelInputSize(MODELS[target.model].input, area.width, area.height);
+      const input = await createImageBitmap(item.source, area.x, area.y, area.width, area.height, { resizeWidth: size.width, resizeHeight: size.height, resizeQuality: 'high' });
       return this.ai.remove(
         Comlink.transfer(input, [input]),
         Comlink.proxy((p: RemoveProgress) => this.progress.set(p)),
@@ -469,7 +557,7 @@ export class ImagesStore {
       const failed = await this.ai.target().catch(() => null);
       if (failed?.device !== 'webgpu') throw e;
       console.warn('Background removal failed on WebGPU, switching to WebAssembly', e);
-      this.configure({ ...this.options, device: 'wasm', model: undefined });
+      this.configure({ ...this.options, device: 'wasm' });
       const result = await attempt();
       this.modelState.set('ready');
       return result;
@@ -513,6 +601,16 @@ export class ImagesStore {
   private patch(id: number, changes: Partial<Item>): void {
     this.items.update((items) => items.map((i) => (i.id === id ? { ...i, ...changes } : i)));
   }
+}
+
+function readStoredModel(): ModelId {
+  try {
+    const stored = typeof localStorage === 'undefined' ? null : localStorage.getItem(MODEL_KEY);
+    if (stored && stored in MODELS) return stored as ModelId;
+  } catch {
+    // ignore
+  }
+  return DEFAULT_MODEL;
 }
 
 async function decode(file: File): Promise<{ bitmap: ImageBitmap; resized: boolean }> {

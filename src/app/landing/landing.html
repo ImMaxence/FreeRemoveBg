@@ -4,7 +4,10 @@
     <div class="hero-copy">
       <a class="ai-pill" href="#ai">
         <span class="pulse" aria-hidden="true"></span>
-        {{ 'landing.hero.ai' | transloco }} <b>{{ model.name }}</b>
+        {{ 'landing.hero.ai' | transloco }}
+        @for (id of modelIds; track id) {
+          <b>{{ models[id].name }}</b>
+        }
         <app-icon name="arrow-right" [size]="15" />
       </a>
       <h1>
@@ -26,10 +29,28 @@
     <figure class="art" [class]="'art mode-' + mode()">
       <div class="art-stage">
         <div class="frame">
-          <img class="photo" src="/samples/hero.jpg" width="1040" height="1300" alt="" fetchpriority="high" />
+          <img
+            class="photo"
+            src="/samples/hero-720.webp"
+            srcset="/samples/hero-480.webp 480w, /samples/hero-720.webp 720w, /samples/hero-1040.webp 1040w"
+            sizes="(max-width: 520px) calc(100vw - 40px), 440px"
+            width="1040"
+            height="1300"
+            alt=""
+            fetchpriority="high"
+          />
         </div>
-        <img class="pop" src="/samples/hero-cutout.webp" width="1040" height="1300" [alt]="'landing.hero.artAlt' | transloco" fetchpriority="high" />
-        <span class="tag tag-ai" aria-hidden="true"><app-icon name="chip" [size]="14" /> {{ model.name }}</span>
+        <img
+          class="pop"
+          src="/samples/hero-cutout-720.webp"
+          srcset="/samples/hero-cutout-480.webp 480w, /samples/hero-cutout-720.webp 720w, /samples/hero-cutout.webp 1040w"
+          sizes="(max-width: 520px) calc(100vw - 40px), 440px"
+          width="1040"
+          height="1300"
+          [alt]="'landing.hero.artAlt' | transloco"
+          fetchpriority="high"
+        />
+        <span class="tag tag-ai" aria-hidden="true"><app-icon name="chip" [size]="14" /> {{ models.isnet.name }}</span>
         <span class="tag tag-local" aria-hidden="true"><app-icon name="lock" [size]="14" /> {{ 'landing.hero.tagLocal' | transloco }}</span>
       </div>
       <div class="segmented modes" role="group" [attr.aria-label]="'landing.hero.modes' | transloco">
@@ -72,33 +93,58 @@
           </li>
         }
       </ul>
-      <div class="links">
-        <a class="btn sm" [href]="paperUrl" target="_blank" rel="noopener"><app-icon name="book" [size]="16" /> {{ 'landing.ai.paper' | transloco }}</a>
-        <a class="btn sm" [href]="model.url" target="_blank" rel="noopener"><app-icon name="github" [size]="16" /> {{ 'landing.ai.code' | transloco }}</a>
-        <a class="btn sm" [href]="'https://huggingface.co/' + model.repo" target="_blank" rel="noopener"><app-icon name="external" [size]="16" /> {{ 'landing.ai.hub' | transloco }}</a>
-      </div>
     </div>
 
-    <article class="spec" [appReveal]="1" [attr.aria-label]="'landing.ai.specLabel' | transloco">
-      <header>
-        <span class="spec-kicker">{{ 'landing.ai.specKicker' | transloco }}</span>
-        <h3>{{ model.name }}</h3>
-        <p>Highly Accurate Dichotomous Image Segmentation</p>
-        <span class="license">{{ model.license }}</span>
-      </header>
-      <dl>
-        @for (f of facts; track f) {
-          <div [class.zero]="f === 'sent'">
-            <dt>{{ 'landing.ai.facts.' + f + '.label' | transloco }}</dt>
-            <dd>{{ 'landing.ai.facts.' + f + '.value' | transloco }}</dd>
-          </div>
+    <div class="spec-wrap" [appReveal]="1">
+      <div class="spec-tabs" role="tablist" [attr.aria-label]="'landing.ai.specLabel' | transloco">
+        @for (id of modelIds; track id) {
+          <button
+            [id]="'spec-tab-' + id"
+            type="button"
+            role="tab"
+            [attr.aria-selected]="spec() === id"
+            aria-controls="spec-sheet"
+            [tabindex]="spec() === id ? 0 : -1"
+            (click)="spec.set(id)"
+            (keydown)="onSpecKey($event)"
+          >
+            <b>{{ models[id].name }}</b>
+            <small>{{ 'landing.ai.models.' + id + '.tab' | transloco }}</small>
+          </button>
         }
-      </dl>
-      <footer aria-hidden="true">
-        <span class="barcode"></span>
-        <span>{{ model.repo }}</span>
-      </footer>
-    </article>
+      </div>
+      <article id="spec-sheet" class="spec" role="tabpanel" [attr.aria-labelledby]="'spec-tab-' + spec()">
+        <header>
+          <span class="spec-kicker">{{ 'landing.ai.specKicker' | transloco }}</span>
+          <h3>{{ specModel().name }}</h3>
+          <p>{{ 'landing.ai.models.' + spec() + '.subtitle' | transloco }}</p>
+          <span class="license">{{ specModel().license }}</span>
+        </header>
+        <dl>
+          @for (f of facts; track f) {
+            <div [class.zero]="f === 'sent'">
+              <dt>{{ 'landing.ai.facts.' + f | transloco }}</dt>
+              <dd>{{ 'landing.ai.models.' + spec() + '.facts.' + f | transloco }}</dd>
+            </div>
+          }
+        </dl>
+        <footer>
+          <a class="qr" [href]="'https://huggingface.co/' + specModel().repo" target="_blank" rel="noopener" [attr.aria-label]="('landing.ai.hub' | transloco) + ' (' + specModel().name + ')'">
+            <img [src]="'/qr/' + spec() + '.svg'" width="76" height="76" alt="" />
+          </a>
+          <div class="spec-links">
+            <small>{{ 'landing.ai.scan' | transloco }}</small>
+            <a [href]="'https://huggingface.co/' + specModel().repo" target="_blank" rel="noopener">huggingface.co/{{ specModel().repo }}</a>
+            <span>
+              @if (specModel().paperUrl; as paper) {
+                <a [href]="paper" target="_blank" rel="noopener">{{ 'landing.ai.paper' | transloco }}</a> ·
+              }
+              <a [href]="specModel().url" target="_blank" rel="noopener">{{ 'landing.ai.code' | transloco }}</a>
+            </span>
+          </div>
+        </footer>
+      </article>
+    </div>
   </div>
 </section>
 
@@ -140,15 +186,15 @@
           <p class="muted">{{ 'landing.features.' + f.key + '.text' | transloco }}</p>
           @if (f.key === 'cutout') {
             <div class="stickers" aria-hidden="true">
-              <img src="/samples/hero-cutout.webp" alt="" loading="lazy" decoding="async" />
-              <img src="/samples/cat-cutout.webp" alt="" loading="lazy" decoding="async" />
-              <img src="/samples/plant-cutout.webp" alt="" loading="lazy" decoding="async" />
+              <img src="/samples/hero-cutout-480.webp" alt="" loading="lazy" decoding="async" />
+              <img src="/samples/cat-cutout-480.webp" alt="" loading="lazy" decoding="async" />
+              <img src="/samples/plant-cutout-480.webp" alt="" loading="lazy" decoding="async" />
             </div>
           }
           @if (f.key === 'background') {
             <div class="swaps" aria-hidden="true">
               @for (b of ['checker', 'yellow', 'sky', 'ink']; track b) {
-                <span [class]="'swap ' + b"><img src="/samples/plant-cutout.webp" alt="" loading="lazy" decoding="async" /></span>
+                <span [class]="'swap ' + b"><img src="/samples/plant-cutout-480.webp" alt="" loading="lazy" decoding="async" /></span>
               }
             </div>
           }
@@ -178,7 +224,7 @@
           <div class="chain">
             <span class="node"><app-icon name="image" [size]="18" /> {{ 'landing.privacy.yourImages' | transloco }}</span>
             <span class="arrow" aria-hidden="true">↓</span>
-            <span class="node ai-node"><app-icon name="chip" [size]="18" /> {{ model.name }}</span>
+            <span class="node ai-node"><app-icon name="chip" [size]="18" /> {{ 'landing.privacy.models' | transloco }}</span>
             <span class="arrow" aria-hidden="true">↓</span>
             <span class="node"><app-icon name="download" [size]="18" /> {{ 'landing.privacy.result' | transloco }}</span>
           </div>
@@ -265,7 +311,7 @@
 <section class="section final">
   <div class="container">
     <div class="final-card" appReveal>
-      <img class="final-sticker" src="/samples/hero-cutout.webp" alt="" loading="lazy" decoding="async" />
+      <img class="final-sticker" src="/samples/hero-cutout-480.webp" alt="" loading="lazy" decoding="async" />
       <h2>{{ 'landing.final.title' | transloco }}</h2>
       <p>{{ 'landing.final.text' | transloco }}</p>
       <div class="ctas">

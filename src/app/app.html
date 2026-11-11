@@ -16,9 +16,10 @@
     <div class="tools">
       <app-lang-switch class="wide-only" />
       <app-theme-toggle class="wide-only" />
-      @if (pwa.canInstall()) {
-        <button class="btn ghost icon sm wide-only" type="button" (click)="pwa.install()" [title]="'nav.install' | transloco" [attr.aria-label]="'nav.install' | transloco">
-          <app-icon name="install" [size]="18" />
+      @if (!pwa.installed()) {
+        <button class="btn ghost sm wide-only install install-bar" type="button" (click)="install()" [title]="'nav.install' | transloco" [attr.aria-label]="'nav.install' | transloco">
+          <app-icon name="install" [size]="19" />
+          <span class="install-label" aria-hidden="true">{{ 'nav.installShort' | transloco }}</span>
         </button>
       }
       <a class="btn primary cta" routerLink="/app">
@@ -51,8 +52,8 @@
     <div class="sheet-tools">
       <app-lang-switch [labelled]="true" />
       <app-theme-toggle [labelled]="true" />
-      @if (pwa.canInstall()) {
-        <button class="btn ghost" type="button" (click)="pwa.install()"><app-icon name="install" [size]="18" /> {{ 'nav.install' | transloco }}</button>
+      @if (!pwa.installed()) {
+        <button class="btn ghost install" type="button" (click)="install()"><app-icon name="install" [size]="18" /> {{ 'nav.install' | transloco }}</button>
       }
     </div>
     <a class="btn primary lg block" routerLink="/app" (click)="menuOpen.set(false)">{{ 'nav.open' | transloco }} <app-icon name="arrow-right" [size]="18" /></a>
@@ -74,8 +75,13 @@
         <p>{{ 'footer.tagline' | transloco }}</p>
         <p class="powered">
           {{ 'footer.powered' | transloco }}
-          <a [href]="model.url" target="_blank" rel="noopener">{{ model.name }}</a>
-          · {{ model.license }}
+          @for (m of models; track m.name; let last = $last, i = $index, count = $count) {
+            @if (last) {
+              {{ 'footer.and' | transloco }}
+            }
+            <a [href]="m.url" target="_blank" rel="noopener">{{ m.name }}</a>@if (i < count - 2) {,}
+          }
+          · Apache-2.0
         </p>
       </div>
       <nav class="footer-links" [attr.aria-label]="'nav.footer' | transloco">
@@ -105,6 +111,26 @@
     </div>
   </div>
 </footer>
+
+<dialog #installDialog class="install-help card" aria-labelledby="install-help-title" (close)="installSteps.set(null)" (click)="closeOnBackdrop($event)">
+  @if (installSteps(); as p) {
+    <div class="install-head">
+      <app-logo [size]="48" />
+      <div>
+        <h2 id="install-help-title">{{ 'install.title' | transloco }}</h2>
+        <p class="muted">{{ 'install.lead' | transloco }}</p>
+      </div>
+    </div>
+    <ol class="install-steps">
+      <li>{{ 'install.' + p + '.step1' | transloco }}</li>
+      <li>{{ 'install.' + p + '.step2' | transloco }}</li>
+    </ol>
+    <p class="faint install-note">{{ 'install.note' | transloco }}</p>
+    <form method="dialog">
+      <button class="btn primary block" type="submit" autofocus>{{ 'install.ok' | transloco }}</button>
+    </form>
+  }
+</dialog>
 
 @if (pwa.updateReady()) {
   <div class="update-toast card" role="status">

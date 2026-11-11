@@ -3,9 +3,8 @@
  * covered by unit tests.
  */
 
-/** RGBA pixels of a square picture → the model's input: 3 planes (R, G, B), each normalised. */
-export function pixelsToInput(pixels: Uint8ClampedArray, size: number, mean: readonly number[], std: readonly number[]): Float32Array {
-  const area = size * size;
+/** RGBA pixels of a picture of `area` pixels → the model's input: 3 planes (R, G, B), each normalised. */
+export function pixelsToInput(pixels: Uint8ClampedArray, area: number, mean: readonly number[], std: readonly number[]): Float32Array {
   const input = new Float32Array(3 * area);
   for (let c = 0; c < 3; c++) {
     const offset = c * area;
@@ -60,4 +59,20 @@ export function maskSize(width: number, height: number): { width: number; height
 export function workingSize(width: number, height: number, maxPixels: number): { width: number; height: number } {
   const scale = Math.min(1, Math.sqrt(maxPixels / (width * height)));
   return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)) };
+}
+
+/** What a model reads: a square, or the picture's own shape (see core/models.ts). */
+export type InputShape = { readonly kind: 'square'; readonly size: number } | { readonly kind: 'shortest'; readonly size: number; readonly multiple: number; readonly maxSide: number };
+
+/**
+ * Size of the picture handed to a model for a `width` × `height` picture: its square, or the
+ * picture's own shape with the shortest side at the model's size, the longest kept under its
+ * limit, both rounded to its multiple.
+ */
+export function modelInputSize(input: InputShape, width: number, height: number): { width: number; height: number } {
+  if (input.kind === 'square') return { width: input.size, height: input.size };
+  let scale = input.size / Math.min(width, height);
+  scale = Math.min(scale, input.maxSide / Math.max(width * scale, height * scale) * scale);
+  const round = (v: number) => Math.max(input.multiple, Math.round(v / input.multiple) * input.multiple);
+  return { width: round(width * scale), height: round(height * scale) };
 }

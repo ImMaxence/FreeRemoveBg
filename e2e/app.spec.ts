@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { type Page, expect, test } from '@playwright/test';
+import { type Page, devices, expect, test } from '@playwright/test';
 
 const SAMPLE = 'public/samples/dog.jpg';
 
@@ -17,6 +17,9 @@ test.describe('public pages', () => {
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Cut out any picture');
     await expect(page.locator('#ai')).toContainText('IS-Net');
     await expect(page.locator('#ai')).toContainText('ECCV 2022');
+    await page.getByRole('tab', { name: /ORMBG/ }).click();
+    await expect(page.locator('#spec-sheet')).toContainText('Open Remove Background Model');
+    await expect(page.locator('#spec-sheet .qr img')).toHaveAttribute('src', '/qr/ormbg.svg');
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://freeremovebg.mbonnici.fr/');
     await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(3);
 
@@ -50,6 +53,23 @@ test.describe('public pages', () => {
     });
   }
 
+  test('the install button is there from the start and explains the steps', async ({ page }) => {
+    await page.goto('/');
+    const install = page.getByRole('button', { name: 'Install the app' }).first();
+    await expect(install).toBeVisible();
+    // No install prompt from the browser yet: the steps for this browser (Chrome) are shown.
+    await install.click();
+    const help = page.getByRole('dialog', { name: 'Install FreeRemoveBg' });
+    await expect(help).toBeVisible();
+    await expect(help.locator('li')).toHaveCount(2);
+    await expect(help).toContainText('address bar');
+    await page.keyboard.press('Escape');
+    await expect(help).toBeHidden();
+    const manifest = await (await page.request.get('/manifest.webmanifest')).json();
+    expect(manifest.icons.some((i: { purpose: string }) => i.purpose === 'maskable')).toBe(true);
+    expect((await page.request.get(manifest.icons.at(-1).src)).ok()).toBe(true);
+  });
+
   test('search engines and assistants get their files', async ({ request }) => {
     expect(await (await request.get('/robots.txt')).text()).toContain('Sitemap: https://freeremovebg.mbonnici.fr/sitemap.xml');
     expect(await (await request.get('/sitemap.xml')).text()).toContain('<loc>https://freeremovebg.mbonnici.fr/fr/privacy</loc>');
@@ -59,7 +79,23 @@ test.describe('public pages', () => {
 });
 
 test.describe('the tool', () => {
+  test('warns phone users that cutouts are slower, until they close the notice', async ({ browser }) => {
+    const phone = await browser.newContext({ ...devices['Pixel 7'], locale: 'en-US' });
+    const page = await phone.newPage();
+    await page.goto('/app');
+    const notice = page.getByRole('note').filter({ hasText: 'On a phone, cutouts are slower' });
+    await expect(notice).toBeVisible();
+    await notice.getByRole('button', { name: 'Close' }).click();
+    await expect(notice).toBeHidden();
+    await page.reload();
+    await expect(page.getByRole('heading', { name: 'First, choose the AI model' })).toBeVisible();
+    await expect(notice).toBeHidden();
+    await phone.close();
+  });
+
   test('asks before downloading the model, then prepares, cuts out and exports', async ({ page }) => {
+    // Three models are downloaded in a fresh browser, and run on the processor.
+    test.setTimeout(600_000);
     const toHub: string[] = [];
     page.on('request', (r) => {
       if (/huggingface\.co|hf\.co/.test(r.url())) toHub.push(r.url());
@@ -67,10 +103,11 @@ test.describe('the tool', () => {
 
     // Step 1: nothing is downloaded before the user agrees. The processor: headless browsers have no graphics card.
     await page.goto('/app?device=wasm');
-    await expect(page.getByRole('heading', { name: 'First, the AI model' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'First, choose the AI model' })).toBeVisible();
+    await expect(page.getByRole('radio', { name: /IS-Net/ })).toBeChecked();
     await page.waitForTimeout(1500);
     expect(toHub).toEqual([]);
-    await page.getByRole('button', { name: /Download the model/ }).click();
+    await page.getByRole('button', { name: /^Download IS-Net/ }).click();
     await page.getByRole('button', { name: 'Continue to my pictures' }).click({ timeout: 10_000 }).catch(() => undefined);
     expect(toHub.length).toBeGreaterThan(0);
 
@@ -98,7 +135,7 @@ test.describe('the tool', () => {
     await expect(page.locator('.meta')).toContainText('960 × 1200 px');
 
     // The cutout is transparent somewhere and opaque somewhere else.
-    const canvas = page.locator('.viewport canvas');
+    const canvas = page.locator('.viewport canvas:not(.overlay)');
     const alpha = await canvas.evaluate((c: HTMLCanvasElement) => {
       const { data } = c.getContext('2d')!.getImageData(0, 0, c.width, c.height);
       let transparent = 0;
@@ -123,9 +160,33 @@ test.describe('the tool', () => {
     expect(jpg.suggestedFilename()).toBe('dog-no-bg.jpg');
     await page.getByRole('button', { name: 'None', exact: true }).click();
 
-    // The brush: erasing across the picture can be undone and redone.
+    // Zoom with the mouse wheel: choosing a brush and painting keep it.
+    const zoomValue = page.locator('.zoom-value');
+    await expect(zoomValue).toHaveText('100 %');
+    const view = (await page.locator('.viewport').boundingBox())!;
+    await page.mouse.move(view.x + view.width / 2, view.y + view.height / 2);
+    await page.mouse.wheel(0, -400);
+    await expect(zoomValue).not.toHaveText('100 %');
+    const zoomed = await zoomValue.textContent();
     await page.getByRole('tab', { name: 'Retouch' }).click();
+    await expect(page.locator('#brush')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Restore', exact: true }).click();
+    await expect(page.locator('#brush')).toBeVisible();
+    // Choosing the tool may have scrolled the page: where the picture is now.
+    await page.locator('.viewport').scrollIntoViewIfNeeded();
+    const now = (await page.locator('.viewport').boundingBox())!;
+    await page.mouse.move(now.x + now.width * 0.4, now.y + now.height * 0.5);
+    await page.mouse.down();
+    await page.mouse.move(now.x + now.width * 0.6, now.y + now.height * 0.5, { steps: 5 });
+    await page.mouse.up();
+    await expect(zoomValue).toHaveText(zoomed!);
+    await page.getByRole('button', { name: 'Undo' }).click();
+    await zoomValue.click();
+    await expect(zoomValue).toHaveText('100 %');
+
+    // The brush: erasing across the picture can be undone and redone.
     await page.getByRole('button', { name: 'Erase', exact: true }).click();
+    await canvas.scrollIntoViewIfNeeded();
     const box = (await canvas.boundingBox())!;
     await page.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.6);
     await page.mouse.down();
@@ -144,6 +205,35 @@ test.describe('the tool', () => {
     await page.getByRole('button', { name: 'Rescue this area' }).click();
     await expect(page.getByRole('button', { name: 'Undo' })).toBeEnabled({ timeout: 120_000 });
     await expect(page.locator('p[role=status]').first()).toHaveText('Background removed');
+    await page.getByRole('button', { name: 'Undo' }).click();
+    await expect(page.getByRole('button', { name: 'Undo' })).toBeDisabled();
+
+    // Click (SAM 2.1): asked for first, then a box around the dog is added as one undoable step.
+    await page.getByRole('button', { name: 'Click', exact: true }).click();
+    await page.waitForTimeout(1000);
+    expect(toHub.some((url) => url.includes('sam2'))).toBe(false);
+    await page.getByRole('button', { name: /^Download SAM 2\.1/ }).click();
+    await expect(page.getByText('Click on the object, or draw a box')).toBeVisible({ timeout: 280_000 });
+    expect(toHub.some((url) => url.includes('sam2'))).toBe(true);
+    await canvas.scrollIntoViewIfNeeded();
+    const area = (await canvas.boundingBox())!;
+    await page.mouse.move(area.x + area.width * 0.1, area.y + area.height * 0.05);
+    await page.mouse.down();
+    await page.mouse.move(area.x + area.width * 0.9, area.y + area.height * 0.97, { steps: 8 });
+    await page.mouse.up();
+    await page.getByRole('button', { name: 'Add to the cutout' }).click({ timeout: 120_000 });
+    await expect(page.getByRole('button', { name: 'Undo' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Add to the cutout' })).toBeHidden();
+
+    // Compare with the other model: it is asked for first, then the picture is cut out again.
+    await expect(page.getByText('Cut out with')).toContainText('IS-Net');
+    page.once('dialog', (d) => d.accept());
+    await page.getByRole('button', { name: 'Try ORMBG' }).click();
+    await expect(page.getByRole('radio', { name: /ORMBG/ })).toBeChecked();
+    await page.getByRole('button', { name: /^Download ORMBG/ }).click();
+    await page.getByRole('button', { name: 'Continue to my pictures' }).click({ timeout: 10_000 }).catch(() => undefined);
+    await expect(page.locator('p[role=status]').first()).toHaveText('Background removed', { timeout: 280_000 });
+    await expect(page.getByText('Cut out with')).toContainText('ORMBG');
 
     // A second picture opens in "Prepare"; both download as one archive.
     await page.locator('input[type=file]').first().setInputFiles('public/samples/plant.jpg');

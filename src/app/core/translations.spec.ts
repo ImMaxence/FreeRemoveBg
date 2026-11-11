@@ -1,8 +1,11 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parseChangelog } from '../changelog/changelog-parser';
 import { AI_FACTS, BROWSERS, COMPARE, FAQ, FEATURES, PRIVACY_POINTS, STEPS } from './landing-content';
 import { LANGUAGES, languageFor } from './languages';
+import { MODEL_IDS, SHEET_IDS } from './models';
 
 type Tree = { [key: string]: Tree | string | Tree[] | string[] };
 
@@ -40,9 +43,32 @@ describe('translations', () => {
       ...PRIVACY_POINTS.map((p) => `landing.privacy.${p}`),
       ...BROWSERS.flatMap((b) => [`landing.support.${b.key}`, `landing.support.${b.level}`]),
       ...FAQ.flatMap((q) => [`landing.faq.${q}.q`, `landing.faq.${q}.a`]),
-      ...AI_FACTS.flatMap((f) => [`landing.ai.facts.${f}.label`, `landing.ai.facts.${f}.value`]),
+      ...AI_FACTS.map((f) => `landing.ai.facts.${f}`),
+      ...SHEET_IDS.flatMap((id) => [`landing.ai.models.${id}.tab`, `landing.ai.models.${id}.subtitle`, ...AI_FACTS.map((f) => `landing.ai.models.${id}.facts.${f}`)]),
+      ...MODEL_IDS.flatMap((id) => [`tool.models.${id}.short`, `tool.models.${id}.text`]),
     ];
     for (const key of keys) expect(english[key], key).toBeTruthy();
+  });
+
+  it('has every text a template names in full', () => {
+    // Keys written whole in templates and components: 'tool.model.title' | transloco.
+    const root = fileURLToPath(new URL('../', import.meta.url));
+    const files: string[] = [];
+    const walk = (dir: string) => {
+      for (const name of readdirSync(dir)) {
+        const path = join(dir, name);
+        if (statSync(path).isDirectory()) walk(path);
+        else if (/\.(html|ts)$/.test(name) && !name.endsWith('.spec.ts')) files.push(path);
+      }
+    };
+    walk(root);
+    const missing: string[] = [];
+    for (const file of files) {
+      for (const [, key] of readFileSync(file, 'utf8').matchAll(/'([a-z]\w*(?:\.\w+)+)'\s*\|\s*transloco/g)) {
+        if (!(key in english)) missing.push(`${key} (${file.slice(root.length)})`);
+      }
+    }
+    expect(missing).toEqual([]);
   });
 
   it('keeps titles and descriptions within what search engines show', () => {

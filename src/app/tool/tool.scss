@@ -90,6 +90,28 @@
   }
 }
 
+/* On a phone, or without a graphics card: the AI will be slower. */
+.slow-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 12px 10px 12px 16px;
+  border: 2px solid var(--line);
+  border-radius: var(--r);
+  background: var(--yellow-soft);
+  font-size: 14.5px;
+  > app-icon {
+    margin-top: 2px;
+  }
+  div {
+    display: grid;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
 .notice {
   display: flex;
   align-items: center;
@@ -176,16 +198,19 @@
 
 .strip ul {
   display: grid;
-  gap: 12px;
+  gap: 14px;
   margin: 0;
-  padding: 4px 6px 4px 2px;
+  padding: 10px 10px 10px 8px;
   list-style: none;
   max-height: min(76dvh, 820px);
   overflow-y: auto;
 }
 
 .strip li {
+  flex: none;
   position: relative;
+  width: 80px;
+  height: 80px;
 }
 
 .thumb {
@@ -208,11 +233,17 @@
     transform: translateY(-2px);
     border-color: var(--line);
   }
+  /* The picture stays inside the frame, whatever its shape; the badges sit on the frame's edge. */
+  .pic {
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    overflow: hidden;
+  }
   img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    border-radius: 15px;
   }
   &.add {
     background: transparent;
@@ -267,26 +298,30 @@ li.active .thumb {
   animation: spin 0.8s linear infinite;
 }
 
+/* Remove: a small dark dot on the top-right corner of the frame. */
 .remove {
   position: absolute;
-  top: -6px;
-  right: 2px;
+  top: -8px;
+  right: -8px;
+  z-index: 1;
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   padding: 0;
-  border: 2px solid var(--line);
+  border: 2px solid var(--paper);
   border-radius: 50%;
-  background: var(--card);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s;
+  transform: scale(0.85);
+  transition:
+    opacity 0.15s,
+    transform 0.15s var(--ease),
+    background 0.15s;
   &:hover {
     background: var(--danger);
-    border-color: var(--danger);
-    color: #fff;
   }
 }
 
@@ -294,6 +329,7 @@ li.active .thumb {
 .strip li.active .remove,
 .remove:focus-visible {
   opacity: 1;
+  transform: none;
 }
 
 /* Drop anywhere ------------------------------------------------------------------------------ */

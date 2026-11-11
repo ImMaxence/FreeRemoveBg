@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ImagesStore } from '../core/images.store';
 import { AI_FACTS, BROWSERS, COMPARE, FAQ, FEATURES, PRIVACY_POINTS, STEPS } from '../core/landing-content';
-import { MODELS } from '../core/models';
+import { AI_SHEETS, SHEET_IDS, type SheetId } from '../core/models';
 import { SAMPLES } from '../core/samples';
 import { REPO_URL } from '../core/version';
 import { Icon } from '../shared/icon';
@@ -31,8 +31,11 @@ export class Landing {
   private readonly router = inject(Router);
 
   protected readonly repoUrl = REPO_URL;
-  protected readonly model = MODELS.isnet;
-  protected readonly paperUrl = 'https://arxiv.org/abs/2203.03041';
+  protected readonly models = AI_SHEETS;
+  protected readonly modelIds = SHEET_IDS;
+  /** The model whose spec sheet is shown. */
+  protected readonly spec = signal<SheetId>('isnet');
+  protected readonly specModel = computed(() => AI_SHEETS[this.spec()]);
   protected readonly steps = STEPS;
   protected readonly facts = AI_FACTS;
   protected readonly features = FEATURES;
@@ -42,11 +45,20 @@ export class Landing {
   protected readonly faq = FAQ;
   protected readonly modes: ArtMode[] = ['photo', 'cutout', 'background'];
   protected readonly ticker = ['free', 'ai', 'noUpload', 'fullSize', 'batch', 'offline', 'noAccount'];
-  protected readonly aiPoints = ['precise', 'local', 'open'];
+  protected readonly aiPoints = ['precise', 'choice', 'local', 'open'];
 
   /** What the hero picture shows: the photo, the cutout, or the cutout on a new background. */
   protected readonly mode = signal<ArtMode>('cutout');
   protected readonly dragging = signal(false);
+
+  /** Arrows move between the spec sheet's tabs. */
+  protected onSpecKey(event: KeyboardEvent): void {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const index = (SHEET_IDS.indexOf(this.spec()) + (event.key === 'ArrowRight' ? 1 : SHEET_IDS.length - 1)) % SHEET_IDS.length;
+    this.spec.set(SHEET_IDS[index]);
+    (event.currentTarget as HTMLElement).parentElement?.querySelector<HTMLElement>(`#spec-tab-${SHEET_IDS[index]}`)?.focus();
+  }
 
   protected trySample(): void {
     const sample = SAMPLES[0];

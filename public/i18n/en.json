@@ -15,8 +15,9 @@
     "changelog": "Changelog",
     "language": "Language",
     "install": "Install the app",
+    "installShort": "Install",
     "open": "Remove a background",
-    "openShort": "Start",
+    "openShort": "Cut out",
     "menu": "Open the menu",
     "close": "Close the menu"
   },
@@ -33,7 +34,8 @@
     "issues": "Report a problem",
     "noTracking": "No cookies, no tracking",
     "product": "Product",
-    "legal": "Legal"
+    "legal": "Legal",
+    "and": "and"
   },
   "pwa": {
     "update": "A new version is available",
@@ -76,7 +78,7 @@
     },
     "ticker": {
       "free": "Free",
-      "ai": "Open source AI: IS-Net",
+      "ai": "Open source AI: IS-Net, ORMBG, SAM 2",
       "noUpload": "Nothing uploaded",
       "fullSize": "Full size",
       "batch": "Batch processing",
@@ -85,13 +87,17 @@
     },
     "ai": {
       "eyebrow": "The AI inside",
-      "title1": "IS-Net, a research model",
-      "title2": "running on your device",
-      "lead": "FreeRemoveBg uses IS-Net, a segmentation model presented by researchers at the ECCV 2022 conference and designed for highly accurate cutouts. Your browser downloads it once from Hugging Face (179 MB), then runs it itself: on your graphics card with WebGPU, or on your processor with WebAssembly.",
+      "title1": "IS-Net, ORMBG and SAM 2,",
+      "title2": "AI that runs on your device",
+      "lead": "Three open source models. IS-Net, presented at the ECCV 2022 conference, cuts out any subject; ORMBG, built on it, was trained on people; SAM 2.1, from Meta, powers the click tool: click on an object, it traces its outline. Your browser downloads each one once from Hugging Face, only if you use it, then runs it itself: on your graphics card with WebGPU, or on your processor with WebAssembly.",
       "points": {
         "precise": {
           "title": "Precise",
           "text": "Trained to follow fine outlines: hair, fur, leaves, thin objects."
+        },
+        "choice": {
+          "title": "Your choice",
+          "text": "Versatile, made for people, or click to select: switch models, cut a picture out again with another one, or point at an object it missed."
         },
         "local": {
           "title": "Local",
@@ -104,37 +110,58 @@
       },
       "paper": "Read the paper",
       "code": "Model code",
-      "hub": "Model on Hugging Face",
-      "specLabel": "Spec sheet of the IS-Net model",
+      "hub": "Model page on Hugging Face",
+      "scan": "Scan or click: the model's page",
+      "specLabel": "Spec sheets of the AI models",
       "specKicker": "Spec sheet",
       "facts": {
-        "task": {
-          "label": "Task",
-          "value": "Dichotomous image segmentation (DIS)"
+        "task": "Task",
+        "paper": "Origin",
+        "input": "Analysis",
+        "weights": "Weights",
+        "runtime": "Engine",
+        "compute": "Computing",
+        "sent": "Data sent"
+      },
+      "models": {
+        "isnet": {
+          "tab": "Versatile · recommended",
+          "subtitle": "Highly Accurate Dichotomous Image Segmentation",
+          "facts": {
+            "task": "Any subject: objects, animals, people",
+            "paper": "Qin et al., ECCV 2022",
+            "input": "1024 × 1024 px",
+            "weights": "179 MB, downloaded once",
+            "runtime": "ONNX Runtime Web + Transformers.js",
+            "compute": "WebGPU or WebAssembly",
+            "sent": "0 bytes"
+          }
         },
-        "paper": {
-          "label": "Paper",
-          "value": "Qin et al., ECCV 2022"
+        "ormbg": {
+          "tab": "Made for people",
+          "subtitle": "Open Remove Background Model",
+          "facts": {
+            "task": "People: portraits, hair",
+            "paper": "IS-Net trained on people (schirrmacher)",
+            "input": "1024 × 1024 px",
+            "weights": "88 MB (graphics card) or 176 MB",
+            "runtime": "ONNX Runtime Web + Transformers.js",
+            "compute": "WebGPU or WebAssembly",
+            "sent": "0 bytes"
+          }
         },
-        "input": {
-          "label": "Analysis",
-          "value": "1024 × 1024 px"
-        },
-        "weights": {
-          "label": "Weights",
-          "value": "179 MB, downloaded once"
-        },
-        "runtime": {
-          "label": "Engine",
-          "value": "ONNX Runtime Web + Transformers.js"
-        },
-        "compute": {
-          "label": "Computing",
-          "value": "WebGPU or WebAssembly"
-        },
-        "sent": {
-          "label": "Data sent",
-          "value": "0 bytes"
+        "sam": {
+          "tab": "Select by clicking",
+          "subtitle": "Segment Anything in Images and Videos",
+          "facts": {
+            "task": "Select the object you click on",
+            "paper": "Ravi et al., Meta AI, 2024",
+            "input": "1024 × 1024 px",
+            "weights": "78 MB (graphics card) or 156 MB, only if used",
+            "runtime": "ONNX Runtime Web + Transformers.js",
+            "compute": "WebGPU or WebAssembly",
+            "sent": "0 bytes"
+          }
         }
       }
     },
@@ -144,8 +171,8 @@
       "lead": "No sign-up, no install: everything happens in this page.",
       "model": {
         "tag": "Only once",
-        "title": "Allow the AI model",
-        "text": "The first time, the page asks before downloading the AI (179 MB). After that, everything starts right away, even offline."
+        "title": "Choose and allow the AI model",
+        "text": "The first time, pick a model (88 to 179 MB): the page asks before downloading it. After that, everything starts right away, even offline."
       },
       "drop": {
         "title": "Add your pictures",
@@ -166,7 +193,7 @@
       "title": "What paid removers do. For free.",
       "cutout": {
         "title": "Automatic cutout",
-        "text": "People, animals, products, objects: the subject is isolated in seconds, fine outlines included."
+        "text": "People, animals, products, objects: IS-Net isolates the subject in seconds, fine outlines included. ORMBG takes over for portraits."
       },
       "background": {
         "title": "A new background in one click",
@@ -178,7 +205,7 @@
       },
       "brush": {
         "title": "Brush and rescue",
-        "text": "Erase or restore by hand, or draw around an object the AI missed so it looks again."
+        "text": "Erase or restore by hand, or click on an object the AI missed: SAM 2 selects it, you add it."
       },
       "batch": {
         "title": "Batches",
@@ -202,7 +229,7 @@
       "title": "Your pictures never leave your device",
       "lead": "There is no processing server: the page does everything itself. The only thing that travels is the AI model, the other way round, once.",
       "upload": "No upload: your pictures are opened, cut out and saved by your browser, in memory.",
-      "model": "The model (179 MB) comes from Hugging Face once, and only if you agree to it.",
+      "model": "The models you use come from Hugging Face once each (78 to 179 MB), and only if you agree to it.",
       "account": "No account, no e-mail address, no payment.",
       "tracking": "No cookies, no analytics, no ads; the server keeps no access logs.",
       "verify": "Verifiable: a strict security policy stops the page from contacting anything but this site and Hugging Face.",
@@ -211,7 +238,8 @@
       "yourImages": "Your pictures",
       "result": "The result",
       "nothingLeaves": "Nothing leaves this box",
-      "once": "the model, once (179 MB)"
+      "once": "the model, once (88 to 179 MB)",
+      "models": "The AI models"
     },
     "compare": {
       "eyebrow": "Comparison",
@@ -251,11 +279,19 @@
       },
       "model": {
         "q": "Which AI is used?",
-        "a": "IS-Net, a segmentation model presented by Xuebin Qin and his co-authors at the ECCV 2022 conference (\"Highly Accurate Dichotomous Image Segmentation\"). Its ONNX version, under the Apache-2.0 license, is run in your browser by ONNX Runtime Web and Transformers.js."
+        "a": "You choose. IS-Net, presented by Xuebin Qin and his co-authors at the ECCV 2022 conference (\"Highly Accurate Dichotomous Image Segmentation\"), handles any subject. ORMBG (\"Open Remove Background Model\") is IS-Net trained again on pictures of people. Both are under the Apache-2.0 license and run in your browser with ONNX Runtime Web and Transformers.js."
+      },
+      "which": {
+        "q": "Which model should I choose?",
+        "a": "IS-Net in most cases: objects, products, animals, people. ORMBG for portraits and people, and when your graphics card computes in half precision it is half the download (88 MB). Not convinced by a result? One button cuts the picture out again with the other model, to compare."
+      },
+      "sam": {
+        "q": "What is SAM 2 for?",
+        "a": "SAM 2.1 (Segment Anything, Meta, Apache-2.0) is not a background remover: it selects the object you click on. In FreeRemoveBg it powers the \"Click\" retouch tool, to add an object the cutout missed (something held at arm's length…) or to take one away. It reads each picture once, then answers each click at once. It is only downloaded (78 to 156 MB) if you use it, after you agree."
       },
       "download": {
         "q": "Why does a model have to be downloaded?",
-        "a": "Because the AI runs on your device, not on a server. Before the first cutout, FreeRemoveBg asks you before downloading the model (179 MB) from Hugging Face. Your browser then keeps it: next time nothing is downloaded again, and everything works even offline."
+        "a": "Because the AI runs on your device, not on a server. Before the first cutout, FreeRemoveBg asks you before downloading the model you chose (88 to 179 MB) from Hugging Face. Your browser then keeps it: next time nothing is downloaded again, and everything works even offline."
       },
       "alternative": {
         "q": "Is it an alternative to remove.bg?",
@@ -263,7 +299,7 @@
       },
       "quality": {
         "q": "How good is the cutout, and at what size?",
-        "a": "IS-Net handles hair, fur and fine details well on people, animals, products and objects. The picture is analysed at 1024 pixels, then the result is saved at the size of your photo, up to about 6,000 × 4,000 pixels (4,900 × 3,300 on iPhone and iPad). Cropping around a small subject before the cutout helps the AI; an object it missed can be rescued by drawing around it."
+        "a": "IS-Net handles hair, fur and fine details well on people, animals, products and objects; ORMBG is made for people. The picture is analysed at 1024 pixels, then the result is saved at the size of your photo, up to about 6,000 × 4,000 pixels (4,900 × 3,300 on iPhone and iPad). Cropping around a small subject before the cutout helps the AI; an object it missed can be rescued by drawing around it."
       },
       "privacy": {
         "q": "Are my pictures uploaded to a server?",
@@ -279,7 +315,7 @@
       },
       "commercial": {
         "q": "Can I use the results commercially?",
-        "a": "Yes. You keep every right on your pictures, and the model used (IS-Net, under the Apache-2.0 license) allows commercial use. You only need the rights on the original pictures."
+        "a": "Yes. You keep every right on your pictures, and both models (IS-Net and ORMBG, under the Apache-2.0 license) allow commercial use. You only need the rights on the original pictures."
       },
       "offline": {
         "q": "Does it work offline?",
@@ -311,7 +347,7 @@
       "images": "Pictures",
       "prepare": "Prepare",
       "result": "Cut out",
-      "modelNote": "179 MB, once",
+      "modelNote": "88–179 MB, once",
       "imagesNote": "Choose or drop",
       "prepareNote": "Optional",
       "resultNote": "Background and export",
@@ -341,13 +377,13 @@
     },
     "model": {
       "eyebrow": "Step 1 · only once",
-      "title": "First, the AI model",
-      "text": "FreeRemoveBg cuts out your pictures on your device, not on a server. For that, your browser needs to download the IS-Net model once, from Hugging Face. It then keeps it: next time, everything starts right away, even offline.",
-      "agree": "Download the model (179 MB)",
-      "retry": "Try the download again",
+      "title": "First, choose the AI model",
+      "text": "FreeRemoveBg cuts out your pictures on your device, not on a server. For that, your browser needs to download the model you choose once, from Hugging Face. It then keeps it: next time, everything starts right away, even offline.",
+      "agree": "Download {{ name }} ({{ size }})",
+      "retry": "Try {{ name }} again ({{ size }})",
       "decline": "Not now",
-      "mobile": "On a phone, prefer Wi-Fi: 179 MB is a large download.",
-      "downloading": "Downloading the model…",
+      "mobile": "On a phone, prefer Wi-Fi: these are large downloads.",
+      "downloading": "Downloading {{ name }}…",
       "preparing": "Preparing the model on your device…",
       "continue": "Continue to my pictures",
       "continueHint": "You can carry on while it downloads: the cutout starts as soon as the model is ready.",
@@ -356,14 +392,18 @@
       "facts": {
         "model": "Model",
         "size": "Size",
-        "sizeValue": "179 MB, once",
+        "sizeValue": "{{ size }}, once",
         "source": "Comes from",
         "license": "License",
         "runs": "Runs on",
         "runsValue": "Your device",
         "sent": "Pictures sent",
         "sentValue": "None"
-      }
+      },
+      "choose": "Model",
+      "recommended": "Recommended",
+      "cached": "Already on this device",
+      "keep": "Keep {{ name }}"
     },
     "prepare": {
       "preview": "Picture to prepare",
@@ -393,7 +433,8 @@
       "modelWait": "The model is downloading ({{ percent }} %): the cutout starts as soon as it is ready.",
       "go": "Cut out this picture",
       "goAll": "Cut out all {{ count }} pictures",
-      "skipHint": "Nothing is sent: the cutout happens on your device."
+      "skipHint": "Nothing is sent: the cutout happens on your device.",
+      "model": "AI model"
     },
     "result": {
       "preview": "Result",
@@ -426,7 +467,10 @@
       "tabs": {
         "background": "Background",
         "retouch": "Retouch"
-      }
+      },
+      "madeWith": "Cut out with",
+      "compare": "Try {{ name }}",
+      "compareConfirm": "Cutting out again drops your retouches. Continue?"
     },
     "background": {
       "transparent": "None",
@@ -452,7 +496,9 @@
       "rescueHelp": "The AI missed something, like an object held at arm's length? Draw a rectangle around it: the AI looks there again and adds what it finds.",
       "rescueGo": "Rescue this area",
       "cancel": "Cancel",
-      "reset": "Back to the AI result"
+      "reset": "Back to the AI result",
+      "moveHelp": "Turn the mouse wheel over the picture to zoom in and out; once zoomed in, drag the picture to move around.",
+      "point": "Click"
     },
     "export": {
       "title": "Download",
@@ -464,6 +510,39 @@
       "copied": "Copied",
       "copyError": "Copy unavailable",
       "all": "All as ZIP ({{ count }})"
+    },
+    "models": {
+      "isnet": {
+        "short": "Versatile",
+        "text": "Objects, animals, products and people: the right choice in most cases."
+      },
+      "ormbg": {
+        "short": "People",
+        "text": "Trained on people: portraits and hair. Lighter on a graphics card."
+      }
+    },
+    "sam": {
+      "intro": "Click on an object to select it: SAM 2.1 traces its outline, then you add it to the cutout or take it away.",
+      "once": "{{ size }}, downloaded once",
+      "agree": "Download SAM 2.1 ({{ size }})",
+      "downloading": "Downloading SAM 2.1…",
+      "preparing": "Preparing SAM 2.1…",
+      "reading": "SAM is reading the picture (once per picture)…",
+      "help": "Click on the object, or draw a box around it: a box gives the whole object. Each click then refines the selection: \"Include\" adds to it, \"Exclude\" (or Alt + click) takes away.",
+      "mode": "Points",
+      "include": "Include",
+      "exclude": "Exclude",
+      "add": "Add to the cutout",
+      "remove": "Remove from it",
+      "clear": "Start over",
+      "error": "SAM could not be downloaded.",
+      "failed": "SAM could not answer. Try again, or use the brush."
+    },
+    "slow": {
+      "phoneTitle": "On a phone, cutouts are slower",
+      "phone": "The AI needs a lot of computing power and memory, and the browser often cannot use a phone's graphics card: a picture can take tens of seconds, and older phones may run out of memory and fail. For many pictures, a computer is more comfortable.",
+      "cpuTitle": "No graphics card available",
+      "cpu": "Your browser gives no access to a graphics card (WebGPU): the AI runs on the processor, which takes several seconds per picture instead of about one."
     }
   },
   "changelog": {
@@ -509,8 +588,28 @@
           "title": "Intellectual property",
           "body": [
             "The source code of FreeRemoveBg is open source and published under the MIT license on [GitHub](https://github.com/ImMaxence/FreeRemoveBg).",
-            "Third-party components, AI models and fonts used by the application remain the property of their authors and are used under their own licenses, listed in the [terms of use](/terms). The sample pictures and their authors are listed in the [credits](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md).",
-            "The trademarks mentioned (remove.bg, Hugging Face, Chrome, Edge, Firefox, Safari…) belong to their owners. FreeRemoveBg is an independent project, not affiliated with remove.bg or its publisher."
+            "The AI models (IS-Net, ORMBG, SAM 2.1) and the libraries used by the application remain the property of their authors and are used under their own licenses, listed in the [terms of use](/terms).",
+            "The trademarks mentioned (remove.bg, Hugging Face, GitHub, Chrome, Edge, Firefox, Safari…) belong to their owners. FreeRemoveBg is an independent project, not affiliated with remove.bg or its publisher."
+          ]
+        },
+        {
+          "title": "Fonts",
+          "body": [
+            "Titles use Bricolage Grotesque (Mathieu Triay) and text uses Geist (Vercel), both under the SIL Open Font License 1.1. They are served by this site, without any request to Google Fonts or another service."
+          ]
+        },
+        {
+          "title": "Pictures",
+          "body": [
+            "The sample pictures were placed in the public domain (CC0) by their authors and come from Wikimedia Commons: \"Dog on a log\" by Christal Yuen, \"Cat in green grass\" by Raphael Schaller and \"Rubber Plant\" by Scott Webb ([details](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md)). They were cropped; their cutouts were made by FreeRemoveBg itself, without retouching.",
+            "The logo, the sharing picture and the illustrations of the site were made for it."
+          ]
+        },
+        {
+          "title": "Icons and logos",
+          "body": [
+            "Most icons come from [Lucide](https://lucide.dev) (ISC license) and from Feather (MIT license), slightly simplified; the others were drawn for the site. They are part of the code, as SVG, and their licenses are [here](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/licenses/lucide.txt).",
+            "The GitHub logo belongs to GitHub, Inc. and is only used to point to that service. The QR codes of the home page open the models' pages on Hugging Face."
           ]
         },
         {
@@ -548,7 +647,7 @@
         {
           "title": "Local storage",
           "body": [
-            "The application saves your interface preferences (language, theme) in your browser's local storage, and keeps its own files and the downloaded AI model in the browser cache so it can work offline. These items are strictly necessary for the service, are never used to track you and therefore need no consent banner.",
+            "The application saves your interface preferences (language, theme, chosen AI model) in your browser's local storage, and keeps its own files and the downloaded AI models in the browser cache so it can work offline. These items are strictly necessary for the service, are never used to track you and therefore need no consent banner.",
             "You can erase them at any time by deleting this site's data in your browser's settings."
           ]
         },
@@ -562,7 +661,7 @@
           "title": "Third parties",
           "body": [
             "Cloudflare: every request to this site goes through Cloudflare, which protects the server and encrypts the connection. Like any network intermediary, it processes your IP address and your browser's standard information to route the pages, and may keep technical logs for security purposes; it never receives your pictures, which never leave your device. See its [privacy policy](https://www.cloudflare.com/privacypolicy/).",
-            "Hugging Face: the AI model is downloaded straight from huggingface.co once you agree to it, before your first cutout, then kept by your browser. Hugging Face then receives your IP address and your browser's usual information, but never your pictures. See its [privacy policy](https://huggingface.co/privacy).",
+            "Hugging Face: the AI models you use (IS-Net or ORMBG for the cutout, SAM 2.1 for the \"Click\" tool) are downloaded straight from huggingface.co once you agree to it, then kept by your browser. Hugging Face then receives your IP address and your browser's usual information, but never your pictures. See its [privacy policy](https://huggingface.co/privacy).",
             "GitHub: only if you follow a link to the source code repository.",
             "No other third party is contacted: a strict Content-Security-Policy technically prevents the page from connecting anywhere else."
           ]
@@ -620,7 +719,7 @@
           "title": "Open source and third-party components",
           "body": [
             "The source code is available under the MIT license on [GitHub](https://github.com/ImMaxence/FreeRemoveBg).",
-            "FreeRemoveBg relies on: the [IS-Net](https://github.com/xuebinqin/DIS) model (Apache-2.0), in its [ONNX version](https://huggingface.co/BritishWerewolf/IS-Net), Transformers.js (Apache-2.0), ONNX Runtime (MIT), Angular (MIT), Transloco (MIT), Comlink (Apache-2.0) and the Bricolage Grotesque and Geist fonts (SIL Open Font License).",
+            "FreeRemoveBg relies on: the [IS-Net](https://github.com/xuebinqin/DIS) model (Apache-2.0, [ONNX version](https://huggingface.co/BritishWerewolf/IS-Net)), the [ORMBG](https://huggingface.co/schirrmacher/ormbg) model (Apache-2.0, [ONNX version](https://huggingface.co/onnx-community/ormbg-ONNX)), the [SAM 2.1](https://github.com/facebookresearch/sam2) model by Meta (Apache-2.0, [ONNX version](https://huggingface.co/onnx-community/sam2.1-hiera-tiny-ONNX)), Transformers.js (Apache-2.0), ONNX Runtime (MIT), Angular (MIT), Transloco (MIT), Comlink (Apache-2.0), the Bricolage Grotesque and Geist fonts (SIL Open Font License) and icons from Lucide (ISC) and Feather (MIT) ([licenses](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/licenses/lucide.txt)).",
             "The sample pictures are used under the licenses listed in the [credits](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md)."
           ]
         },
@@ -660,10 +759,11 @@
         {
           "title": "Content that is not accessible",
           "body": [
-            "The erase and restore brush and the rescue of an area need a pointer (mouse, finger or stylus): they have no keyboard equivalent. The automatic cutout, preparing the picture, the backgrounds and the downloads do not depend on them.",
+            "The erase and restore brush, the rescue of an area and the \"Click\" tool need a pointer (mouse, finger or stylus): they have no keyboard equivalent. The automatic cutout, preparing the picture, the backgrounds and the downloads do not depend on them.",
             "The preview of a picture is a drawing surface described by a short text only (the name of the file and its state): the content of your own pictures cannot be described automatically.",
             "The changelog is written in English only, including on the French version of the site.",
-            "Dropping files and pasting from the clipboard are shortcuts; the \"Choose images\" button always offers the same function."
+            "Dropping files and pasting from the clipboard are shortcuts; the \"Choose images\" button always offers the same function.",
+            "Zooming with the mouse wheel and moving the zoomed picture by dragging it are shortcuts: the zoom buttons and the scroll bars offer the same, with the keyboard too."
           ]
         },
         {
@@ -675,7 +775,7 @@
         {
           "title": "About this statement",
           "body": [
-            "This statement was written on 11 November 2026, for version 2.0.0 of the site. It is updated when the site changes."
+            "This statement was written on 11 November 2026 and checked again for version 2.2.0 of the site. It is updated when the site changes."
           ]
         }
       ]
@@ -684,7 +784,7 @@
   "seo": {
     "home": {
       "title": "FreeRemoveBg — Free background remover, no upload",
-      "description": "Remove the background of any picture for free, in your browser, with the open source IS-Net AI: new background, brush, batches, full-size PNG. No upload, no account. A free remove.bg alternative"
+      "description": "Remove the background of any picture for free, in your browser, with open source AI (IS-Net, ORMBG): new background, brush, batches, full-size PNG. No upload, no account. A free remove.bg alternative"
     },
     "changelog": {
       "title": "Changelog — FreeRemoveBg",
@@ -709,6 +809,40 @@
     "app": {
       "title": "Remove a background — FreeRemoveBg",
       "description": "Remove the background of your pictures, in your browser"
+    }
+  },
+  "install": {
+    "title": "Install FreeRemoveBg",
+    "lead": "It opens in its own window, like an app, and works without an internet connection once the AI is downloaded.",
+    "note": "Nothing else is installed: it is the same site, kept by your browser. Uninstalling it is done like any app.",
+    "ok": "Got it",
+    "ios": {
+      "step1": "Tap the Share button (the square with an arrow) at the bottom of Safari, or at the top on an iPad.",
+      "step2": "Choose \"Add to Home Screen\", then \"Add\"."
+    },
+    "android": {
+      "step1": "Open the browser menu (⋮ at the top right).",
+      "step2": "Choose \"Install app\" or \"Add to Home screen\"."
+    },
+    "edge": {
+      "step1": "Click the \"App available\" icon at the right of the address bar.",
+      "step2": "Or open the menu (⋯), then Apps → \"Install this site as an app\"."
+    },
+    "chrome": {
+      "step1": "Click the install icon (a screen with an arrow) at the right of the address bar.",
+      "step2": "Or open the menu (⋮), then \"Cast, save and share\" → \"Install page as app\"."
+    },
+    "safari": {
+      "step1": "In the menu bar, open File (or the Share button).",
+      "step2": "Choose \"Add to Dock\", then \"Add\"."
+    },
+    "firefox": {
+      "step1": "Firefox does not install sites as apps on computers yet.",
+      "step2": "Open this page in Chrome or Edge to install it, or keep it in your bookmarks: it works the same."
+    },
+    "other": {
+      "step1": "Open your browser menu.",
+      "step2": "Look for \"Install app\", \"Add to Home screen\" or \"Add to Dock\"."
     }
   }
 }

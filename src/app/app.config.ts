@@ -32,7 +32,8 @@ export const appConfig: ApplicationConfig = {
     }),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
-      registrationStrategy: 'registerWhenStable:30000',
+      // Soon after the start: the browser only offers to install the app once it is registered.
+      registrationStrategy: 'registerWhenStable:5000',
     }),
   ],
 };

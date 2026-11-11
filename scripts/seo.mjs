@@ -5,10 +5,13 @@
 //     asking for text/markdown (see docker/nginx.conf);
 //   - llms.txt (what the site is and its pages) and llms-full.txt (every English page in one file).
 // The texts come from the same translation files and lists as the pages.
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+// It also has the prerendered pages preload their two fonts (named by the build, with a hash), so
+// that they are fetched with the stylesheet rather than after it. index.csr.html is left as it is:
+// the service worker checks its hash.
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { LANGUAGES } from '../src/app/core/languages.ts';
 import { AI_FACTS, BROWSERS, COMPARE, FAQ, FEATURES, PRIVACY_POINTS, STEPS } from '../src/app/core/landing-content.ts';
-import { MODELS } from '../src/app/core/models.ts';
+import { AI_SHEETS, MODELS, SAM, SHEET_IDS } from '../src/app/core/models.ts';
 
 const SITE = 'https://freeremovebg.mbonnici.fr';
 const REPO = 'https://github.com/ImMaxence/FreeRemoveBg';
@@ -45,17 +48,24 @@ const sections = (...blocks) => blocks.flat().filter(Boolean).join('\n\n');
 // --- The pages ------------------------------------------------------------------------------
 
 function home(t) {
-  const model = MODELS.isnet;
+  const names = SHEET_IDS.map((id) => `**${AI_SHEETS[id].name}**`).join(', ');
   return sections(
     `## ${t('landing.hero.title1')} ${t('landing.hero.title2')} ${t('landing.hero.title3')}`,
-    `${t('landing.hero.ai')} **${model.name}** · ${['free', 'noUpload', 'fullSize'].map((p) => t(`landing.hero.proof.${p}`)).join(' · ')}`,
+    `${t('landing.hero.ai')} ${names} · ${['free', 'noUpload', 'fullSize'].map((p) => t(`landing.hero.proof.${p}`)).join(' · ')}`,
     t('landing.hero.lead'),
     `[${t('landing.hero.cta')}](${SITE}/app) · [GitHub](${REPO})`,
     `## ${t('landing.ai.title1')} ${t('landing.ai.title2')}`,
     t('landing.ai.lead'),
-    ['precise', 'local', 'open'].map((p) => `- **${t(`landing.ai.points.${p}.title`)}**: ${t(`landing.ai.points.${p}.text`)}`).join('\n'),
-    [`| ${t('landing.ai.specKicker')} | ${model.name} |`, '|---|---|', ...AI_FACTS.map((f) => `| ${t(`landing.ai.facts.${f}.label`)} | ${t(`landing.ai.facts.${f}.value`)} |`)].join('\n'),
-    `[${t('landing.ai.paper')}](https://arxiv.org/abs/2203.03041) · [${t('landing.ai.code')}](${model.url}) · [${t('landing.ai.hub')}](https://huggingface.co/${model.repo})`,
+    ['precise', 'choice', 'local', 'open'].map((p) => `- **${t(`landing.ai.points.${p}.title`)}**: ${t(`landing.ai.points.${p}.text`)}`).join('\n'),
+    [
+      `| ${t('landing.ai.specKicker')} | ${SHEET_IDS.map((id) => AI_SHEETS[id].name).join(' | ')} |`,
+      `|---|${SHEET_IDS.map(() => '---').join('|')}|`,
+      ...AI_FACTS.map((f) => `| ${t(`landing.ai.facts.${f}`)} | ${SHEET_IDS.map((id) => t(`landing.ai.models.${id}.facts.${f}`)).join(' | ')} |`),
+    ].join('\n'),
+    SHEET_IDS.map((id) => {
+      const m = AI_SHEETS[id];
+      return `- **${m.name}**: ${m.paperUrl ? `[${t('landing.ai.paper')}](${m.paperUrl}) · ` : ''}[${t('landing.ai.code')}](${m.url}) · [${t('landing.ai.hub')}](https://huggingface.co/${m.repo})`;
+    }).join('\n'),
     `## ${t('landing.how.title')}`,
     t('landing.how.lead'),
     STEPS.map((step, i) => `### ${i + 1}. ${t(`landing.how.${step}.title`)}\n\n${t(`landing.how.${step}.text`)}`),
@@ -127,7 +137,9 @@ function pageMarkdown(page, lang, nav = true) {
 function llmsText() {
   const t = translator('en');
   const others = LANGUAGES.filter((l) => l.code !== 'en');
-  const model = MODELS.isnet;
+  const isnet = MODELS.isnet;
+  const ormbg = MODELS.ormbg;
+  const mb = (bytes) => `${Math.round(bytes / 1e6)} MB`;
   return `# ${NAME}
 
 > Free, open source background remover that runs entirely in the web browser. Pictures are never uploaded: the AI model that finds the subject, the background editor and the full-resolution export all run on the user's device. No account, no credits, no watermark.
@@ -136,8 +148,12 @@ ${NAME} is a web app (installable as a PWA, works offline), version ${version}, 
 
 ## What it does
 
-- Removes the background of a picture automatically with the ${model.name} segmentation model (Qin et al., "Highly Accurate Dichotomous Image Segmentation", ECCV 2022; ${model.license}), run in the browser by ONNX Runtime Web and Transformers.js
-- Asks before downloading the model (${model.download}, once, from Hugging Face); nothing else is downloaded and no picture is uploaded
+- Removes the background of a picture automatically with an open source segmentation model of the user's choice, run in the browser by ONNX Runtime Web and Transformers.js:
+  - ${isnet.name} (Qin et al., "Highly Accurate Dichotomous Image Segmentation", ECCV 2022; ${isnet.license}; ${mb(isnet.weights.fp32)}): any subject, the default
+  - ${ormbg.name} ("Open Remove Background Model", IS-Net trained on people; ${ormbg.license}; ${mb(ormbg.weights.fp16)} on a graphics card, ${mb(ormbg.weights.fp32)} otherwise): people and portraits
+- Asks before downloading the chosen model (once, from Hugging Face); nothing else is downloaded and no picture is uploaded
+- A picture can be cut out again with the other model, to compare
+- "Click" retouch tool: ${SAM.name} (Meta, "Segment Anything in Images and Videos", 2024; ${SAM.license}; ${Math.round(SAM.weights.fp16 / 1e6)} MB on a graphics card, ${Math.round(SAM.weights.fp32 / 1e6)} MB otherwise, downloaded only if used) selects the object the user clicks on, to add it to the cutout or take it away
 - Optional preparation before the cutout: turn, mirror, crop with preset proportions
 - Replaces the background: transparent, a color, a gradient, another picture, or the original blurred
 - Erase and restore brush, and "rescue": draw around an object the AI missed so it looks again
@@ -148,7 +164,7 @@ ${NAME} is a web app (installable as a PWA, works offline), version ${version}, 
 ## Requirements
 
 - A recent browser. With WebGPU (Chrome, Edge, recent Firefox and Safari) a picture takes about a second; without it the processor is used (WebAssembly) and a picture takes a few seconds
-- The AI model (${model.download}) is downloaded once from Hugging Face, after the user agrees to it, then kept by the browser
+- The chosen AI model (${mb(ormbg.weights.fp16)} to ${mb(isnet.weights.fp32)}) is downloaded once from Hugging Face, after the user agrees to it, then kept by the browser
 
 ## Pages
 
@@ -193,12 +209,20 @@ function sitemap() {
 
 // --- Write ------------------------------------------------------------------------------------
 
+/** The fonts of the first screen, as the build named them: Geist (text) and Bricolage Grotesque (titles). */
+const FONTS = readdirSync(new URL('media/', OUT)).filter((f) => /^(geist-latin-wght-normal|bricolage-grotesque-latin-opsz-normal)-\w+\.woff2$/.test(f));
+if (FONTS.length !== 2) throw new Error(`Expected the two latin fonts in media/, found ${FONTS.join(', ') || 'none'}`);
+const preloads = FONTS.map((f) => `<link rel="preload" href="media/${f}" as="font" type="font/woff2" crossorigin>`).join('');
+
 let count = 0;
 for (const page of PAGES) {
   for (const { code } of LANGUAGES) {
     // Next to the prerendered page: a missing one means the routes and this list differ.
-    if (!existsSync(new URL(`${dir(page, code)}index.html`, OUT))) throw new Error(`No prerendered page for ${url(page, code)}`);
+    const html = `${dir(page, code)}index.html`;
+    if (!existsSync(new URL(html, OUT))) throw new Error(`No prerendered page for ${url(page, code)}`);
     write(`${dir(page, code)}index.md`, pageMarkdown(page, code));
+    const source = readFileSync(new URL(html, OUT), 'utf8');
+    if (!source.includes('rel="preload" href="media/')) write(html, source.replace('<link rel="stylesheet"', `${preloads}<link rel="stylesheet"`));
     count++;
   }
 }

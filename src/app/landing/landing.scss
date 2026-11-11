@@ -54,6 +54,11 @@ figure {
       animation-delay: #{($i - 1) * 0.07}s;
     }
   }
+  /* The title and the lead are the largest things painted: they slide in, visible from the start. */
+  > h1,
+  > .lead {
+    animation-name: slide-in;
+  }
 }
 
 @keyframes rise {
@@ -63,14 +68,22 @@ figure {
   }
 }
 
+@keyframes slide-in {
+  from {
+    transform: translateY(20px);
+  }
+}
+
 .ai-pill {
   display: inline-flex;
+  flex-wrap: wrap;
+  row-gap: 4px;
   align-items: center;
   gap: 9px;
   min-height: 38px;
-  padding: 0 14px 0 12px;
+  padding: 4px 14px 4px 12px;
   border: 2px solid var(--line);
-  border-radius: 999px;
+  border-radius: 22px;
   background: var(--card);
   box-shadow: var(--shadow-sm);
   color: var(--ink);
@@ -84,6 +97,9 @@ figure {
     background: var(--yellow);
     color: var(--on-yellow);
     font-weight: 750;
+  }
+  b + b {
+    margin-left: -4px;
   }
   &:hover {
     transform: translateY(-2px);
@@ -365,7 +381,7 @@ h3 {
 
 .ai-points {
   display: grid;
-  gap: 4px;
+  gap: 0;
   width: 100%;
   li {
     display: grid;
@@ -393,7 +409,53 @@ h3 {
   flex-wrap: wrap;
 }
 
-/* The model's spec sheet, printed like a label. */
+/* The models' spec sheets, printed like labels, one tab per model. */
+.spec-wrap {
+  display: grid;
+  gap: 14px;
+}
+
+.spec-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  button {
+    display: grid;
+    gap: 1px;
+    padding: 10px 14px;
+    border: 2px solid var(--line-soft);
+    border-radius: var(--r);
+    background: var(--card);
+    color: var(--ink-muted);
+    text-align: left;
+    cursor: pointer;
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+    b {
+      font-family: var(--display);
+      font-size: 19px;
+      color: var(--ink);
+    }
+    small {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    &:hover {
+      border-color: var(--line);
+    }
+    &[aria-selected='true'] {
+      border-color: var(--line);
+      background: var(--yellow);
+      color: var(--on-yellow);
+      box-shadow: var(--shadow-sm);
+      b {
+        color: var(--on-yellow);
+      }
+    }
+  }
+}
+
 .spec {
   border: 2px solid var(--line);
   border-radius: var(--r-lg);
@@ -444,12 +506,39 @@ h3 {
   footer {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 16px;
     padding: 14px 24px;
     border-top: 2px solid var(--line);
+    font-size: 13px;
+  }
+}
+
+/* A real QR code, opening the model's page on Hugging Face. */
+.qr {
+  flex: none;
+  display: block;
+  padding: 4px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  img {
+    display: block;
+    width: 76px;
+    height: 76px;
+  }
+}
+
+.spec-links {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  small {
     color: var(--ink-faint);
     font-size: 12px;
-    font-variant-numeric: tabular-nums;
+  }
+  a {
+    font-weight: 600;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -470,12 +559,6 @@ h3 {
   font-size: 12.5px;
   font-weight: 750;
   transform: rotate(6deg);
-}
-
-.barcode {
-  width: 92px;
-  height: 26px;
-  background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 4px, var(--ink) 4px 5px, transparent 5px 8px, var(--ink) 8px 11px, transparent 11px 12px);
 }
 
 /* Steps -------------------------------------------------------------------------------------- */

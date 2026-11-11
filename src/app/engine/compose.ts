@@ -104,9 +104,9 @@ export function compose(target: AnyCanvas, scratch: AnyCanvas, source: CanvasIma
   ctx.drawImage(scratch, 0, 0);
 }
 
-/** The model's opacities (a `size` × `size` square) as a picture: white where the subject is. */
-export function alphaToImageData(alpha: Uint8ClampedArray, size: number): ImageData {
-  const image = new ImageData(size, size);
+/** The model's opacities (`width` × `height`) as a picture: white where the subject is. */
+export function alphaToImageData(alpha: Uint8ClampedArray, width: number, height: number): ImageData {
+  const image = new ImageData(width, height);
   const data = image.data;
   data.fill(255);
   for (let i = 0; i < alpha.length; i++) data[i * 4 + 3] = alpha[i];

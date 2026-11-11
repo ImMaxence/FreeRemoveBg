@@ -6,6 +6,11 @@
 
 main {
   flex: 1;
+  /*
+   * At least a screen under the header: the footer starts below the fold, so a page drawn in the
+   * browser (the tool) grows without pushing it in front of the visitor.
+   */
+  min-height: calc(100vh - 82px);
 }
 
 /* Header: a floating bar ------------------------------------------------------------------- */
@@ -310,6 +315,98 @@ main {
   }
 }
 
+/* Install ---------------------------------------------------------------------------------- */
+
+/* Inside the installed app, before the page has even started. */
+@media (display-mode: standalone) {
+  .install {
+    display: none !important;
+  }
+}
+
+/* In the bar: icon and word on wide screens, the icon alone when room is short. */
+.install-bar {
+  gap: 7px;
+  padding: 0 12px 0 10px;
+}
+
+@media (max-width: 1279px) {
+  .install-bar {
+    width: 36px;
+    padding: 0;
+  }
+  .install-label {
+    display: none;
+  }
+}
+
+.install-help {
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 26px;
+  border-radius: var(--r-xl);
+  color: var(--ink);
+  box-shadow: var(--shadow-lg);
+  &::backdrop {
+    background: rgb(22 20 15 / 0.45);
+    backdrop-filter: blur(3px);
+  }
+  &[open] {
+    animation: sheet 0.25s var(--ease) both;
+  }
+  h2 {
+    font-size: 24px;
+    line-height: 1.15;
+  }
+  .muted {
+    margin-top: 4px;
+    font-size: 15px;
+  }
+}
+
+.install-head {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.install-steps {
+  display: grid;
+  gap: 12px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  li {
+    position: relative;
+    padding: 2px 0 0 44px;
+    min-height: 30px;
+    counter-increment: step;
+    &::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 2px solid var(--line);
+      border-radius: 50%;
+      background: var(--yellow);
+      color: var(--on-yellow);
+      font-weight: 700;
+      font-size: 14px;
+    }
+  }
+}
+
+.install-note {
+  margin: 18px 0 20px;
+  font-size: 14px;
+}
+
 /* Update toast ------------------------------------------------------------------------------ */
 
 .update-toast {
@@ -357,6 +454,13 @@ main {
   }
 }
 
+/* Just above the burger, the links come a little closer so that they keep their room. */
+@media (min-width: 1081px) and (max-width: 1240px) {
+  .nav {
+    gap: 26px;
+  }
+}
+
 @media (max-width: 520px) {
   .site-header {
     padding: 0 12px;
@@ -364,9 +468,12 @@ main {
     margin-top: 10px;
   }
   .bar {
-    gap: 10px;
+    gap: 8px;
     min-height: 60px;
     padding: 7px 7px 7px 12px;
+  }
+  .burger {
+    margin-left: 4px;
   }
   .sheet {
     left: 12px;
@@ -380,12 +487,18 @@ main {
     display: inline;
   }
   .tools .cta {
-    padding: 0 16px;
+    padding: 0 14px;
     margin-left: 0;
+  }
+  .bar .wordmark {
+    font-size: 18px;
+  }
+  .brand {
+    gap: 8px;
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 385px) {
   .bar .wordmark {
     display: none;
   }

@@ -87,6 +87,17 @@
   </section>
 
   <section class="go">
+    <div class="model-pick">
+      <span class="mini-label" id="model-label">{{ 'tool.prepare.model' | transloco }}</span>
+      <div class="segmented models" role="radiogroup" aria-labelledby="model-label">
+        @for (id of modelIds; track id) {
+          <button type="button" role="radio" [attr.aria-checked]="store.model() === id" [class.active]="store.model() === id" (click)="store.selectModel(id)">
+            <b>{{ models[id].name }}</b>
+            <small>{{ 'tool.models.' + id + '.short' | transloco }}</small>
+          </button>
+        }
+      </div>
+    </div>
     @if (store.modelState() === 'downloading') {
       <p class="model-wait" role="status">
         <span class="spinner small" aria-hidden="true"></span>

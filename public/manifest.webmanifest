@@ -1,24 +1,36 @@
 {
   "name": "FreeRemoveBg",
   "short_name": "RemoveBg",
-  "description": "Remove picture backgrounds for free, in your browser, with the open source IS-Net AI: new backgrounds, batches, full size. Nothing is uploaded.",
+  "description": "Remove picture backgrounds for free, in your browser, with open source AI (IS-Net, ORMBG, SAM 2.1): new backgrounds, batches, full size. Nothing is uploaded.",
   "id": "/",
   "start_url": "/app",
   "scope": "/",
   "display": "standalone",
+  "orientation": "any",
+  "lang": "en",
+  "dir": "ltr",
   "background_color": "#f5f0e6",
   "theme_color": "#ffd60a",
   "categories": ["photo", "productivity", "utilities"],
   "icons": [
-    { "src": "icons/icon-72x72.png", "sizes": "72x72", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-96x96.png", "sizes": "96x96", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-144x144.png", "sizes": "144x144", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-152x152.png", "sizes": "152x152", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/maskable-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/sticker-48.png", "sizes": "48x48", "type": "image/png", "purpose": "any" },
+    { "src": "icons/sticker-72.png", "sizes": "72x72", "type": "image/png", "purpose": "any" },
+    { "src": "icons/sticker-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any" },
+    { "src": "icons/sticker-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
+    { "src": "icons/sticker-144.png", "sizes": "144x144", "type": "image/png", "purpose": "any" },
+    { "src": "icons/sticker-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/sticker-256.png", "sizes": "256x256", "type": "image/png", "purpose": "any" },
+    { "src": "icons/sticker-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "icons/sticker-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/sticker-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/sticker-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "screenshots/wide-home.webp", "sizes": "1440x900", "type": "image/webp", "form_factor": "wide", "label": "The home page: cut out any picture without uploading it" },
+    { "src": "screenshots/wide-editor.webp", "sizes": "1440x900", "type": "image/webp", "form_factor": "wide", "label": "The editor: a cutout on a new background" },
+    { "src": "screenshots/narrow-home.webp", "sizes": "780x1688", "type": "image/webp", "form_factor": "narrow", "label": "The home page on a phone" },
+    { "src": "screenshots/narrow-editor.webp", "sizes": "780x1688", "type": "image/webp", "form_factor": "narrow", "label": "The editor on a phone" }
   ],
   "file_handlers": [
     {
@@ -27,9 +39,11 @@
         "image/png": [".png"],
         "image/jpeg": [".jpg", ".jpeg"],
         "image/webp": [".webp"],
-        "image/avif": [".avif"]
+        "image/avif": [".avif"],
+        "image/gif": [".gif"],
+        "image/bmp": [".bmp"]
       }
     }
   ],
-  "shortcuts": [{ "name": "Remove a background", "short_name": "Remove", "url": "/app", "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }] }]
+  "shortcuts": [{ "name": "Remove a background", "short_name": "Remove", "url": "/app", "icons": [{ "src": "icons/sticker-96.png", "sizes": "96x96", "type": "image/png" }] }]
 }

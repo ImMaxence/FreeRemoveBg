@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, type ElementRef, computed, effect, inject, input, signal, untracked, viewChild } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ImagesStore, type Item } from '../core/images.store';
+import { MODELS, MODEL_IDS } from '../core/models';
 import { HANDLES, type Handle, applyRatio, dragCrop, fitRatio, isWhole, roundRect } from '../engine/crop';
 import type { Rect } from '../engine/prepare';
 import { Icon } from '../shared/icon';
@@ -25,6 +26,8 @@ export class PrepareView {
   protected readonly store = inject(ImagesStore);
   protected readonly handles = HANDLES;
   protected readonly ratios: RatioId[] = ['free', 'original', 'square', 'portrait', 'photo', 'wide'];
+  protected readonly models = MODELS;
+  protected readonly modelIds = MODEL_IDS;
 
   protected readonly cropping = signal(false);
   protected readonly frame = signal<Rect | null>(null);
@@ -45,6 +48,7 @@ export class PrepareView {
   });
 
   private drag: { handle: Handle; x: number; y: number; start: Rect; scale: number } | null = null;
+  private readonly source = computed(() => this.item().source);
 
   constructor() {
     // Redraws the picture when it changes or when its place on screen does.
@@ -63,9 +67,10 @@ export class PrepareView {
         ctx.drawImage(item.source, 0, 0, pixels.width, pixels.height);
       });
     });
-    // Another picture, or a new version of this one: no frame left over.
+    // Another picture, or a new version of this one: no frame left over. (The item itself
+    // changes with every update, its thumbnail included: only its picture counts here.)
     effect(() => {
-      this.item().source;
+      this.source();
       untracked(() => this.cancelCrop());
     });
   }

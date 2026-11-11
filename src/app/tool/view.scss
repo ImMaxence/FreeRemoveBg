@@ -68,6 +68,19 @@
   overscroll-behavior: contain;
 }
 
+.viewport.can-pan {
+  cursor: grab;
+  canvas {
+    cursor: grab;
+  }
+}
+
+.viewport.panning,
+.viewport.panning canvas {
+  cursor: grabbing;
+  user-select: none;
+}
+
 .frame {
   position: relative;
   grid-area: 1 / 1;
@@ -236,6 +249,45 @@ canvas {
 
 /* Result overlays ------------------------------------------------------------------------------ */
 
+/* The "Click" tool: SAM's selection, and the points clicked. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sam-box {
+  position: absolute;
+  border: 2px dashed #ffd60a;
+  outline: 1.5px solid rgb(0 0 0 / 0.6);
+  pointer-events: none;
+}
+
+.sam-point {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: -8px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #1c6e37;
+  box-shadow: 0 0 0 1.5px rgb(0 0 0 / 0.7);
+  pointer-events: none;
+  &.negative {
+    background: #b8271b;
+  }
+}
+
+.sam {
+  display: grid;
+  gap: 10px;
+  .sam-title {
+    font-size: 14px;
+  }
+}
+
 .selection {
   position: absolute;
   border: 2px dashed #fff;
@@ -321,6 +373,18 @@ canvas {
   justify-content: flex-start;
 }
 
+.made-with {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+  padding: 10px 10px 10px 16px;
+  border: 1.5px solid var(--line-soft);
+  border-radius: var(--r);
+  font-size: 14px;
+}
+
 .group {
   display: grid;
   gap: 14px;
@@ -366,6 +430,15 @@ canvas {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
+  &.five {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    .tool-btn {
+      min-height: 70px;
+      padding: 8px 2px;
+      font-size: 11.5px;
+    }
+  }
 }
 
 .tool-btn {
@@ -448,6 +521,30 @@ canvas {
 .go {
   display: grid;
   gap: 10px;
+}
+
+.model-pick {
+  display: grid;
+  gap: 8px;
+}
+
+.segmented.models {
+  border-radius: var(--r);
+  button {
+    display: grid;
+    gap: 0;
+    min-height: 52px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    line-height: 1.2;
+    b {
+      font-size: 15px;
+    }
+    small {
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
 }
 
 .model-wait {
@@ -635,8 +732,9 @@ canvas {
   .stage-head .spacer {
     display: none;
   }
-  .tool-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .tool-grid,
+  .tool-grid.five {
+    grid-template-columns: repeat(3, 1fr);
   }
   .group {
     padding: 16px;

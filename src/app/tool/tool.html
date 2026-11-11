@@ -27,6 +27,19 @@
     }
   </ol>
 
+  @if (slowNotice(); as kind) {
+    <div class="slow-notice" role="note">
+      <app-icon [name]="kind === 'phone' ? 'phone' : 'cpu'" [size]="22" />
+      <div>
+        <b>{{ 'tool.slow.' + kind + 'Title' | transloco }}</b>
+        <span>{{ 'tool.slow.' + kind | transloco }}</span>
+      </div>
+      <button class="btn ghost icon sm" type="button" (click)="hideNotice()" [attr.aria-label]="'common.close' | transloco" [title]="'common.close' | transloco">
+        <app-icon name="x" [size]="16" />
+      </button>
+    </div>
+  }
+
   @if (store.rejected().length) {
     <div class="notice" role="alert">
       <app-icon name="alert" [size]="18" />
@@ -73,7 +86,7 @@
                   (click)="store.selectedId.set(i.id)"
                 >
                   @if (i.thumb) {
-                    <img [src]="i.thumb" alt="" />
+                    <span class="pic"><img [src]="i.thumb" alt="" /></span>
                   }
                   <span class="badge" [class]="i.status" aria-hidden="true">
                     @switch (i.status) {

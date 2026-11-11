@@ -7,7 +7,7 @@
 /** The steps of the tool, in its order: the AI model is only asked for the first time. */
 export const STEPS = ['model', 'drop', 'prepare', 'export'];
 
-/** The facts of the AI model's label on the home page (values in i18n `landing.ai.facts`). */
+/** The facts of each model's spec sheet on the home page (labels in i18n `landing.ai.facts`, values in `landing.ai.models.<id>.facts`). */
 export const AI_FACTS = ['task', 'paper', 'input', 'weights', 'runtime', 'compute', 'sent'];
 
 /** Bento of features: `size` is the room each takes in the grid. */
@@ -42,4 +42,4 @@ export const BROWSERS = [
   { name: 'Android / iOS', level: 'partial', key: 'mobile' },
 ];
 
-export const FAQ = ['free', 'model', 'download', 'alternative', 'quality', 'privacy', 'formats', 'batch', 'commercial', 'offline', 'iphone'];
+export const FAQ = ['free', 'model', 'which', 'sam', 'download', 'alternative', 'quality', 'privacy', 'formats', 'batch', 'commercial', 'offline', 'iphone'];

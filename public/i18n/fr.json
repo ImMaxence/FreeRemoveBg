@@ -15,8 +15,9 @@
     "changelog": "Nouveautés",
     "language": "Langue",
     "install": "Installer l'app",
+    "installShort": "Installer",
     "open": "Supprimer un fond",
-    "openShort": "Ouvrir",
+    "openShort": "Détourer",
     "menu": "Ouvrir le menu",
     "close": "Fermer le menu"
   },
@@ -33,7 +34,8 @@
     "issues": "Signaler un problème",
     "noTracking": "Ni cookies, ni pistage",
     "product": "Produit",
-    "legal": "Légal"
+    "legal": "Légal",
+    "and": "et"
   },
   "pwa": {
     "update": "Une nouvelle version est disponible",
@@ -76,7 +78,7 @@
     },
     "ticker": {
       "free": "Gratuit",
-      "ai": "IA open source IS-Net",
+      "ai": "IA open source : IS-Net, ORMBG, SAM 2",
       "noUpload": "Aucun envoi",
       "fullSize": "Taille réelle",
       "batch": "Traitement par lot",
@@ -85,56 +87,81 @@
     },
     "ai": {
       "eyebrow": "L'IA utilisée",
-      "title1": "IS-Net, un modèle de recherche",
-      "title2": "qui tourne chez vous",
-      "lead": "FreeRemoveBg utilise IS-Net, un modèle de segmentation présenté par des chercheurs à la conférence ECCV 2022 et conçu pour des détourages très précis. Votre navigateur le télécharge une seule fois depuis Hugging Face (179 Mo), puis l'exécute lui-même : sur votre carte graphique avec WebGPU, ou sur votre processeur avec WebAssembly.",
+      "title1": "IS-Net, ORMBG et SAM 2,",
+      "title2": "des IA qui tournent chez vous",
+      "lead": "Trois modèles open source. IS-Net, présenté à la conférence ECCV 2022, détoure tous les sujets ; ORMBG, construit sur lui, a été entraîné sur des personnes ; SAM 2.1, de Meta, fait marcher l'outil de sélection au clic : cliquez sur un objet, il en trace le contour. Votre navigateur télécharge chacun une seule fois depuis Hugging Face, seulement si vous l'utilisez, puis l'exécute lui-même : sur votre carte graphique avec WebGPU, ou sur votre processeur avec WebAssembly.",
       "points": {
         "precise": {
           "title": "Précis",
-          "text": "Entraîné à suivre les contours fins : cheveux, poils, feuillages, objets fins."
+          "text": "Entraînés à suivre les contours fins : cheveux, poils, feuillages, objets fins."
+        },
+        "choice": {
+          "title": "Au choix",
+          "text": "Polyvalent, fait pour les personnes, ou sélection au clic : changez de modèle, redétourez une image avec un autre, ou désignez un objet oublié."
         },
         "local": {
           "title": "Local",
-          "text": "Il calcule sur votre appareil. Le serveur ne voit jamais vos images."
+          "text": "Ils calculent sur votre appareil. Le serveur ne voit jamais vos images."
         },
         "open": {
-          "title": "Ouvert",
+          "title": "Ouverts",
           "text": "Code et poids publics sous licence Apache-2.0, usage commercial autorisé."
         }
       },
       "paper": "Lire l'article",
       "code": "Code du modèle",
-      "hub": "Modèle sur Hugging Face",
-      "specLabel": "Fiche technique du modèle IS-Net",
+      "hub": "Page du modèle sur Hugging Face",
+      "scan": "Scannez ou cliquez : la page du modèle",
+      "specLabel": "Fiches techniques des modèles d'IA",
       "specKicker": "Fiche technique",
       "facts": {
-        "task": {
-          "label": "Tâche",
-          "value": "Segmentation d'image dichotomique (DIS)"
+        "task": "Tâche",
+        "paper": "Origine",
+        "input": "Analyse",
+        "weights": "Poids",
+        "runtime": "Moteur",
+        "compute": "Calcul",
+        "sent": "Données envoyées"
+      },
+      "models": {
+        "isnet": {
+          "tab": "Polyvalent · conseillé",
+          "subtitle": "Highly Accurate Dichotomous Image Segmentation",
+          "facts": {
+            "task": "Tous les sujets : objets, animaux, personnes",
+            "paper": "Qin et al., ECCV 2022",
+            "input": "1024 × 1024 px",
+            "weights": "179 Mo, téléchargés une fois",
+            "runtime": "ONNX Runtime Web + Transformers.js",
+            "compute": "WebGPU ou WebAssembly",
+            "sent": "0 octet"
+          }
         },
-        "paper": {
-          "label": "Publication",
-          "value": "Qin et al., ECCV 2022"
+        "ormbg": {
+          "tab": "Fait pour les personnes",
+          "subtitle": "Open Remove Background Model",
+          "facts": {
+            "task": "Personnes : portraits, cheveux",
+            "paper": "IS-Net entraîné sur des personnes (schirrmacher)",
+            "input": "1024 × 1024 px",
+            "weights": "88 Mo (carte graphique) ou 176 Mo",
+            "runtime": "ONNX Runtime Web + Transformers.js",
+            "compute": "WebGPU ou WebAssembly",
+            "sent": "0 octet"
+          }
         },
-        "input": {
-          "label": "Analyse",
-          "value": "1024 × 1024 px"
-        },
-        "weights": {
-          "label": "Poids",
-          "value": "179 Mo, téléchargés une fois"
-        },
-        "runtime": {
-          "label": "Moteur",
-          "value": "ONNX Runtime Web + Transformers.js"
-        },
-        "compute": {
-          "label": "Calcul",
-          "value": "WebGPU ou WebAssembly"
-        },
-        "sent": {
-          "label": "Données envoyées",
-          "value": "0 octet"
+        "sam": {
+          "tab": "Sélection au clic",
+          "subtitle": "Segment Anything in Images and Videos",
+          "facts": {
+            "task": "Sélectionner l'objet sur lequel on clique",
+            "paper": "Ravi et al., Meta AI, 2024",
+            "input": "1024 × 1024 px",
+            "weights": "78 Mo (carte graphique) ou 156 Mo, si vous l'utilisez",
+            "runtime": "ONNX Runtime Web + Transformers.js",
+            "compute": "WebGPU ou WebAssembly",
+            "sent": "0 octet"
+          }
         }
       }
     },
@@ -144,8 +171,8 @@
       "lead": "Ni inscription, ni installation : tout se passe dans cette page.",
       "model": {
         "tag": "Une seule fois",
-        "title": "Autorisez le modèle d'IA",
-        "text": "La première fois, la page vous demande votre accord avant de télécharger l'IA (179 Mo). Ensuite, tout démarre tout de suite, même hors ligne."
+        "title": "Choisissez et autorisez le modèle d'IA",
+        "text": "La première fois, choisissez un modèle (88 à 179 Mo) : la page vous demande votre accord avant de le télécharger. Ensuite, tout démarre tout de suite, même hors ligne."
       },
       "drop": {
         "title": "Ajoutez vos images",
@@ -166,7 +193,7 @@
       "title": "Ce que font les outils payants. Gratuitement.",
       "cutout": {
         "title": "Détourage automatique",
-        "text": "Personnes, animaux, produits, objets : le sujet est isolé en quelques secondes, contours fins compris."
+        "text": "Personnes, animaux, produits, objets : IS-Net isole le sujet en quelques secondes, contours fins compris. ORMBG prend le relais pour les portraits."
       },
       "background": {
         "title": "Un nouveau fond en un clic",
@@ -178,7 +205,7 @@
       },
       "brush": {
         "title": "Pinceau et rattrapage",
-        "text": "Effacez ou restaurez à la main, ou entourez un objet oublié pour que l'IA le rattrape."
+        "text": "Effacez ou restaurez à la main, ou cliquez sur un objet oublié : SAM 2 le sélectionne, vous l'ajoutez."
       },
       "batch": {
         "title": "Par lot",
@@ -202,7 +229,7 @@
       "title": "Vos images ne quittent jamais votre appareil",
       "lead": "Il n'y a pas de serveur de traitement : la page fait tout elle-même. La seule chose qui voyage, c'est le modèle d'IA, dans l'autre sens, une seule fois.",
       "upload": "Aucun envoi : vos images sont ouvertes, détourées et enregistrées par votre navigateur, en mémoire.",
-      "model": "Le modèle (179 Mo) vient de Hugging Face une seule fois, et seulement si vous l'acceptez.",
+      "model": "Les modèles que vous utilisez viennent de Hugging Face une seule fois chacun (78 à 179 Mo), et seulement si vous l'acceptez.",
       "account": "Pas de compte, pas d'adresse e-mail, pas de paiement.",
       "tracking": "Ni cookies, ni mesure d'audience, ni publicité ; le serveur ne conserve aucun journal d'accès.",
       "verify": "Vérifiable : une politique de sécurité stricte empêche la page de contacter autre chose que ce site et Hugging Face.",
@@ -211,7 +238,8 @@
       "yourImages": "Vos images",
       "result": "Le résultat",
       "nothingLeaves": "Rien ne sort de ce cadre",
-      "once": "le modèle, une fois (179 Mo)"
+      "once": "le modèle, une fois (88 à 179 Mo)",
+      "models": "Les modèles d'IA"
     },
     "compare": {
       "eyebrow": "Comparatif",
@@ -251,11 +279,19 @@
       },
       "model": {
         "q": "Quelle IA est utilisée ?",
-        "a": "IS-Net, un modèle de segmentation présenté par Xuebin Qin et ses coauteurs à la conférence ECCV 2022 (« Highly Accurate Dichotomous Image Segmentation »). Sa version ONNX, sous licence Apache-2.0, est exécutée dans votre navigateur par ONNX Runtime Web et Transformers.js."
+        "a": "Vous choisissez. IS-Net, présenté par Xuebin Qin et ses coauteurs à la conférence ECCV 2022 (« Highly Accurate Dichotomous Image Segmentation »), s'adapte à tous les sujets. ORMBG (« Open Remove Background Model ») est un IS-Net réentraîné sur des photos de personnes. Les deux sont sous licence Apache-2.0 et s'exécutent dans votre navigateur avec ONNX Runtime Web et Transformers.js."
+      },
+      "which": {
+        "q": "Quel modèle choisir ?",
+        "a": "IS-Net dans la plupart des cas : objets, produits, animaux, personnes. ORMBG pour les portraits et les personnes ; et quand votre carte graphique calcule en demi-précision, il est deux fois plus léger à télécharger (88 Mo). Un résultat ne vous convient pas ? Un bouton redétoure l'image avec l'autre modèle, pour comparer."
+      },
+      "sam": {
+        "q": "À quoi sert SAM 2 ?",
+        "a": "SAM 2.1 (Segment Anything, Meta, Apache-2.0) ne supprime pas le fond : il sélectionne l'objet sur lequel vous cliquez. Dans FreeRemoveBg, il fait marcher l'outil de retouche « Cliquer », pour ajouter un objet que le détourage a oublié (un objet tenu à bout de bras…) ou en retirer un. Il lit chaque image une fois, puis répond à chaque clic aussitôt. Il n'est téléchargé (78 à 156 Mo) que si vous l'utilisez, après votre accord."
       },
       "download": {
         "q": "Pourquoi faut-il télécharger un modèle ?",
-        "a": "Parce que l'IA tourne sur votre appareil et non sur un serveur. Avant le premier détourage, FreeRemoveBg vous demande votre accord pour télécharger le modèle (179 Mo) depuis Hugging Face. Votre navigateur le garde ensuite : les fois suivantes, rien n'est retéléchargé, et tout fonctionne même hors ligne."
+        "a": "Parce que l'IA tourne sur votre appareil et non sur un serveur. Avant le premier détourage, FreeRemoveBg vous demande votre accord pour télécharger le modèle choisi (88 à 179 Mo) depuis Hugging Face. Votre navigateur le garde ensuite : les fois suivantes, rien n'est retéléchargé, et tout fonctionne même hors ligne."
       },
       "alternative": {
         "q": "Est-ce une alternative à remove.bg ?",
@@ -263,7 +299,7 @@
       },
       "quality": {
         "q": "Quelle est la qualité du détourage, et à quelle taille ?",
-        "a": "IS-Net gère bien les cheveux, les poils et les détails fins, sur les personnes, les animaux, les produits et les objets. L'image est analysée en 1024 pixels, puis le résultat est enregistré à la taille de votre photo, jusqu'à environ 6 000 × 4 000 pixels (4 900 × 3 300 sur iPhone et iPad). Recadrer autour d'un petit sujet avant le détourage aide l'IA ; un objet oublié se rattrape en l'entourant."
+        "a": "IS-Net gère bien les cheveux, les poils et les détails fins, sur les personnes, les animaux, les produits et les objets ; ORMBG est fait pour les personnes. L'image est analysée en 1024 pixels, puis le résultat est enregistré à la taille de votre photo, jusqu'à environ 6 000 × 4 000 pixels (4 900 × 3 300 sur iPhone et iPad). Recadrer autour d'un petit sujet avant le détourage aide l'IA ; un objet oublié se rattrape en l'entourant."
       },
       "privacy": {
         "q": "Mes images sont-elles envoyées sur un serveur ?",
@@ -279,7 +315,7 @@
       },
       "commercial": {
         "q": "Puis-je utiliser les résultats à des fins commerciales ?",
-        "a": "Oui. Vous gardez tous les droits sur vos images, et le modèle utilisé (IS-Net, sous licence Apache-2.0) autorise l'usage commercial. Il vous faut seulement les droits sur les images d'origine."
+        "a": "Oui. Vous gardez tous les droits sur vos images, et les deux modèles (IS-Net et ORMBG, sous licence Apache-2.0) autorisent l'usage commercial. Il vous faut seulement les droits sur les images d'origine."
       },
       "offline": {
         "q": "Est-ce que ça marche hors ligne ?",
@@ -311,7 +347,7 @@
       "images": "Images",
       "prepare": "Préparer",
       "result": "Détourage",
-      "modelNote": "179 Mo, une fois",
+      "modelNote": "88 à 179 Mo, une fois",
       "imagesNote": "Choisir ou déposer",
       "prepareNote": "Facultatif",
       "resultNote": "Fond et export",
@@ -341,13 +377,13 @@
     },
     "model": {
       "eyebrow": "Étape 1 · une seule fois",
-      "title": "D'abord, le modèle d'IA",
-      "text": "FreeRemoveBg détoure vos images sur votre appareil, pas sur un serveur. Pour cela, votre navigateur doit télécharger une fois le modèle IS-Net, depuis Hugging Face. Il le garde ensuite : les prochaines fois, tout démarre tout de suite, même hors ligne.",
-      "agree": "Télécharger le modèle (179 Mo)",
-      "retry": "Relancer le téléchargement",
+      "title": "D'abord, choisissez le modèle d'IA",
+      "text": "FreeRemoveBg détoure vos images sur votre appareil, pas sur un serveur. Pour cela, votre navigateur doit télécharger une fois le modèle choisi, depuis Hugging Face. Il le garde ensuite : les prochaines fois, tout démarre tout de suite, même hors ligne.",
+      "agree": "Télécharger {{ name }} ({{ size }})",
+      "retry": "Relancer {{ name }} ({{ size }})",
       "decline": "Pas maintenant",
-      "mobile": "Sur téléphone, préférez le Wi-Fi : 179 Mo, c'est un gros téléchargement.",
-      "downloading": "Téléchargement du modèle…",
+      "mobile": "Sur téléphone, préférez le Wi-Fi : ce sont de gros téléchargements.",
+      "downloading": "Téléchargement de {{ name }}…",
       "preparing": "Préparation du modèle sur votre appareil…",
       "continue": "Continuer vers mes images",
       "continueHint": "Vous pouvez avancer pendant le téléchargement : le détourage commencera dès que le modèle sera prêt.",
@@ -356,14 +392,18 @@
       "facts": {
         "model": "Modèle",
         "size": "Taille",
-        "sizeValue": "179 Mo, une fois",
+        "sizeValue": "{{ size }}, une fois",
         "source": "Provenance",
         "license": "Licence",
         "runs": "S'exécute sur",
         "runsValue": "Votre appareil",
         "sent": "Images envoyées",
         "sentValue": "Aucune"
-      }
+      },
+      "choose": "Modèle",
+      "recommended": "Conseillé",
+      "cached": "Déjà sur cet appareil",
+      "keep": "Garder {{ name }}"
     },
     "prepare": {
       "preview": "Image à préparer",
@@ -393,7 +433,8 @@
       "modelWait": "Le modèle se télécharge ({{ percent }} %) : le détourage commencera dès qu'il sera prêt.",
       "go": "Détourer cette image",
       "goAll": "Détourer les {{ count }} images",
-      "skipHint": "Rien n'est envoyé : le détourage se fait sur votre appareil."
+      "skipHint": "Rien n'est envoyé : le détourage se fait sur votre appareil.",
+      "model": "Modèle d'IA"
     },
     "result": {
       "preview": "Résultat",
@@ -426,7 +467,10 @@
       "tabs": {
         "background": "Fond",
         "retouch": "Retoucher"
-      }
+      },
+      "madeWith": "Détouré avec",
+      "compare": "Essayer {{ name }}",
+      "compareConfirm": "Détourer à nouveau abandonne vos retouches. Continuer ?"
     },
     "background": {
       "transparent": "Aucun",
@@ -452,7 +496,9 @@
       "rescueHelp": "L'IA a oublié quelque chose, comme un objet tenu à bout de bras ? Tracez un rectangle autour : l'IA y regarde de plus près et ajoute ce qu'elle trouve.",
       "rescueGo": "Rattraper cette zone",
       "cancel": "Annuler",
-      "reset": "Revenir au résultat de l'IA"
+      "reset": "Revenir au résultat de l'IA",
+      "moveHelp": "Tournez la molette de la souris sur l'image pour zoomer et dézoomer ; une fois zoomé, faites glisser l'image pour vous déplacer.",
+      "point": "Cliquer"
     },
     "export": {
       "title": "Télécharger",
@@ -464,6 +510,39 @@
       "copied": "Copié",
       "copyError": "Copie indisponible",
       "all": "Tout en ZIP ({{ count }})"
+    },
+    "models": {
+      "isnet": {
+        "short": "Polyvalent",
+        "text": "Objets, animaux, produits et personnes : le bon choix dans la plupart des cas."
+      },
+      "ormbg": {
+        "short": "Personnes",
+        "text": "Entraîné sur des personnes : portraits et cheveux. Plus léger sur carte graphique."
+      }
+    },
+    "sam": {
+      "intro": "Cliquez sur un objet pour le sélectionner : SAM 2.1 en trace le contour, puis vous l'ajoutez à la découpe ou le retirez.",
+      "once": "{{ size }}, téléchargés une fois",
+      "agree": "Télécharger SAM 2.1 ({{ size }})",
+      "downloading": "Téléchargement de SAM 2.1…",
+      "preparing": "Préparation de SAM 2.1…",
+      "reading": "SAM lit l'image (une fois par image)…",
+      "help": "Cliquez sur l'objet, ou tracez un cadre autour : le cadre donne l'objet entier. Chaque clic affine ensuite la sélection : « Inclure » ajoute, « Exclure » (ou Alt + clic) retire.",
+      "mode": "Points",
+      "include": "Inclure",
+      "exclude": "Exclure",
+      "add": "Ajouter à la découpe",
+      "remove": "Retirer de la découpe",
+      "clear": "Recommencer",
+      "error": "SAM n'a pas pu être téléchargé.",
+      "failed": "SAM n'a pas pu répondre. Réessayez, ou utilisez le pinceau."
+    },
+    "slow": {
+      "phoneTitle": "Sur téléphone, le détourage est plus lent",
+      "phone": "L'IA demande beaucoup de calcul et de mémoire, et le navigateur ne peut souvent pas utiliser la carte graphique d'un téléphone : une image peut prendre plusieurs dizaines de secondes, et les téléphones anciens peuvent manquer de mémoire et échouer. Pour beaucoup d'images, un ordinateur reste plus confortable.",
+      "cpuTitle": "Pas de carte graphique disponible",
+      "cpu": "Votre navigateur ne donne pas accès à une carte graphique (WebGPU) : l'IA tourne sur le processeur, ce qui prend plusieurs secondes par image au lieu d'une environ."
     }
   },
   "changelog": {
@@ -509,8 +588,28 @@
           "title": "Propriété intellectuelle",
           "body": [
             "Le code source de FreeRemoveBg est open source et publié sous licence MIT sur [GitHub](https://github.com/ImMaxence/FreeRemoveBg).",
-            "Les composants tiers, modèles d'IA et polices utilisés par l'application restent la propriété de leurs auteurs et sont utilisés selon leurs propres licences, listées dans les [conditions d'utilisation](/terms). Les images d'exemple et leurs auteurs sont listés dans les [crédits](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md).",
-            "Les marques citées (remove.bg, Hugging Face, Chrome, Edge, Firefox, Safari…) appartiennent à leurs propriétaires. FreeRemoveBg est un projet indépendant, sans lien avec remove.bg ni son éditeur."
+            "Les modèles d'IA (IS-Net, ORMBG, SAM 2.1) et les bibliothèques utilisés par l'application restent la propriété de leurs auteurs et sont utilisés selon leurs propres licences, listées dans les [conditions d'utilisation](/terms).",
+            "Les marques citées (remove.bg, Hugging Face, GitHub, Chrome, Edge, Firefox, Safari…) appartiennent à leurs propriétaires. FreeRemoveBg est un projet indépendant, sans lien avec remove.bg ni son éditeur."
+          ]
+        },
+        {
+          "title": "Polices de caractères",
+          "body": [
+            "Les titres utilisent Bricolage Grotesque (Mathieu Triay) et le texte Geist (Vercel), toutes deux sous licence SIL Open Font License 1.1. Elles sont servies par ce site, sans requête vers Google Fonts ni un autre service."
+          ]
+        },
+        {
+          "title": "Images",
+          "body": [
+            "Les photos d'exemple ont été placées dans le domaine public (CC0) par leurs auteurs et proviennent de Wikimedia Commons : « Dog on a log » de Christal Yuen, « Cat in green grass » de Raphael Schaller et « Rubber Plant » de Scott Webb ([détails](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md)). Elles ont été recadrées ; leurs détourages ont été réalisés par FreeRemoveBg lui-même, sans retouche.",
+            "Le logo, l'image de partage et les illustrations du site ont été créés pour lui."
+          ]
+        },
+        {
+          "title": "Icônes et logos",
+          "body": [
+            "La plupart des icônes viennent de [Lucide](https://lucide.dev) (licence ISC) et de Feather (licence MIT), légèrement simplifiées ; les autres ont été dessinées pour le site. Elles sont intégrées au code en SVG, et leurs licences figurent [ici](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/licenses/lucide.txt).",
+            "Le logo GitHub appartient à GitHub, Inc. et sert uniquement à désigner ce service. Les QR codes de la page d'accueil ouvrent les pages des modèles sur Hugging Face."
           ]
         },
         {
@@ -548,7 +647,7 @@
         {
           "title": "Stockage local",
           "body": [
-            "L'application enregistre vos préférences d'interface (langue, thème) dans le stockage local de votre navigateur, et conserve ses propres fichiers ainsi que le modèle d'IA téléchargé dans le cache du navigateur pour fonctionner hors ligne. Ces éléments sont strictement nécessaires au service, ne servent jamais à vous suivre et ne nécessitent donc pas de bandeau de consentement.",
+            "L'application enregistre vos préférences d'interface (langue, thème, modèle d'IA choisi) dans le stockage local de votre navigateur, et conserve ses propres fichiers ainsi que les modèles d'IA téléchargés dans le cache du navigateur pour fonctionner hors ligne. Ces éléments sont strictement nécessaires au service, ne servent jamais à vous suivre et ne nécessitent donc pas de bandeau de consentement.",
             "Vous pouvez les effacer à tout moment en supprimant les données de ce site dans les réglages de votre navigateur."
           ]
         },
@@ -562,7 +661,7 @@
           "title": "Tiers",
           "body": [
             "Cloudflare : toutes les requêtes vers ce site passent par Cloudflare, qui protège le serveur et chiffre la connexion. Comme tout intermédiaire réseau, il traite votre adresse IP et les informations standard de votre navigateur pour acheminer les pages, et peut conserver des journaux techniques à des fins de sécurité ; il ne reçoit jamais vos images, qui ne quittent jamais votre appareil. Voir sa [politique de confidentialité](https://www.cloudflare.com/privacypolicy/).",
-            "Hugging Face : le modèle d'IA est téléchargé directement depuis huggingface.co après votre accord, avant votre premier détourage, puis conservé par votre navigateur. Hugging Face reçoit alors votre adresse IP et les informations habituelles de votre navigateur, mais jamais vos images. Consultez sa [politique de confidentialité](https://huggingface.co/privacy).",
+            "Hugging Face : les modèles d'IA que vous utilisez (IS-Net ou ORMBG pour le détourage, SAM 2.1 pour l'outil « Cliquer ») sont téléchargés directement depuis huggingface.co après votre accord, puis conservés par votre navigateur. Hugging Face reçoit alors votre adresse IP et les informations habituelles de votre navigateur, mais jamais vos images. Consultez sa [politique de confidentialité](https://huggingface.co/privacy).",
             "GitHub : uniquement si vous suivez un lien vers le dépôt du code source.",
             "Aucun autre tiers n'est contacté : une Content-Security-Policy stricte empêche techniquement la page de se connecter ailleurs."
           ]
@@ -620,7 +719,7 @@
           "title": "Open source et composants tiers",
           "body": [
             "Le code source est disponible sous licence MIT sur [GitHub](https://github.com/ImMaxence/FreeRemoveBg).",
-            "FreeRemoveBg s'appuie sur : le modèle [IS-Net](https://github.com/xuebinqin/DIS) (Apache-2.0), dans sa [version ONNX](https://huggingface.co/BritishWerewolf/IS-Net), Transformers.js (Apache-2.0), ONNX Runtime (MIT), Angular (MIT), Transloco (MIT), Comlink (Apache-2.0) et les polices Bricolage Grotesque et Geist (SIL Open Font License).",
+            "FreeRemoveBg s'appuie sur : le modèle [IS-Net](https://github.com/xuebinqin/DIS) (Apache-2.0, [version ONNX](https://huggingface.co/BritishWerewolf/IS-Net)), le modèle [ORMBG](https://huggingface.co/schirrmacher/ormbg) (Apache-2.0, [version ONNX](https://huggingface.co/onnx-community/ormbg-ONNX)), le modèle [SAM 2.1](https://github.com/facebookresearch/sam2) de Meta (Apache-2.0, [version ONNX](https://huggingface.co/onnx-community/sam2.1-hiera-tiny-ONNX)), Transformers.js (Apache-2.0), ONNX Runtime (MIT), Angular (MIT), Transloco (MIT), Comlink (Apache-2.0), les polices Bricolage Grotesque et Geist (SIL Open Font License) et des icônes de Lucide (ISC) et Feather (MIT) ([licences](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/licenses/lucide.txt)).",
             "Les images d'exemple sont utilisées selon les licences listées dans les [crédits](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md)."
           ]
         },
@@ -660,10 +759,11 @@
         {
           "title": "Contenus non accessibles",
           "body": [
-            "Le pinceau effacer et restaurer et le rattrapage d'une zone demandent un pointeur (souris, doigt ou stylet) : ils n'ont pas d'équivalent au clavier. Le détourage automatique, la préparation de l'image, les fonds et les téléchargements n'en dépendent pas.",
+            "Le pinceau effacer et restaurer, le rattrapage d'une zone et l'outil « Cliquer » demandent un pointeur (souris, doigt ou stylet) : ils n'ont pas d'équivalent au clavier. Le détourage automatique, la préparation de l'image, les fonds et les téléchargements n'en dépendent pas.",
             "L'aperçu d'une image est une surface de dessin décrite par un texte court seulement (le nom du fichier et son état) : le contenu de vos propres images ne peut pas être décrit automatiquement.",
             "Le journal des nouveautés est rédigé en anglais uniquement, y compris sur la version française du site.",
-            "Le dépôt de fichiers et le collage depuis le presse-papiers sont des raccourcis ; le bouton « Choisir des images » offre toujours la même fonction."
+            "Le dépôt de fichiers et le collage depuis le presse-papiers sont des raccourcis ; le bouton « Choisir des images » offre toujours la même fonction.",
+            "Le zoom à la molette et le déplacement de l'image zoomée par glisser sont des raccourcis : les boutons de zoom et les barres de défilement offrent la même chose, au clavier aussi."
           ]
         },
         {
@@ -675,7 +775,7 @@
         {
           "title": "À propos de cette déclaration",
           "body": [
-            "Cette déclaration a été rédigée le 11 novembre 2026, pour la version 2.0.0 du site. Elle est mise à jour quand le site évolue."
+            "Cette déclaration a été rédigée le 11 novembre 2026 et revue pour la version 2.2.0 du site. Elle est mise à jour quand le site évolue."
           ]
         }
       ]
@@ -684,7 +784,7 @@
   "seo": {
     "home": {
       "title": "FreeRemoveBg — Supprimer le fond d'une image, gratuit, sans envoi",
-      "description": "Supprimez le fond de vos images gratuitement, dans votre navigateur, avec l'IA open source IS-Net : nouveau fond, pinceau, lots, PNG en taille réelle. Sans envoi, sans compte. Une alternative gratuite à remove.bg"
+      "description": "Supprimez le fond de vos images gratuitement, dans votre navigateur, avec une IA open source (IS-Net, ORMBG) : nouveau fond, pinceau, lots, PNG en taille réelle. Sans envoi, sans compte. Alternative gratuite à remove.bg"
     },
     "changelog": {
       "title": "Nouveautés — FreeRemoveBg",
@@ -709,6 +809,40 @@
     "app": {
       "title": "Supprimer un fond — FreeRemoveBg",
       "description": "Supprimez le fond de vos images, dans votre navigateur"
+    }
+  },
+  "install": {
+    "title": "Installer FreeRemoveBg",
+    "lead": "Il s'ouvre dans sa propre fenêtre, comme une application, et fonctionne sans connexion une fois l'IA téléchargée.",
+    "note": "Rien d'autre n'est installé : c'est le même site, gardé par votre navigateur. Il se désinstalle comme n'importe quelle application.",
+    "ok": "C'est noté",
+    "ios": {
+      "step1": "Touchez le bouton Partager (le carré avec une flèche) en bas de Safari, ou en haut sur iPad.",
+      "step2": "Choisissez « Sur l'écran d'accueil », puis « Ajouter »."
+    },
+    "android": {
+      "step1": "Ouvrez le menu du navigateur (⋮ en haut à droite).",
+      "step2": "Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil »."
+    },
+    "edge": {
+      "step1": "Cliquez sur l'icône « Application disponible » à droite de la barre d'adresse.",
+      "step2": "Ou ouvrez le menu (⋯), puis Applications → « Installer ce site en tant qu'application »."
+    },
+    "chrome": {
+      "step1": "Cliquez sur l'icône d'installation (un écran avec une flèche) à droite de la barre d'adresse.",
+      "step2": "Ou ouvrez le menu (⋮), puis « Caster, enregistrer et partager » → « Installer la page en tant qu'application »."
+    },
+    "safari": {
+      "step1": "Dans la barre des menus, ouvrez Fichier (ou le bouton Partager).",
+      "step2": "Choisissez « Ajouter au Dock », puis « Ajouter »."
+    },
+    "firefox": {
+      "step1": "Firefox n'installe pas encore les sites comme des applications sur ordinateur.",
+      "step2": "Ouvrez cette page dans Chrome ou Edge pour l'installer, ou gardez-la dans vos favoris : elle marche pareil."
+    },
+    "other": {
+      "step1": "Ouvrez le menu de votre navigateur.",
+      "step2": "Cherchez « Installer l'application », « Ajouter à l'écran d'accueil » ou « Ajouter au Dock »."
     }
   }
 }

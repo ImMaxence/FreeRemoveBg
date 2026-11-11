@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { blurRadius, coverRect } from './compose';
 import { exportName, isImageFile, megapixels } from './files';
-import { alphaFromScores, halfToFloat, maskSize, pixelsToInput, workingSize } from './mask';
+import { alphaFromScores, halfToFloat, maskSize, modelInputSize, pixelsToInput, workingSize } from './mask';
 import { areaBetween, scaleRect, turnedSize } from './prepare';
 import { crc32, uniqueNames, zip } from './zip';
 
@@ -27,6 +27,19 @@ describe('mask', () => {
   it('applies a sigmoid to raw scores', () => {
     const alpha = alphaFromScores(new Float32Array([-20, 0, 20]), 3);
     expect(Array.from(alpha)).toEqual([0, 128, 255]);
+  });
+
+  it('sizes the picture a model reads', () => {
+    expect(modelInputSize({ kind: 'square', size: 1024 }, 4000, 3000)).toEqual({ width: 1024, height: 1024 });
+    const shape = { kind: 'shortest', size: 512, multiple: 32, maxSide: 1024 } as const;
+    // Shortest side at 512, both sides multiples of 32.
+    expect(modelInputSize(shape, 4000, 3000)).toEqual({ width: 672, height: 512 });
+    expect(modelInputSize(shape, 960, 1200)).toEqual({ width: 512, height: 640 });
+    // A long strip keeps its longest side under the limit.
+    const strip = modelInputSize(shape, 5000, 1000);
+    expect(strip.width).toBeLessThanOrEqual(1024);
+    expect(strip.width % 32).toBe(0);
+    expect(strip.height % 32).toBe(0);
   });
 
   it('sizes the mask and the working picture', () => {

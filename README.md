@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Cut out any picture. Without uploading it.</b><br />
-  The free, open source remove.bg alternative. An open source AI, <b>IS-Net</b>, isolates your subject<br />
+  The free, open source remove.bg alternative. Open source AI (<b>IS-Net</b>, <b>ORMBG</b>, <b>SAM 2.1</b>) isolates your subject<br />
   right in your browser. No upload, no account, no credits, no watermark, full size.
 </p>
 
@@ -35,24 +35,24 @@
 
 Your own graphics card or processor does the computing, so each picture costs nothing to run: that is why everything can be free.
 
-## The AI: IS-Net
+## The AI: three open source models
 
 <p align="center">
-  <img src="docs/screenshots/landing-ai.png" alt="The 'AI inside' section of the home page, with the IS-Net spec sheet" />
+  <img src="docs/screenshots/landing-ai.png" alt="The 'AI inside' section of the home page, with the spec sheets of IS-Net, ORMBG and SAM 2.1 and their QR codes" />
 </p>
 
-FreeRemoveBg runs **[IS-Net](https://github.com/xuebinqin/DIS)**, from *Highly Accurate Dichotomous Image Segmentation* (Xuebin Qin, Hang Dai, Xiaobin Hu, Deng-Ping Fan, Ling Shao, Luc Van Gool, [ECCV 2022](https://arxiv.org/abs/2203.03041)), a segmentation model designed to follow fine outlines.
+| | **IS-Net** (default) | **ORMBG** | **SAM 2.1** |
+| --- | --- | --- | --- |
+| For | Cutting out any subject: objects, products, animals, people | Cutting out people: portraits, hair | The "Click" tool: selecting one object by a click or a box, to add it to the cutout or take it away |
+| Origin | *Highly Accurate Dichotomous Image Segmentation*, Xuebin Qin, Hang Dai, Xiaobin Hu, Deng-Ping Fan, Ling Shao, Luc Van Gool ([ECCV 2022](https://arxiv.org/abs/2203.03041), [code](https://github.com/xuebinqin/DIS)) | *Open Remove Background Model*: IS-Net trained on pictures of people ([schirrmacher/ormbg](https://huggingface.co/schirrmacher/ormbg)) | *Segment Anything 2*, Meta AI, Nikhila Ravi et al. ([2024](https://arxiv.org/abs/2408.00714), [code](https://github.com/facebookresearch/sam2)), "tiny" size |
+| Weights | [ONNX](https://huggingface.co/BritishWerewolf/IS-Net), 179 MB | [ONNX](https://huggingface.co/onnx-community/ormbg-ONNX), 88 MB (fp16, graphics card) or 176 MB | [ONNX](https://huggingface.co/onnx-community/sam2.1-hiera-tiny-ONNX), 78 MB (fp16, graphics card) or 156 MB |
+| License | Apache-2.0 | Apache-2.0 | Apache-2.0 |
 
-| | |
-| --- | --- |
-| Weights | [ONNX version](https://huggingface.co/BritishWerewolf/IS-Net), 179 MB, Apache-2.0, pinned to a commit |
-| Analysis | 1024 × 1024 px; the mask is then stretched back to the photo's size |
-| Engine | ONNX Runtime Web through Transformers.js, in a Web Worker |
-| Computing | Graphics card (WebGPU) when available, processor (WebAssembly) otherwise or after a failure |
-| Download | Once, from Hugging Face, **only after the user agrees to it**; kept by the browser, works offline afterwards |
-| Data sent | None: no request carries a picture |
+IS-Net and ORMBG analyse the picture at 1024 × 1024 px; the mask is then stretched back to the photo's size. They run with ONNX Runtime Web through Transformers.js, in a Web Worker, on the graphics card (WebGPU) when available, on the processor (WebAssembly) otherwise or after a failure. Each is downloaded once from Hugging Face, **only after the user agrees to it**, pinned to a commit, then kept by the browser. No request carries a picture. A result can be cut out again with the other model, to compare.
 
-BiRefNet lite and BEN2 were tried too: with ONNX Runtime Web 1.31 they do not run in the browser (WebGPU shader limits, memory). They are worth trying again with newer versions (see [`src/app/core/models.ts`](src/app/core/models.ts)).
+SAM 2.1 works differently: it reads the picture once (about a second on a graphics card), then answers each click or box in a fraction of a second with the outline of the object under it. It is only downloaded when the "Click" tool is first opened, after a second agreement.
+
+Tried and left out (see [`src/app/core/models.ts`](src/app/core/models.ts)): BiRefNet lite and BEN2 do not run in the browser with ONNX Runtime Web 1.31 (WebGPU shader limits, memory); MODNet runs but its mattes are full of holes; RMBG 1.4 and 2.0 forbid commercial use of the results.
 
 ## How it works: four steps
 
@@ -64,23 +64,25 @@ BiRefNet lite and BEN2 were tried too: with ONNX Runtime Web 1.31 they do not ru
 | --- | --- |
 | ![Step 3: a crop frame with handles and set proportions, while the model is still downloading](docs/screenshots/step-3-prepare.png) | ![Step 4: the cutout on a transparency grid, with the background and download panels](docs/screenshots/step-4-result.png) |
 
-1. **The AI model.** The first time, the page explains what it needs (179 MB from Hugging Face, once) and downloads nothing until the user agrees. The download continues while pictures are added and prepared. On the next visits the model is found in the browser and this step is skipped.
+1. **The AI model.** The first time, the user picks a model (IS-Net or ORMBG); the page says what it needs (88 to 179 MB from Hugging Face, once) and downloads nothing until the user agrees. The download continues while pictures are added and prepared. On the next visits the model is found in the browser and this step is skipped.
 2. **Pictures.** Choose, drop anywhere or paste with `Ctrl + V`, one or many. Every picture the browser can open is accepted (JPG, PNG, WebP, AVIF, GIF, BMP, HEIC in Safari).
 3. **Prepare.** Optional: turn, mirror, crop with set proportions (free, original, square, 4:5, 3:2, 16:9), also with the keyboard, and back to the original. Cropping around a small subject lets the AI see it bigger.
-4. **Cut out and export.** New background, eraser and restore brush, "rescue" an object the AI missed, then download as PNG, WebP or JPG at the photo's size, copy, or download the whole batch as a ZIP.
+4. **Cut out and export.** New background, eraser and restore brush, "rescue" an object the AI missed, "click" an object to add it or take it away (SAM 2.1), try the other model, then download as PNG, WebP or JPG at the photo's size, copy, or download the whole batch as a ZIP. The mouse wheel zooms around the pointer; with "Move", dragging moves the zoomed picture.
 
 ## Features
 
 | | |
 | --- | --- |
-| **Automatic cutout** | People, animals, products, objects: the subject is isolated in about a second on a graphics card, a few seconds on the processor. |
+| **Automatic cutout** | People, animals, products, objects: the subject is isolated in about a second on a graphics card, a few seconds on the processor. Two models: IS-Net for any subject, ORMBG for people; one click cuts a picture out again with the other. |
 | **New background** | Transparent, a color (presets or your own), a gradient, one of your pictures, or the original blurred. The same background applies to the whole batch. |
 | **Prepare** | Turn by quarter turns, mirror, crop with a frame (8 handles, set proportions, arrows and Shift + arrows on the keyboard). |
-| **Brush and rescue** | Erase or restore by hand, with zoom up to 800 %, undo and redo. "Rescue": draw a rectangle around something the AI missed (an object held at arm's length…), it looks there again and adds it. |
+| **Brush and rescue** | Erase or restore by hand, with zoom up to 800 % (mouse wheel, around the pointer), undo and redo. "Rescue": draw a rectangle around something the AI missed (an object held at arm's length…), it looks there again and adds it. |
+| **Click (SAM 2.1)** | Click an object, or draw a box around it, and SAM 2.1 outlines it: add it to the cutout or remove it from it. More clicks refine the selection ("Include", "Exclude" or Alt + click). Undoable like a brush stroke. |
 | **Batches** | As many pictures as you want, each prepared or not, cut out in one click and downloaded as a single ZIP. |
 | **Full size** | The result has the photo's own size, up to about 6,000 × 4,000 pixels (4,900 × 3,300 on iPhone and iPad). |
 | **Zero upload** | Pictures are read, cut out and saved by the browser, in memory. Nothing is stored, nothing is sent. |
-| **PWA** | Installable, works offline, "Open with FreeRemoveBg" for picture files. |
+| **PWA** | Installable, works offline, "Open with FreeRemoveBg" for picture files. The "Install" button is always there: it opens the browser's prompt, or shows the steps for Safari, Firefox, Edge, Chrome and Android. |
+| **Honest about slow devices** | On a phone, or a computer without a usable graphics card, a notice says the AI runs slower there and that very large pictures may fail, before anything is downloaded. |
 | **English and French** | Each public page has its own URL (`/` and `/fr`). Light, dark and system themes. |
 | **SEO, for search engines and AI** | Public pages prerendered at build time (Angular SSG) with titles, descriptions, Open Graph, canonical and `hreflang` links, schema.org data (`WebApplication`, `HowTo`, `FAQPage`). `robots.txt` open to search engines and AI crawlers, `sitemap.xml`, `llms.txt` and `llms-full.txt`, and a Markdown version of every page (`/fr/index.md`, also served for `Accept: text/markdown`). |
 | **Accessibility** | The main path works with the keyboard alone (including the crop frame), with a skip link, a visible focus, screen reader announcements, AA contrast in both themes and reduced motion. See the [accessibility statement](https://freeremovebg.mbonnici.fr/accessibility). |
@@ -96,9 +98,13 @@ BiRefNet lite and BEN2 were tried too: with ONNX Runtime Web 1.31 they do not ru
 | --- | --- |
 | ![A cat cut out and placed on a gradient](docs/screenshots/editor-background.png) | ![A dog kept sharp in front of its blurred original background](docs/screenshots/editor-blur.png) |
 
-| Rescue an area | Dark theme |
+| Rescue an area | Click an object (SAM 2.1) |
 | --- | --- |
-| ![The rescue tool: a rectangle drawn on the plant, with the button to rescue it](docs/screenshots/editor-rescue.png) | ![The tool in the dark theme](docs/screenshots/editor-dark.png) |
+| ![The rescue tool: a rectangle drawn on the plant, with the button to rescue it](docs/screenshots/editor-rescue.png) | ![The Click tool: a box drawn around an object, outlined in yellow by SAM 2.1, with the buttons to add it or remove it](docs/screenshots/editor-click.png) |
+
+| Dark theme | Install the app |
+| --- | --- |
+| ![The tool in the dark theme](docs/screenshots/editor-dark.png) | ![The install help: the steps for this browser](docs/screenshots/install-help.png) |
 
 | Privacy | The four steps |
 | --- | --- |
@@ -126,25 +132,30 @@ flowchart LR
 
   subgraph browser[Your browser]
     ui[Angular UI<br/>steps, crop, canvas compositing]
-    ai[AI worker<br/>IS-Net via Transformers.js<br/>WebGPU or WebAssembly]
+    ai[AI worker<br/>IS-Net or ORMBG via Transformers.js<br/>WebGPU or WebAssembly]
+    sam[SAM worker<br/>SAM 2.1, for the Click tool]
     ui -- "1024 px copy" --> ai
     ai -- "mask" --> ui
+    ui -- "picture once, then clicks" --> sam
+    sam -- "outline" --> ui
   end
 
   ui -->|PNG, WebP, JPG, ZIP| out[(Your downloads)]
-  hf[Hugging Face] -. model, once, after agreement .-> ai
+  hf[Hugging Face] -. chosen model, once, after agreement .-> ai
+  hf -. SAM 2.1, once, after agreement .-> sam
 ```
 
 - **Nothing reaches the AI before the user agrees.** The store keeps the model's state (`checking`, `missing`, `downloading`, `preparing`, `ready`); pictures are drafts until "Cut out" is pressed, and the queue only runs once the model is allowed.
 - **The picture never leaves the page.** It is decoded by the browser; a 1024 px copy (of the whole picture, or of an area for "rescue") goes to the worker, which answers with a mask.
 - **The mask is a picture of its own** (up to 2048 px), which the brush edits. The result is the original, cut by the mask, over the chosen background; the preview and the downloads share this code ([`src/app/engine/compose.ts`](src/app/engine/compose.ts)).
+- **SAM reads once, answers many times.** Its encoder turns the picture into an embedding once (kept in its worker); each click or box only runs the small decoder, whose outline (256 × 256 scores) is enlarged to the picture and added or removed from the mask as one undoable step ([`src/app/engine/sam.ts`](src/app/engine/sam.ts)).
 - **Graphics card first, processor as a safety net.** If WebGPU fails, the worker is replaced by one running on WebAssembly and the picture is tried again.
 - **Public pages are prerendered** in both languages at build time ([`src/app/app.routes.server.ts`](src/app/app.routes.server.ts)), then hydrated; the tool (`/app`) renders in the browser only.
 
 ## Privacy
 
 - No upload, no account, no cookies, no analytics, no ads. The server keeps no access logs.
-- The AI model is downloaded only after the user agrees; pictures and results live in the page's memory and are gone when the tab is closed.
+- The chosen AI model is downloaded only after the user agrees; pictures and results live in the page's memory and are gone when the tab is closed.
 - The production server sends a strict **Content-Security-Policy**: the page can only connect to its own origin and to Hugging Face. The end-to-end tests check that no request goes to Hugging Face before the user agrees.
 - The ONNX Runtime binaries and the fonts are self-hosted (no CDN).
 
@@ -155,7 +166,7 @@ flowchart LR
 | Chrome, Edge, Opera, Brave (desktop) | Full: graphics card (WebGPU), installable app |
 | Firefox | WebGPU on recent versions, processor otherwise |
 | Safari | WebGPU from Safari 26 on Mac, processor otherwise |
-| Android, iPhone, iPad | Works on recent devices, more slowly: the AI uses the processor there and close to 1 GB of memory during a cutout |
+| Android, iPhone, iPad | Works on recent devices, more slowly: the AI uses the processor there and close to 1 GB of memory during a cutout. The tool says so with a notice. |
 
 Measured on a desktop with a mid-range graphics card: about 0.5 to 2 s per picture with WebGPU, about 8 s on the processor.
 
@@ -165,9 +176,9 @@ Measured on a desktop with a mid-range graphics card: about 0.5 to 2 s per pictu
 | --- | --- |
 | UI | Angular 22 (standalone components, zoneless, signals, prerendering with hydration), SCSS with `light-dark()` |
 | i18n | Transloco (runtime language switch), JSON files in `public/i18n` |
-| AI | Transformers.js + ONNX Runtime Web, IS-Net ([ONNX](https://huggingface.co/BritishWerewolf/IS-Net), 179 MB) |
+| AI | Transformers.js + ONNX Runtime Web; IS-Net ([ONNX](https://huggingface.co/BritishWerewolf/IS-Net), 179 MB) ORMBG ([ONNX](https://huggingface.co/onnx-community/ormbg-ONNX), 88–176 MB) and SAM 2.1 tiny ([ONNX](https://huggingface.co/onnx-community/sam2.1-hiera-tiny-ONNX), 78–156 MB) |
 | Imaging | Canvas 2D compositing, `createImageBitmap`, a dependency-free ZIP writer |
-| Fonts | Bricolage Grotesque and Geist (Fontsource, self-hosted) |
+| Fonts and icons | Bricolage Grotesque and Geist (Fontsource, self-hosted); icons from Lucide and Feather, as inline SVG |
 | Workers | Comlink |
 | PWA | `@angular/service-worker`, web app manifest with file handlers |
 | Tests | Vitest (engine, crop geometry, translations, changelog), Playwright (the four steps against the Docker build) |
@@ -230,7 +241,7 @@ docker compose -f docker-compose.yml -f docker-compose.local.yml up --build
 3. Set the domain of the `web` service to `https://freeremovebg.mbonnici.fr` (container port 80).
 4. Deploy. Coolify's proxy handles HTTPS; the container exposes a `/healthz` endpoint for the health check.
 
-The image is small (nginx and static files): the AI model is not in it. Each visitor's browser downloads it from Hugging Face, once, after agreeing, pinned to a commit (see [`src/app/core/models.ts`](src/app/core/models.ts)).
+The image is small (nginx and static files): the AI models are not in it. Each visitor's browser downloads it from Hugging Face, once, after agreeing, pinned to a commit (see [`src/app/core/models.ts`](src/app/core/models.ts)).
 
 ### After a deployment
 
@@ -242,13 +253,13 @@ The image is small (nginx and static files): the AI model is not in it. Each vis
 Versions follow [SemVer](https://semver.org/), `MAJOR.MINOR.PATCH`:
 
 - **MAJOR**: a change in how the app is used or hosted (2.0.0: the four-step flow and the new look);
-- **MINOR**: a new feature;
+- **MINOR**: a new feature (2.1.0: a second AI model, wheel zoom);
 - **PATCH**: a fix.
 
 The version comes from `package.json` and is shown in the site footer and on the `/changelog` page. [`CHANGELOG.md`](CHANGELOG.md) follows Keep a Changelog; it is copied into the build and rendered in the app. To release: bump `version` in `package.json`, add a section to `CHANGELOG.md`, tag `vX.Y.Z`.
 
 ## License
 
-[MIT](LICENSE) © Maxence Bonnici. Third-party libraries and models keep their own licenses (IS-Net model: Apache-2.0, Transformers.js and Comlink: Apache-2.0, ONNX Runtime, Angular and Transloco: MIT, Bricolage Grotesque and Geist fonts: OFL). The sample pictures are in the public domain (CC0): see [`public/samples/CREDITS.md`](public/samples/CREDITS.md).
+[MIT](LICENSE) © Maxence Bonnici. Third-party libraries and models keep their own licenses (IS-Net, ORMBG and SAM 2.1 models: Apache-2.0, Transformers.js and Comlink: Apache-2.0, ONNX Runtime, Angular and Transloco: MIT, Bricolage Grotesque and Geist fonts: OFL, Lucide icons: ISC, Feather icons: MIT, see [`public/licenses/lucide.txt`](public/licenses/lucide.txt)). The sample pictures are in the public domain (CC0): see [`public/samples/CREDITS.md`](public/samples/CREDITS.md).
 
 remove.bg is a trademark of its owner. FreeRemoveBg is an independent project, not affiliated with remove.bg or its publisher.

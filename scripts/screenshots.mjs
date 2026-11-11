@@ -29,7 +29,7 @@ async function section(page, selector, name) {
 }
 
 /** Through the model step (a fresh browser does not have the model yet). */
-async function agree(page, label = /Download the model/, next = 'Continue to my pictures') {
+async function agree(page, label = /^Download IS-Net/, next = 'Continue to my pictures') {
   const button = page.getByRole('button', { name: label });
   if (await button.waitFor({ timeout: 10_000 }).then(() => true, () => false)) {
     await button.click();
@@ -51,6 +51,12 @@ async function cutOut(page, ...ids) {
 // --- Home page -----------------------------------------------------------------------------
 let page = await open('/');
 await shot(page, 'landing-light');
+// The install help, before the browser offers its own prompt.
+await page.getByRole('button', { name: 'Install the app' }).first().click();
+await page.getByRole('dialog').waitFor();
+await page.waitForTimeout(400);
+await shot(page, 'install-help');
+await page.keyboard.press('Escape');
 await section(page, '#ai', 'landing-ai');
 await section(page, '#how', 'landing-steps');
 await section(page, '#features', 'landing-features');
@@ -63,7 +69,7 @@ await page.context().close();
 
 // --- The tool, step by step ------------------------------------------------------------------
 page = await open('/app');
-await page.getByRole('button', { name: /Download the model/ }).waitFor({ timeout: 10_000 });
+await page.getByRole('button', { name: /^Download IS-Net/ }).waitFor({ timeout: 10_000 });
 await shot(page, 'step-1-model');
 await agree(page);
 await page.getByRole('button', { name: 'Choose pictures' }).waitFor({ timeout: 60_000 });
@@ -93,13 +99,26 @@ await page.getByRole('button', { name: /^plant\.jpg/ }).click();
 await page.getByRole('button', { name: 'None', exact: true }).click();
 await page.getByRole('tab', { name: 'Retouch' }).click();
 await page.getByRole('button', { name: 'Rescue', exact: true }).click();
-const frame = await page.locator('.viewport canvas').boundingBox();
+const frame = await page.locator('.viewport canvas:not(.overlay)').boundingBox();
 await page.mouse.move(frame.x + frame.width * 0.12, frame.y + frame.height * 0.2);
 await page.mouse.down();
 await page.mouse.move(frame.x + frame.width * 0.7, frame.y + frame.height * 0.62, { steps: 8 });
 await page.mouse.up();
 await page.waitForTimeout(300);
 await shot(page, 'editor-rescue');
+// The Click tool: SAM 2.1 outlines what a box is drawn around.
+await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+await page.getByRole('button', { name: 'Click', exact: true }).click();
+await page.getByRole('button', { name: /^Download SAM 2\.1/ }).click();
+await page.getByText('Click on the object, or draw a box').waitFor({ timeout: 300_000 });
+const area = await page.locator('.viewport canvas:not(.overlay)').boundingBox();
+await page.mouse.move(area.x + area.width * 0.18, area.y + area.height * 0.08);
+await page.mouse.down();
+await page.mouse.move(area.x + area.width * 0.84, area.y + area.height * 0.96, { steps: 8 });
+await page.mouse.up();
+await page.getByRole('button', { name: 'Add to the cutout' }).waitFor({ timeout: 120_000 });
+await page.waitForTimeout(400);
+await shot(page, 'editor-click');
 await page.context().close();
 
 page = await open('/app', { colorScheme: 'dark' });

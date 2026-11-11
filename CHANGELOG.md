@@ -2,6 +2,38 @@
 
 All notable changes to FreeRemoveBg. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning: [SemVer](https://semver.org/) — `MAJOR.MINOR.PATCH`: MAJOR for changes that break how the app is used or hosted, MINOR for new features, PATCH for fixes.
 
+## [2.2.0] - 2026-11-12
+
+### Added
+- "Click" tool in the cutout step, powered by SAM 2.1 (Meta AI, Apache-2.0): click an object, or draw a box around it, then add it to the cutout or remove it from it. More clicks refine the selection ("Include", "Exclude" or Alt + click). SAM is downloaded only when the tool is first opened, after you agree (78 MB on a graphics card)
+- A notice on phones, and on computers without a usable graphics card, that the AI runs slower there and may fail on very large pictures
+- The "Install" button is always in the menu: it opens the browser's install prompt, or shows the steps for Safari, Firefox, Edge, Chrome and Android
+- Install screenshots and a vector icon in the app manifest
+
+### Changed
+- New file names for the app icons, so browsers and installed apps show the new logo; iPhone and iPad get their own home screen icon
+- Lighter pictures on the home page for phones, whose title and introduction show from the first frame
+- The sharing picture, the descriptions and the footer name the three AIs: IS-Net, ORMBG and SAM 2.1
+
+### Fixed
+- The navigation bar moved a few seconds after the start, when the install icon appeared
+- On the tool page, the footer jumped down while the tool was drawn
+
+## [2.1.0] - 2026-11-11
+
+### Added
+- A second AI model to choose from: ORMBG, made for people (portraits, hair), half the download on a graphics card (88 MB). IS-Net stays the default for any subject
+- "Try ORMBG" / "Try IS-Net" on a result: the picture is cut out again with the other model, to compare
+- The mouse wheel zooms in and out around the pointer; with "Move", dragging moves the zoomed picture
+- Real QR codes on the home page's spec sheets, opening each model's page on Hugging Face (they replace a decorative barcode)
+- Legal notice: fonts, sample pictures (authors and license) and icons (Lucide, Feather, with their license) are credited
+
+### Fixed
+- Zoom reset as soon as a brush stroke was made (or the thumbnail refreshed)
+- A crop being drawn could be cancelled by the thumbnail refreshing
+- Thumbnails of tall pictures went past their frame; the remove button sat off the corner
+- The brush size is only shown with the eraser and the restore brush
+
 ## [2.0.0] - 2026-11-11
 
 ### Changed

@@ -16,29 +16,55 @@
       <app-icon name="redo" [size]="17" />
     </button>
     <span class="divider" aria-hidden="true"></span>
-    <button class="btn ghost icon sm" type="button" [disabled]="zoom() === 1" (click)="zoomBy(-1)" [attr.aria-label]="'tool.result.zoomOut' | transloco" [title]="'tool.result.zoomOut' | transloco">
+    <button class="btn ghost icon sm" type="button" [disabled]="zoom() <= 1" (click)="zoomBy(-1)" [attr.aria-label]="'tool.result.zoomOut' | transloco" [title]="'tool.result.zoomOut' | transloco">
       <app-icon name="zoom-out" [size]="17" />
     </button>
-    <button class="btn ghost sm zoom-value" type="button" (click)="zoom.set(1)" [title]="'tool.result.zoomFit' | transloco" [attr.aria-label]="'tool.result.zoomFit' | transloco">{{ percent(zoom()) }} %</button>
-    <button class="btn ghost icon sm" type="button" [disabled]="zoom() === 8" (click)="zoomBy(1)" [attr.aria-label]="'tool.result.zoomIn' | transloco" [title]="'tool.result.zoomIn' | transloco">
+    <button class="btn ghost sm zoom-value" type="button" (click)="zoomFit()" [title]="'tool.result.zoomFit' | transloco" [attr.aria-label]="'tool.result.zoomFit' | transloco">{{ percent(zoom()) }} %</button>
+    <button class="btn ghost icon sm" type="button" [disabled]="zoom() >= maxZoom" (click)="zoomBy(1)" [attr.aria-label]="'tool.result.zoomIn' | transloco" [title]="'tool.result.zoomIn' | transloco">
       <app-icon name="zoom" [size]="17" />
     </button>
   </div>
 
-  <div #viewport class="viewport" (wheel)="onWheel($event)">
+  <div
+    #viewport
+    class="viewport"
+    [class.can-pan]="tool() === 'move' && zoom() > 1"
+    [class.panning]="panning()"
+    (wheel)="onWheel($event)"
+    (pointerdown)="onPanStart($event)"
+    (pointermove)="onPanMove($event)"
+    (pointerup)="onPanEnd()"
+    (pointercancel)="onPanEnd()"
+  >
     <div class="frame" [class.done]="done() && view() === 'result'" [style.width.px]="display().width" [style.height.px]="display().height">
       <canvas
         #canvas
         role="img"
         [attr.aria-label]="(view() === 'original' || !done() ? 'tool.result.altOriginal' : 'tool.result.altResult') | transloco: { name: it.name }"
         [class.brush]="brushing()"
-        [class.select]="rescuing()"
+        [class.select]="rescuing() || pointing()"
         (pointerdown)="onPointerDown($event)"
         (pointermove)="onPointerMove($event)"
-        (pointerup)="onPointerUp()"
+        (pointerup)="onPointerUp($event)"
         (pointercancel)="onPointerUp()"
         (pointerleave)="cursor.set(null)"
       ></canvas>
+      <canvas #overlay class="overlay" aria-hidden="true"></canvas>
+      @for (b of [samDraft() ?? samBox()]; track $index) {
+        @if (b) {
+          <span
+            class="sam-box"
+            aria-hidden="true"
+            [style.left.%]="percent(b.x, samWork().width)"
+            [style.top.%]="percent(b.y, samWork().height)"
+            [style.width.%]="percent(b.width, samWork().width)"
+            [style.height.%]="percent(b.height, samWork().height)"
+          ></span>
+        }
+      }
+      @for (p of samPoints(); track $index) {
+        <span class="sam-point" [class.negative]="!p.positive" aria-hidden="true" [style.left.%]="percent(p.x, samWork().width)" [style.top.%]="percent(p.y, samWork().height)"></span>
+      }
       @if (area(); as a) {
         <span
           class="selection"
@@ -109,6 +135,15 @@
   <div class="side-top">
     <button class="btn ghost sm" type="button" [disabled]="!done() && it.status !== 'error'" (click)="backToPrepare()"><app-icon name="arrow-left" [size]="16" /> {{ 'tool.result.back' | transloco }}</button>
   </div>
+
+  @if (done() && it.model) {
+    <div class="made-with">
+      <span>{{ 'tool.result.madeWith' | transloco }} <b>{{ models[it.model].name }}</b></span>
+      @for (other of otherModels(); track other) {
+        <button class="btn sm" type="button" (click)="compareWith(other)"><app-icon name="refresh" [size]="15" /> {{ 'tool.result.compare' | transloco: { name: models[other].name } }}</button>
+      }
+    </div>
+  }
 
   @if (otherDrafts().length) {
     <div class="waiting">
@@ -206,7 +241,7 @@
       </div>
     } @else {
       <div id="panel-retouch" role="tabpanel" aria-labelledby="tab-retouch" class="tab-panel">
-        <div class="tool-grid four" role="group" [attr.aria-label]="'tool.result.tabs.retouch' | transloco">
+        <div class="tool-grid five" role="group" [attr.aria-label]="'tool.result.tabs.retouch' | transloco">
           @for (t of tools; track t.id) {
             <button class="tool-btn" type="button" [class.on]="tool() === t.id" [attr.aria-pressed]="tool() === t.id" [disabled]="t.id !== 'move' && !canRetouch()" [title]="('tool.retouch.' + t.id | transloco) + ' (' + t.key + ')'" (click)="setTool(t.id)">
               <app-icon [name]="t.icon" [size]="20" />
@@ -215,7 +250,60 @@
           }
         </div>
 
-        @if (tool() === 'rescue') {
+        @if (tool() === 'point') {
+          <div class="sam">
+            @switch (sam.state()) {
+              @case ('ready') {
+                @if (!samReady()) {
+                  <p class="model-wait" role="status"><span class="spinner small" aria-hidden="true"></span> {{ 'tool.sam.reading' | transloco }}</p>
+                } @else {
+                  <p class="help">{{ 'tool.sam.help' | transloco }}</p>
+                  <div class="segmented" role="group" [attr.aria-label]="'tool.sam.mode' | transloco">
+                    <button type="button" [class.active]="samMode() === 'include'" [attr.aria-pressed]="samMode() === 'include'" (click)="samMode.set('include')"><app-icon name="plus" [size]="15" /> {{ 'tool.sam.include' | transloco }}</button>
+                    <button type="button" [class.active]="samMode() === 'exclude'" [attr.aria-pressed]="samMode() === 'exclude'" (click)="samMode.set('exclude')"><app-icon name="minus" [size]="15" /> {{ 'tool.sam.exclude' | transloco }}</button>
+                  </div>
+                  @if (samBusy()) {
+                    <div class="progress indeterminate"><div></div></div>
+                  }
+                  @if (samSelection()) {
+                    <div class="row two">
+                      <button class="btn dark sm" type="button" (click)="samApply('add')"><app-icon name="plus" [size]="15" /> {{ 'tool.sam.add' | transloco }}</button>
+                      <button class="btn sm" type="button" (click)="samApply('remove')"><app-icon name="minus" [size]="15" /> {{ 'tool.sam.remove' | transloco }}</button>
+                    </div>
+                    <button class="btn ghost sm" type="button" (click)="samClear()">{{ 'tool.sam.clear' | transloco }}</button>
+                  }
+                }
+              }
+              @case ('downloading') {
+                <b class="sam-title">{{ 'tool.sam.downloading' | transloco }}</b>
+                <div class="progress"><div [style.width.%]="samPercent()"></div></div>
+                @if (sam.download(); as d) {
+                  @if (d.loaded !== undefined && d.total) {
+                    <app-download-progress [loaded]="d.loaded" [total]="d.total" />
+                  }
+                }
+              }
+              @case ('preparing') {
+                <b class="sam-title">{{ 'tool.sam.preparing' | transloco }}</b>
+                <div class="progress indeterminate"><div></div></div>
+              }
+              @case ('checking') {
+                <div class="progress indeterminate"><div></div></div>
+              }
+              @default {
+                <p class="help">{{ 'tool.sam.intro' | transloco }}</p>
+                <p class="faint help">{{ samModel.name }} · {{ samModel.maker }} · {{ samModel.license }} · {{ 'tool.sam.once' | transloco: { size: samSize() } }}</p>
+                @if (sam.state() === 'error') {
+                  <p class="inline-error" role="alert"><app-icon name="alert" [size]="16" /> {{ 'tool.sam.error' | transloco }}</p>
+                }
+                <button class="btn primary sm" type="button" (click)="sam.agree()"><app-icon name="download" [size]="16" /> {{ 'tool.sam.agree' | transloco: { size: samSize() } }}</button>
+              }
+            }
+            @if (samFailed()) {
+              <p class="inline-error" role="alert"><app-icon name="alert" [size]="16" /> {{ 'tool.sam.failed' | transloco }}</p>
+            }
+          </div>
+        } @else if (tool() === 'rescue') {
           <p class="help">{{ 'tool.retouch.rescueHelp' | transloco }}</p>
           @if (area()) {
             <div class="row">
@@ -223,12 +311,14 @@
               <button class="btn ghost sm" type="button" (click)="area.set(null)">{{ 'tool.retouch.cancel' | transloco }}</button>
             </div>
           }
-        } @else {
+        } @else if (tool() === 'erase' || tool() === 'restore') {
           <div class="field">
             <label for="brush">{{ 'tool.retouch.size' | transloco }} <span class="value">{{ brush() }} px</span></label>
             <input id="brush" type="range" min="4" max="200" step="2" [value]="brush()" (input)="brush.set(+value($event))" />
           </div>
           <p class="faint help">{{ 'tool.retouch.help' | transloco }}</p>
+        } @else {
+          <p class="faint help">{{ 'tool.retouch.moveHelp' | transloco }}</p>
         }
         <button class="btn ghost sm" type="button" [disabled]="!it.undo.length" (click)="store.resetMask(it.id)"><app-icon name="restore" [size]="15" /> {{ 'tool.retouch.reset' | transloco }}</button>
       </div>

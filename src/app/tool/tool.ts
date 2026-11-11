@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, afterNextRender, computed, effect, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { isPhone } from '../core/device';
 import { localizedPath } from '../core/i18n';
 import { ImagesStore } from '../core/images.store';
+import { SamService } from '../core/sam.service';
 import { MODELS, type ModelId } from '../core/models';
 import type { Sample } from '../core/samples';
 import { ACCEPTED_TYPES } from '../engine/files';
@@ -14,6 +16,17 @@ import { ResultView } from './result-view';
 
 type View = 'checking' | 'model' | 'images' | 'prepare' | 'result';
 type StepState = 'done' | 'current' | 'todo';
+
+const NOTICE_KEY = 'frb-slow-notice';
+
+/** The slow-device notice was closed during this visit. */
+function readNoticeHidden(): boolean {
+  try {
+    return typeof sessionStorage !== 'undefined' && sessionStorage.getItem(NOTICE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
 interface LaunchParams {
   files: { getFile(): Promise<File> }[];
@@ -47,10 +60,30 @@ export class Tool {
   private readonly asked = signal(false);
   private readonly continued = signal(false);
 
+  private readonly forcedCpu: boolean;
+  private readonly noticeHidden = signal(readNoticeHidden());
+  /**
+   * A word of warning where the AI is slow: on a phone, or when the browser offers no graphics
+   * card (known once the catalog of models is in). Not when the processor was asked for (tests).
+   */
+  protected readonly slowNotice = computed<'phone' | 'cpu' | null>(() => {
+    // Shown with the first step, not above the "checking" line: nothing moves on the page.
+    if (this.noticeHidden() || this.view() === 'checking') return null;
+    if (isPhone()) return 'phone';
+    const device = this.store.catalog()[0]?.device;
+    return device === 'wasm' && !this.forcedCpu ? 'cpu' : null;
+  });
+
+  /** The first look in the browser cache is over: later checks (another model) keep the page as it is. */
+  private readonly settled = signal(false);
+  private readonly inModelStep = signal(false);
+
   protected readonly view = computed<View>(() => {
     const state = this.store.modelState();
-    if (state === 'checking') return 'checking';
-    if (state === 'missing' || state === 'error') return 'model';
+    if (state === 'checking') {
+      if (!this.settled()) return 'checking';
+      if (this.inModelStep()) return 'model';
+    } else if (state === 'missing' || state === 'error') return 'model';
     if (this.asked() && !this.continued() && (state === 'downloading' || state === 'preparing')) return 'model';
     const item = this.store.selected();
     if (!item) return 'images';
@@ -83,9 +116,21 @@ export class Tool {
     // ?device=wasm and ?model=… impose the processor or a model (tests, broken graphics drivers).
     const params = inject(ActivatedRoute).snapshot.queryParamMap;
     const model = params.get('model');
-    if (params.get('device') === 'wasm' || model) {
-      this.store.configure({ device: params.get('device') === 'wasm' ? 'wasm' : undefined, model: model && model in MODELS ? (model as ModelId) : undefined });
+    this.forcedCpu = params.get('device') === 'wasm';
+    if (this.forcedCpu) {
+      this.store.configure({ device: 'wasm' });
+      inject(SamService).configure({ device: 'wasm' });
     }
+    if (model && model in MODELS) this.store.selectModel(model as ModelId);
+    effect(() => {
+      const state = this.store.modelState();
+      const view = this.view();
+      untracked(() => {
+        if (state !== 'checking') this.settled.set(true);
+        this.inModelStep.set(view === 'model');
+      });
+    });
+
     // A new step starts at the top: after "Cut out" on a phone, the result is above the button.
     let previous: View | null = null;
     effect(() => {
@@ -159,6 +204,15 @@ export class Tool {
     this.dragging.set(false);
     const files = Array.from(event.dataTransfer?.files ?? []);
     if (files.length) this.add(files);
+  }
+
+  protected hideNotice(): void {
+    this.noticeHidden.set(true);
+    try {
+      sessionStorage.setItem(NOTICE_KEY, '1');
+    } catch {
+      // Private mode: it comes back on the next page load.
+    }
   }
 
   protected stateKey(status: string): string {
