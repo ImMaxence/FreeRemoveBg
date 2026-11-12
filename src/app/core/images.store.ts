@@ -2,6 +2,7 @@ import { Injectable, computed, signal } from '@angular/core';
 import * as Comlink from 'comlink';
 import { type Background, alphaToImageData, compose } from '../engine/compose';
 import { EXPORT_FORMATS, type ExportFormat, exportName, isImageFile } from '../engine/files';
+import { type LassoPoint, isShape } from '../engine/lasso';
 import { maskSize, modelInputSize, workingSize } from '../engine/mask';
 import { type Rect, drawTurned, scaleRect, turnedSize } from '../engine/prepare';
 import { uniqueNames, zip } from '../engine/zip';
@@ -406,6 +407,30 @@ export class ImagesStore {
     ctx.globalCompositeOperation = mode === 'add' ? 'source-over' : 'destination-out';
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(squareOf(alphaToImageData(alpha, width, height)), 0, 0, item.mask.width, item.mask.height);
+    ctx.restore();
+    this.touch(id, true);
+  }
+
+  /**
+   * The lasso: restores (`add`) or cuts (`remove`) what a shape encloses, or everything around
+   * it (`around`). Points are in pixels of the picture. Undoable like a brush stroke.
+   */
+  applyShape(id: number, points: readonly LassoPoint[], mode: 'add' | 'remove', around = false): void {
+    const item = this.find(id);
+    if (!item?.mask || item.status !== 'done' || !isShape(points)) return;
+    this.beginStroke(id);
+    const { width, height } = item.mask;
+    const sx = width / item.width;
+    const sy = height / item.height;
+    const path = new Path2D();
+    if (around) path.rect(0, 0, width, height);
+    points.forEach((p, i) => (i ? path.lineTo(p.x * sx, p.y * sy) : path.moveTo(p.x * sx, p.y * sy)));
+    path.closePath();
+    const ctx = item.mask.getContext('2d')!;
+    ctx.save();
+    ctx.globalCompositeOperation = mode === 'add' ? 'source-over' : 'destination-out';
+    ctx.fillStyle = '#fff';
+    ctx.fill(path, around ? 'evenodd' : 'nonzero');
     ctx.restore();
     this.touch(id, true);
   }

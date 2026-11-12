@@ -1,0 +1,73 @@
+<div class="container">
+  <div class="spot-card">
+    <div class="spot-copy" appReveal>
+      <span class="eyebrow"
+        ><span class="new-badge">{{ 'common.new' | transloco }}</span>
+        {{ 'landing.lasso.eyebrow' | transloco }}</span
+      >
+      <h2>{{ 'landing.lasso.title' | transloco }}</h2>
+      <p class="lead">{{ 'landing.lasso.lead' | transloco }}</p>
+      <ol class="spot-steps">
+        @for (s of lassoSteps; track s) {
+          <li>
+            <b>{{ 'landing.lasso.steps.' + s + '.title' | transloco }}</b>
+            <span class="muted">{{ 'landing.lasso.steps.' + s + '.text' | transloco }}</span>
+          </li>
+        }
+      </ol>
+      <p class="spot-undo">
+        <span class="keys"><kbd>Ctrl</kbd> + <kbd>Z</kbd></span>
+        <span>{{ 'landing.lasso.undo' | transloco }}</span>
+      </p>
+      <a class="btn primary lg" routerLink="/app"
+        >{{ 'landing.lasso.cta' | transloco }} <app-icon name="arrow-right" [size]="19"
+      /></a>
+    </div>
+
+    <figure class="lasso-demo" [appReveal]="1">
+      <div class="demo-stage">
+        <!-- Drawn around the grass the AI left, cut out, then brought back with Ctrl + Z. -->
+        <svg
+          viewBox="0 0 480 600"
+          role="img"
+          [attr.aria-label]="'landing.lasso.demoAlt' | transloco"
+        >
+          <defs>
+            <mask
+              id="lasso-demo-cut"
+              maskUnits="userSpaceOnUse"
+              x="0"
+              y="0"
+              width="480"
+              height="600"
+            >
+              <rect width="480" height="600" fill="#fff" />
+              <path class="demo-cut" [attr.d]="demoPath" fill="#000" />
+            </mask>
+          </defs>
+          <image
+            href="/samples/cat-cutout-480.webp"
+            width="480"
+            height="600"
+            mask="url(#lasso-demo-cut)"
+          />
+          <path class="demo-fill" [attr.d]="demoPath" />
+          <path class="demo-under" [attr.d]="demoPath" pathLength="1" />
+          <path class="demo-line" [attr.d]="demoPath" pathLength="1" />
+          @for (p of demoPoints; track $index) {
+            <circle [attr.class]="'demo-dot d' + $index" [attr.cx]="p[0]" [attr.cy]="p[1]" r="7" />
+          }
+        </svg>
+      </div>
+      <div class="demo-bar" aria-hidden="true">
+        <span class="demo-btn"
+          ><app-icon name="brush" [size]="15" /> {{ 'landing.lasso.demoRestore' | transloco }}</span
+        >
+        <span class="demo-btn cut"
+          ><app-icon name="scissors" [size]="15" /> {{ 'landing.lasso.demoCut' | transloco }}</span
+        >
+      </div>
+      <span class="demo-key" aria-hidden="true"><kbd>Ctrl</kbd> + <kbd>Z</kbd></span>
+    </figure>
+  </div>
+</div>

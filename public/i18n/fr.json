@@ -1,7 +1,8 @@
 {
   "common": {
     "close": "Fermer",
-    "downloadStats": "{{ done }} sur {{ total }} · {{ speed }} · reste {{ left }}"
+    "downloadStats": "{{ done }} sur {{ total }} · {{ speed }} · reste {{ left }}",
+    "new": "Nouveau"
   },
   "nav": {
     "skip": "Aller au contenu",
@@ -74,16 +75,42 @@
         "cutout": "Détouré",
         "background": "Nouveau fond"
       },
-      "caption": "Détouré par FreeRemoveBg dans le navigateur, sans retouche"
+      "caption": "Détouré par FreeRemoveBg dans le navigateur, sans retouche",
+      "new": "Retouche au lasso"
     },
     "ticker": {
       "free": "Gratuit",
+      "lasso": "Nouveau : le lasso",
       "ai": "IA open source : IS-Net, ORMBG, SAM 2",
       "noUpload": "Aucun envoi",
       "fullSize": "Taille réelle",
       "batch": "Traitement par lot",
       "offline": "Hors ligne",
       "noAccount": "Sans compte"
+    },
+    "lasso": {
+      "eyebrow": "Version 2.3",
+      "title": "Le lasso : entourez, puis restaurez ou coupez.",
+      "lead": "L'IA a laissé un bout de décor, ou coupé une main ? Posez des points autour de la zone, fermez la forme, et choisissez : restaurer, ou couper. Dans la forme ou tout autour.",
+      "steps": {
+        "points": {
+          "title": "Point par point",
+          "text": "Cliquez autour de la zone. Ou maintenez le clic et dessinez à main levée."
+        },
+        "close": {
+          "title": "Fermez la forme",
+          "text": "Sur le premier point, d'un double clic ou avec Entrée."
+        },
+        "apply": {
+          "title": "Restaurez ou coupez",
+          "text": "Dans la forme, ou autour pour ne garder que ce qu'elle entoure."
+        }
+      },
+      "undo": "retire le dernier point pendant le tracé, puis annule le changement une fois appliqué.",
+      "cta": "Essayer le lasso",
+      "demoRestore": "Restaurer",
+      "demoCut": "Couper",
+      "demoAlt": "Un chat détouré, avec un lasso en pointillés tracé autour de son oreille"
     },
     "ai": {
       "eyebrow": "L'IA utilisée",
@@ -204,8 +231,8 @@
         "text": "Pivoter, retourner, recadrer avec des proportions toutes prêtes (carré, 4:5, 16:9…)."
       },
       "brush": {
-        "title": "Pinceau et rattrapage",
-        "text": "Effacez ou restaurez à la main, ou cliquez sur un objet oublié : SAM 2 le sélectionne, vous l'ajoutez."
+        "title": "Pinceau, lasso et clic",
+        "text": "Effacez ou restaurez à la main, entourez une zone au lasso, ou cliquez sur un objet oublié : SAM 2 le sélectionne, vous l'ajoutez."
       },
       "batch": {
         "title": "Par lot",
@@ -288,6 +315,10 @@
       "sam": {
         "q": "À quoi sert SAM 2 ?",
         "a": "SAM 2.1 (Segment Anything, Meta, Apache-2.0) ne supprime pas le fond : il sélectionne l'objet sur lequel vous cliquez. Dans FreeRemoveBg, il fait marcher l'outil de retouche « Cliquer », pour ajouter un objet que le détourage a oublié (un objet tenu à bout de bras…) ou en retirer un. Il lit chaque image une fois, puis répond à chaque clic aussitôt. Il n'est téléchargé (78 à 156 Mo) que si vous l'utilisez, après votre accord."
+      },
+      "lasso": {
+        "q": "Comment corriger une zone précise du détourage ?",
+        "a": "Avec le lasso, dans l'onglet Retoucher : cliquez point par point autour de la zone (ou dessinez à main levée), fermez la forme, puis « Restaurer » ou « Couper ». Il s'applique dans la forme ou autour. Ctrl + Z l'annule, comme chaque retouche."
       },
       "download": {
         "q": "Pourquoi faut-il télécharger un modèle ?",
@@ -490,6 +521,7 @@
       "move": "Déplacer",
       "erase": "Effacer",
       "restore": "Restaurer",
+      "lasso": "Lasso",
       "rescue": "Rattraper",
       "size": "Taille du pinceau",
       "help": "Effacez ce qui doit partir, restaurez ce qui doit rester. Zoomez pour les détails : le pinceau garde sa taille à l'écran.",
@@ -499,6 +531,24 @@
       "reset": "Revenir au résultat de l'IA",
       "moveHelp": "Tournez la molette de la souris sur l'image pour zoomer et dézoomer ; une fois zoomé, faites glisser l'image pour vous déplacer.",
       "point": "Cliquer"
+    },
+    "lasso": {
+      "help": "Cliquez point par point autour d'une zone, ou maintenez le clic et dessinez à main levée. Fermez la forme sur son premier point, d'un double clic ou avec Entrée, puis restaurez-la ou coupez-la.",
+      "enter": "Entrée",
+      "closeKey": "ferme la forme",
+      "undoKey": "retire le dernier point",
+      "escape": "Échap",
+      "clearKey": "l'efface",
+      "where": "Où s'applique le changement",
+      "inside": "Dans la forme",
+      "around": "Autour",
+      "empty": "Cliquez sur l'image pour poser le premier point.",
+      "drawing": "{{ count }} points : fermez la forme, ou continuez.",
+      "closed": "Forme fermée ({{ count }} points).",
+      "restore": "Restaurer",
+      "cut": "Couper",
+      "close": "Fermer la forme",
+      "clear": "Recommencer"
     },
     "export": {
       "title": "Télécharger",
@@ -759,7 +809,7 @@
         {
           "title": "Contenus non accessibles",
           "body": [
-            "Le pinceau effacer et restaurer, le rattrapage d'une zone et l'outil « Cliquer » demandent un pointeur (souris, doigt ou stylet) : ils n'ont pas d'équivalent au clavier. Le détourage automatique, la préparation de l'image, les fonds et les téléchargements n'en dépendent pas.",
+            "Le pinceau effacer et restaurer, le lasso, le rattrapage d'une zone et l'outil « Cliquer » demandent un pointeur (souris, doigt ou stylet) : ils n'ont pas d'équivalent au clavier. Le détourage automatique, la préparation de l'image, les fonds et les téléchargements n'en dépendent pas.",
             "L'aperçu d'une image est une surface de dessin décrite par un texte court seulement (le nom du fichier et son état) : le contenu de vos propres images ne peut pas être décrit automatiquement.",
             "Le journal des nouveautés est rédigé en anglais uniquement, y compris sur la version française du site.",
             "Le dépôt de fichiers et le collage depuis le presse-papiers sont des raccourcis ; le bouton « Choisir des images » offre toujours la même fonction.",
@@ -775,7 +825,7 @@
         {
           "title": "À propos de cette déclaration",
           "body": [
-            "Cette déclaration a été rédigée le 11 novembre 2026 et revue pour la version 2.2.0 du site. Elle est mise à jour quand le site évolue."
+            "Cette déclaration a été rédigée le 11 novembre 2026 et revue pour la version 2.3.0 du site. Elle est mise à jour quand le site évolue."
           ]
         }
       ]

@@ -21,6 +21,15 @@
   <img src="docs/screenshots/landing-light.png" alt="FreeRemoveBg home page: the headline 'Cut out any picture. Without uploading it.', and a dog cut out of its photo, breaking out of the frame" />
 </p>
 
+## New in 2.3: the lasso
+
+<p align="center">
+  <img src="docs/screenshots/editor-lasso.png" alt="The lasso: a shape drawn point by point around the grass left at a cat's feet, filled in yellow, with the Restore and Cut out buttons" />
+</p>
+
+The AI left a bit of background, or cut off a hand? **Click point by point around the area** (or hold the button down and draw freehand), **close the shape** on its first point, with a double click or <kbd>Enter</kbd>, then **restore it or cut it out**, inside the shape or all around it.
+<kbd>Ctrl</kbd> + <kbd>Z</kbd> removes the last point while you draw, and undoes the change once it is applied, like every retouch. <kbd>Esc</kbd> clears the shape.
+
 ## Why FreeRemoveBg
 
 | | FreeRemoveBg | Online background removers |
@@ -67,7 +76,7 @@ Tried and left out (see [`src/app/core/models.ts`](src/app/core/models.ts)): BiR
 1. **The AI model.** The first time, the user picks a model (IS-Net or ORMBG); the page says what it needs (88 to 179 MB from Hugging Face, once) and downloads nothing until the user agrees. The download continues while pictures are added and prepared. On the next visits the model is found in the browser and this step is skipped.
 2. **Pictures.** Choose, drop anywhere or paste with `Ctrl + V`, one or many. Every picture the browser can open is accepted (JPG, PNG, WebP, AVIF, GIF, BMP, HEIC in Safari).
 3. **Prepare.** Optional: turn, mirror, crop with set proportions (free, original, square, 4:5, 3:2, 16:9), also with the keyboard, and back to the original. Cropping around a small subject lets the AI see it bigger.
-4. **Cut out and export.** New background, eraser and restore brush, "rescue" an object the AI missed, "click" an object to add it or take it away (SAM 2.1), try the other model, then download as PNG, WebP or JPG at the photo's size, copy, or download the whole batch as a ZIP. The mouse wheel zooms around the pointer; with "Move", dragging moves the zoomed picture.
+4. **Cut out and export.** New background, eraser and restore brush, the lasso to restore or cut out any area, "rescue" an object the AI missed, "click" an object to add it or take it away (SAM 2.1), try the other model, then download as PNG, WebP or JPG at the photo's size, copy, or download the whole batch as a ZIP. The mouse wheel zooms around the pointer; with "Move", dragging moves the zoomed picture.
 
 ## Features
 
@@ -77,6 +86,7 @@ Tried and left out (see [`src/app/core/models.ts`](src/app/core/models.ts)): BiR
 | **New background** | Transparent, a color (presets or your own), a gradient, one of your pictures, or the original blurred. The same background applies to the whole batch. |
 | **Prepare** | Turn by quarter turns, mirror, crop with a frame (8 handles, set proportions, arrows and Shift + arrows on the keyboard). |
 | **Brush and rescue** | Erase or restore by hand, with zoom up to 800 % (mouse wheel, around the pointer), undo and redo. "Rescue": draw a rectangle around something the AI missed (an object held at arm's length…), it looks there again and adds it. |
+| **Lasso** (new) | Click point by point around an area, or draw it freehand, close the shape, then restore it or cut it out, inside or around it. <kbd>Ctrl</kbd> + <kbd>Z</kbd> takes the last point back while drawing and undoes the change afterwards; <kbd>Enter</kbd> closes, <kbd>Esc</kbd> clears. |
 | **Click (SAM 2.1)** | Click an object, or draw a box around it, and SAM 2.1 outlines it: add it to the cutout or remove it from it. More clicks refine the selection ("Include", "Exclude" or Alt + click). Undoable like a brush stroke. |
 | **Batches** | As many pictures as you want, each prepared or not, cut out in one click and downloaded as a single ZIP. |
 | **Full size** | The result has the photo's own size, up to about 6,000 × 4,000 pixels (4,900 × 3,300 on iPhone and iPad). |
@@ -90,17 +100,17 @@ Tried and left out (see [`src/app/core/models.ts`](src/app/core/models.ts)): BiR
 
 ## Screenshots
 
-| Home page, dark theme, in French | Features |
-| --- | --- |
-| ![Home page in French, dark theme](docs/screenshots/landing-dark.png) | ![The features of the home page](docs/screenshots/landing-features.png) |
+| Home page, dark theme, in French | The lasso, new in 2.3 | Features |
+| --- | --- | --- |
+| ![Home page in French, dark theme](docs/screenshots/landing-dark.png) | ![The home page's "New" section: the lasso, its three steps and its demo](docs/screenshots/landing-lasso.png) | ![The features of the home page](docs/screenshots/landing-features.png) |
 
 | A new background | The original, blurred |
 | --- | --- |
 | ![A cat cut out and placed on a gradient](docs/screenshots/editor-background.png) | ![A dog kept sharp in front of its blurred original background](docs/screenshots/editor-blur.png) |
 
-| Rescue an area | Click an object (SAM 2.1) |
-| --- | --- |
-| ![The rescue tool: a rectangle drawn on the plant, with the button to rescue it](docs/screenshots/editor-rescue.png) | ![The Click tool: a box drawn around an object, outlined in yellow by SAM 2.1, with the buttons to add it or remove it](docs/screenshots/editor-click.png) |
+| Lasso | Rescue an area | Click an object (SAM 2.1) |
+| --- | --- | --- |
+| ![The lasso: a shape closed around the grass at a cat's feet, with the Restore and Cut out buttons](docs/screenshots/editor-lasso.png) | ![The rescue tool: a rectangle drawn on the plant, with the button to rescue it](docs/screenshots/editor-rescue.png) | ![The Click tool: a box drawn around an object, outlined in yellow by SAM 2.1, with the buttons to add it or remove it](docs/screenshots/editor-click.png) |
 
 | Dark theme | Install the app |
 | --- | --- |

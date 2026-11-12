@@ -157,6 +157,7 @@ ${NAME} is a web app (installable as a PWA, works offline), version ${version}, 
 - Optional preparation before the cutout: turn, mirror, crop with preset proportions
 - Replaces the background: transparent, a color, a gradient, another picture, or the original blurred
 - Erase and restore brush, and "rescue": draw around an object the AI missed so it looks again
+- Lasso: place points around an area (or draw it freehand), close the shape, then restore it or cut it out, inside the shape or around it; Ctrl + Z removes the last point while drawing and undoes any retouch
 - Batch processing: several pictures at once, the same background for all, one ZIP download
 - Download at the photo's own size (up to about 6,000 × 4,000 pixels) as PNG or WebP (transparent) or JPG; copy to the clipboard
 - Accepts every picture the browser can open: JPG, PNG, WebP, AVIF, GIF, BMP, and HEIC in Safari

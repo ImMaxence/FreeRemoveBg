@@ -106,6 +106,20 @@ figure {
   }
 }
 
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* "New: lasso retouching": the AI pill in ink, so that it reads first. */
+.ai-pill.new {
+  padding-left: 5px;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+
 .pulse {
   position: relative;
   width: 9px;

@@ -2,14 +2,21 @@
 <section class="hero">
   <div class="container hero-grid">
     <div class="hero-copy">
-      <a class="ai-pill" href="#ai">
-        <span class="pulse" aria-hidden="true"></span>
-        {{ 'landing.hero.ai' | transloco }}
-        @for (id of modelIds; track id) {
-          <b>{{ models[id].name }}</b>
-        }
-        <app-icon name="arrow-right" [size]="15" />
-      </a>
+      <div class="pills">
+        <a class="ai-pill new" href="#lasso">
+          <b>{{ 'common.new' | transloco }}</b>
+          {{ 'landing.hero.new' | transloco }}
+          <app-icon name="arrow-right" [size]="15" />
+        </a>
+        <a class="ai-pill" href="#ai">
+          <span class="pulse" aria-hidden="true"></span>
+          {{ 'landing.hero.ai' | transloco }}
+          @for (id of modelIds; track id) {
+            <b>{{ models[id].name }}</b>
+          }
+          <app-icon name="arrow-right" [size]="15" />
+        </a>
+      </div>
       <h1>
         {{ 'landing.hero.title1' | transloco }}
         <span class="line"><span class="mark">{{ 'landing.hero.title2' | transloco }}</span> {{ 'landing.hero.title3' | transloco }}</span>
@@ -74,6 +81,9 @@
     }
   </div>
 </div>
+
+<!-- New: the lasso ------------------------------------------------------------------------ -->
+<section id="lasso" class="section" app-lasso-spot></section>
 
 <!-- The AI --------------------------------------------------------------------------------- -->
 <section id="ai" class="section ai">

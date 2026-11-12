@@ -5,6 +5,7 @@ import { MODELS, MODEL_IDS, type ModelId, SAM } from '../core/models';
 import { SamService } from '../core/sam.service';
 import { formatBytes } from '../engine/download-stats';
 import type { SamPoint } from '../engine/sam';
+import { LASSO_FREEHAND_GAP, LASSO_MIN_POINTS, type LassoPoint, clampPoint, closesShape, isNewPoint, isShape, shapePath, simplify } from '../engine/lasso';
 import { REPO_URL } from '../core/version';
 import { type Background, compose } from '../engine/compose';
 import { ACCEPTED_TYPES, EXPORT_FORMATS, type ExportFormat } from '../engine/files';
@@ -13,7 +14,7 @@ import { DownloadProgress } from '../shared/download-progress';
 import { Icon } from '../shared/icon';
 import { canvasPixels, elementSize, fitSize } from './fit';
 
-type Tool = 'move' | 'erase' | 'restore' | 'rescue' | 'point';
+type Tool = 'move' | 'erase' | 'restore' | 'lasso' | 'rescue' | 'point';
 type Tab = 'background' | 'retouch';
 type BackgroundKind = Background['kind'];
 
@@ -51,10 +52,11 @@ export class ResultView {
     { id: 'image', icon: 'image' },
     { id: 'blur', icon: 'droplet' },
   ];
-  protected readonly tools: { id: Tool; icon: string; key: string }[] = [
+  protected readonly tools: { id: Tool; icon: string; key: string; isNew?: boolean }[] = [
     { id: 'move', icon: 'hand', key: 'V' },
     { id: 'erase', icon: 'eraser', key: 'E' },
     { id: 'restore', icon: 'brush', key: 'R' },
+    { id: 'lasso', icon: 'lasso', key: 'L', isNew: true },
     { id: 'rescue', icon: 'select', key: 'Z' },
     { id: 'point', icon: 'pointer', key: 'C' },
   ];
@@ -88,6 +90,28 @@ export class ResultView {
   protected readonly canRetouch = computed(() => this.done() && this.view() === 'result');
   protected readonly brushing = computed(() => (this.tool() === 'erase' || this.tool() === 'restore') && this.canRetouch());
   protected readonly rescuing = computed(() => this.tool() === 'rescue' && this.canRetouch());
+  /** The lasso is in hand. */
+  protected readonly lassoing = computed(() => this.tool() === 'lasso' && this.canRetouch());
+  /** The shape drawn with the lasso, in pixels of the picture. */
+  protected readonly lassoPoints = signal<LassoPoint[]>([]);
+  protected readonly lassoClosed = signal(false);
+  /** Where the pointer is: a line follows it from the last point. */
+  protected readonly lassoHover = signal<LassoPoint | null>(null);
+  /** Restore or cut around the shape rather than inside it. */
+  protected readonly lassoAround = signal(false);
+  /** The shape can be applied (closing it if needed). */
+  protected readonly lassoUsable = computed(() => isShape(this.lassoPoints()));
+  /** A click on the first point closes the shape. */
+  protected readonly lassoCanClose = computed(() => !this.lassoClosed() && this.lassoPoints().length >= LASSO_MIN_POINTS);
+  protected readonly lassoLine = computed(() => shapePath(this.lassoPoints(), this.lassoClosed()));
+  /** What will change: the shape, or the whole picture minus the shape. */
+  protected readonly lassoFill = computed(() => shapePath(this.lassoPoints(), true, this.lassoAround() ? this.item() : undefined));
+  /** A freehand line has many points: only its ends get a dot. */
+  protected readonly lassoDots = computed(() => {
+    const points = this.lassoPoints();
+    return points.length <= 40 ? points : [points[0], points[points.length - 1]];
+  });
+  private lassoDrag: { clientX: number; clientY: number; moved: boolean; fresh: boolean; from: number } | null = null;
   /** The "Click" tool is in hand. */
   protected readonly pointing = computed(() => this.tool() === 'point' && this.canRetouch());
   /** SAM has read this picture: clicks are answered at once. */
@@ -162,6 +186,7 @@ export class ResultView {
         this.zoom.set(1);
         this.view.set('result');
         this.area.set(null);
+        this.lassoClear();
       });
     });
     // The "Click" tool: SAM is looked for when it is opened, and reads each picture once.
@@ -311,6 +336,89 @@ export class ResultView {
     if (tool !== 'move') this.view.set('result');
     if (tool !== 'rescue') this.area.set(null);
     if (tool !== 'point') this.samClear();
+    if (tool !== 'lasso') this.lassoClear();
+  }
+
+  // --- Lasso -------------------------------------------------------------------------------
+
+  /** Where the pointer is, in pixels of the picture, kept within it. */
+  private picturePoint(event: PointerEvent): LassoPoint {
+    const item = this.item();
+    const at = this.fraction(event);
+    return clampPoint({ x: at.x * item.width, y: at.y * item.height }, item.width, item.height);
+  }
+
+  /** Pixels of the screen per pixel of the picture, at the current zoom. */
+  private screenScale(): number {
+    return this.canvas()!.nativeElement.getBoundingClientRect().width / this.item().width;
+  }
+
+  /** A press: a point of the shape, the start of a freehand line, or the first point again (closing it). */
+  private lassoStart(event: PointerEvent): void {
+    if (this.lassoClosed()) this.lassoClear();
+    const at = this.picturePoint(event);
+    const scale = this.screenScale();
+    const points = this.lassoPoints();
+    if (closesShape(points, at, scale)) {
+      this.lassoClose();
+      return;
+    }
+    if (isNewPoint(points, at, scale)) this.lassoPoints.set([...points, at]);
+    this.lassoDrag = { clientX: event.clientX, clientY: event.clientY, moved: false, fresh: !points.length, from: this.lassoPoints().length - 1 };
+  }
+
+  private lassoMove(event: PointerEvent): void {
+    this.lassoHover.set(this.lassoClosed() ? null : this.picturePoint(event));
+    const drag = this.lassoDrag;
+    if (!drag) return;
+    if (!drag.moved && Math.hypot(event.clientX - drag.clientX, event.clientY - drag.clientY) < LASSO_FREEHAND_GAP) return;
+    drag.moved = true;
+    const scale = this.screenScale();
+    const points = [...this.lassoPoints()];
+    for (const e of event.getCoalescedEvents?.() ?? [event]) {
+      const at = this.picturePoint(e);
+      if (isNewPoint(points, at, scale, LASSO_FREEHAND_GAP)) points.push(at);
+    }
+    this.lassoPoints.set(points);
+  }
+
+  /** The press ends. A freehand line is lightened; drawn on its own, it closes like a lasso. */
+  private lassoEnd(): void {
+    const drag = this.lassoDrag;
+    this.lassoDrag = null;
+    if (!drag?.moved) return;
+    const points = this.lassoPoints();
+    const start = Math.max(0, drag.from);
+    this.lassoPoints.set([...points.slice(0, start), ...simplify(points.slice(start), 0.8 / this.screenScale())]);
+    if (drag.fresh && isShape(this.lassoPoints())) this.lassoClose();
+  }
+
+  protected lassoClose(): void {
+    if (this.lassoPoints().length < LASSO_MIN_POINTS) return;
+    this.lassoClosed.set(true);
+    this.lassoHover.set(null);
+  }
+
+  /** Restores ("add") or cuts ("remove") the shape, or around it: one step, undone with Ctrl + Z. */
+  protected lassoApply(mode: 'add' | 'remove'): void {
+    if (!this.lassoUsable()) return;
+    this.store.applyShape(this.item().id, this.lassoPoints(), mode, this.lassoAround());
+    this.lassoClear();
+  }
+
+  protected lassoClear(): void {
+    this.lassoPoints.set([]);
+    this.lassoClosed.set(false);
+    this.lassoHover.set(null);
+    this.lassoDrag = null;
+  }
+
+  /** Ctrl + Z while a shape is drawn: it is reopened, then loses its points one by one. */
+  private lassoStepBack(): boolean {
+    if (!this.lassoing() || !this.lassoPoints().length || this.lassoDrag) return false;
+    if (this.lassoClosed()) this.lassoClosed.set(false);
+    else this.lassoPoints.update((points) => points.slice(0, -1));
+    return true;
   }
 
   // --- "Click" tool (SAM) ------------------------------------------------------------------
@@ -473,6 +581,12 @@ export class ResultView {
       this.samStart(event);
       return;
     }
+    if (this.lassoing()) {
+      event.preventDefault();
+      (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+      this.lassoStart(event);
+      return;
+    }
     if (this.rescuing()) {
       event.preventDefault();
       (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
@@ -492,6 +606,10 @@ export class ResultView {
   protected onPointerMove(event: PointerEvent): void {
     if (this.samDrag) {
       this.samMove(event);
+      return;
+    }
+    if (this.lassoing()) {
+      this.lassoMove(event);
       return;
     }
     const item = this.item();
@@ -518,6 +636,10 @@ export class ResultView {
   protected onPointerUp(event?: PointerEvent): void {
     if (this.samDrag && event) {
       void this.samEnd(event);
+      return;
+    }
+    if (this.lassoDrag) {
+      this.lassoEnd();
       return;
     }
     this.drag = null;
@@ -566,13 +688,28 @@ export class ResultView {
     const item = this.item();
     const key = event.key.toLowerCase();
     if (event.ctrlKey || event.metaKey) {
-      if (key === 'z' && !event.shiftKey) this.store.undo(item.id);
+      if (key === 'z' && !event.shiftKey) {
+        if (!this.lassoStepBack()) this.store.undo(item.id);
+      }
       else if (key === 'y' || (key === 'z' && event.shiftKey)) this.store.redo(item.id);
       else return;
       event.preventDefault();
       return;
     }
     if (event.altKey || !this.canRetouch()) return;
+    if (this.lassoing() && this.lassoPoints().length) {
+      if (key === 'escape') return this.lassoClear();
+      if (key === 'backspace' || key === 'delete') {
+        event.preventDefault();
+        this.lassoStepBack();
+        return;
+      }
+      // Enter on a focused button presses the button.
+      if (key === 'enter' && !target?.closest('button, a')) {
+        event.preventDefault();
+        return this.lassoClose();
+      }
+    }
     const tool = this.tools.find((t) => t.key.toLowerCase() === key);
     if (tool) {
       this.tab.set('retouch');

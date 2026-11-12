@@ -57,6 +57,9 @@ await page.getByRole('dialog').waitFor();
 await page.waitForTimeout(400);
 await shot(page, 'install-help');
 await page.keyboard.press('Escape');
+// The focus goes back to the install button: without it, its ring stays in the next screenshots.
+await page.evaluate(() => document.activeElement?.blur());
+await section(page, '#lasso .spot-card', 'landing-lasso');
 await section(page, '#ai', 'landing-ai');
 await section(page, '#how', 'landing-steps');
 await section(page, '#features', 'landing-features');
@@ -119,6 +122,16 @@ await page.mouse.up();
 await page.getByRole('button', { name: 'Add to the cutout' }).waitFor({ timeout: 120_000 });
 await page.waitForTimeout(400);
 await shot(page, 'editor-click');
+// The lasso: points around the grass left at the cat's feet, the shape closed on the first one.
+await page.getByRole('button', { name: /^cat\.jpg/ }).click();
+await page.getByRole('tab', { name: 'Retouch' }).click();
+await page.getByRole('button', { name: 'Lasso', exact: true }).click();
+const cat = await page.locator('.viewport canvas:not(.overlay)').boundingBox();
+for (const [x, y] of [[292, 418], [297, 442], [262, 505], [222, 594], [170, 594], [174, 556], [240, 470], [292, 418]]) {
+  await page.mouse.click(cat.x + (cat.width * x) / 480, cat.y + (cat.height * y) / 600);
+}
+await page.waitForTimeout(400);
+await shot(page, 'editor-lasso');
 await page.context().close();
 
 page = await open('/app', { colorScheme: 'dark' });

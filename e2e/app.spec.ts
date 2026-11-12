@@ -225,6 +225,33 @@ test.describe('the tool', () => {
     await expect(page.getByRole('button', { name: 'Undo' })).toBeEnabled();
     await expect(page.getByRole('button', { name: 'Add to the cutout' })).toBeHidden();
 
+    // Lasso: a square in the empty top-left corner, point by point; Ctrl + Z takes the last point
+    // back while drawing, then undoes the restored area once it is applied.
+    await page.getByRole('button', { name: 'Lasso', exact: true }).click();
+    await canvas.scrollIntoViewIfNeeded();
+    const pic = (await canvas.boundingBox())!;
+    const click = (fx: number, fy: number) => page.mouse.click(pic.x + pic.width * fx, pic.y + pic.height * fy);
+    const cornerAlpha = () =>
+      canvas.evaluate((c: HTMLCanvasElement) => c.getContext('2d')!.getImageData(Math.round(c.width * 0.055), Math.round(c.height * 0.04), 1, 1).data[3]);
+    const state = page.locator('.lasso-state');
+    expect(await cornerAlpha()).toBeLessThan(10);
+    await click(0.02, 0.02);
+    await click(0.09, 0.02);
+    await click(0.05, 0.4);
+    await expect(state).toContainText('3 points');
+    await page.keyboard.press('Control+z');
+    await expect(state).toContainText('2 points');
+    await click(0.09, 0.06);
+    await click(0.02, 0.06);
+    await click(0.02, 0.02);
+    await expect(state).toContainText('Shape closed (4 points)');
+    await page.getByRole('button', { name: 'Restore', exact: true }).last().click();
+    await expect.poll(cornerAlpha).toBeGreaterThan(245);
+    await page.keyboard.press('Control+z');
+    await expect.poll(cornerAlpha).toBeLessThan(10);
+    await page.keyboard.press('Control+y');
+    await expect.poll(cornerAlpha).toBeGreaterThan(245);
+
     // Compare with the other model: it is asked for first, then the picture is cut out again.
     await expect(page.getByText('Cut out with')).toContainText('IS-Net');
     page.once('dialog', (d) => d.accept());

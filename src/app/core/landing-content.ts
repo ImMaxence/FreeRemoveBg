@@ -42,4 +42,4 @@ export const BROWSERS = [
   { name: 'Android / iOS', level: 'partial', key: 'mobile' },
 ];
 
-export const FAQ = ['free', 'model', 'which', 'sam', 'download', 'alternative', 'quality', 'privacy', 'formats', 'batch', 'commercial', 'offline', 'iphone'];
+export const FAQ = ['free', 'model', 'which', 'sam', 'lasso', 'download', 'alternative', 'quality', 'privacy', 'formats', 'batch', 'commercial', 'offline', 'iphone'];

@@ -42,12 +42,13 @@
         role="img"
         [attr.aria-label]="(view() === 'original' || !done() ? 'tool.result.altOriginal' : 'tool.result.altResult') | transloco: { name: it.name }"
         [class.brush]="brushing()"
-        [class.select]="rescuing() || pointing()"
+        [class.select]="rescuing() || pointing() || lassoing()"
+        (dblclick)="lassoing() && lassoClose()"
         (pointerdown)="onPointerDown($event)"
         (pointermove)="onPointerMove($event)"
         (pointerup)="onPointerUp($event)"
         (pointercancel)="onPointerUp()"
-        (pointerleave)="cursor.set(null)"
+        (pointerleave)="cursor.set(null); lassoHover.set(null)"
       ></canvas>
       <canvas #overlay class="overlay" aria-hidden="true"></canvas>
       @for (b of [samDraft() ?? samBox()]; track $index) {
@@ -64,6 +65,29 @@
       }
       @for (p of samPoints(); track $index) {
         <span class="sam-point" [class.negative]="!p.positive" aria-hidden="true" [style.left.%]="percent(p.x, samWork().width)" [style.top.%]="percent(p.y, samWork().height)"></span>
+      }
+      @if (lassoing() && lassoPoints().length) {
+        <svg class="lasso" [class.closed]="lassoClosed()" [attr.viewBox]="'0 0 ' + it.width + ' ' + it.height" preserveAspectRatio="none" aria-hidden="true">
+          @if (lassoClosed()) {
+            <path class="lasso-fill" [attr.d]="lassoFill()" [attr.fill-rule]="lassoAround() ? 'evenodd' : 'nonzero'" />
+          }
+          <path class="lasso-under" [attr.d]="lassoLine()" />
+          <path class="lasso-line" [attr.d]="lassoLine()" />
+          @if (lassoHover(); as h) {
+            @let last = lassoPoints()[lassoPoints().length - 1];
+            <line class="lasso-rubber" [attr.x1]="last.x" [attr.y1]="last.y" [attr.x2]="h.x" [attr.y2]="h.y" />
+          }
+        </svg>
+        @for (p of lassoDots(); track $index; let first = $first) {
+          <span
+            class="lasso-point"
+            [class.first]="first"
+            [class.closable]="first && lassoCanClose()"
+            aria-hidden="true"
+            [style.left.%]="(p.x / it.width) * 100"
+            [style.top.%]="(p.y / it.height) * 100"
+          ></span>
+        }
       }
       @if (area(); as a) {
         <span
@@ -241,11 +265,14 @@
       </div>
     } @else {
       <div id="panel-retouch" role="tabpanel" aria-labelledby="tab-retouch" class="tab-panel">
-        <div class="tool-grid five" role="group" [attr.aria-label]="'tool.result.tabs.retouch' | transloco">
+        <div class="tool-grid six" role="group" [attr.aria-label]="'tool.result.tabs.retouch' | transloco">
           @for (t of tools; track t.id) {
             <button class="tool-btn" type="button" [class.on]="tool() === t.id" [attr.aria-pressed]="tool() === t.id" [disabled]="t.id !== 'move' && !canRetouch()" [title]="('tool.retouch.' + t.id | transloco) + ' (' + t.key + ')'" (click)="setTool(t.id)">
               <app-icon [name]="t.icon" [size]="20" />
               <span>{{ 'tool.retouch.' + t.id | transloco }}</span>
+              @if (t.isNew) {
+                <span class="new-badge" aria-hidden="true">{{ 'common.new' | transloco }}</span>
+              }
             </button>
           }
         </div>
@@ -301,6 +328,40 @@
             }
             @if (samFailed()) {
               <p class="inline-error" role="alert"><app-icon name="alert" [size]="16" /> {{ 'tool.sam.failed' | transloco }}</p>
+            }
+          </div>
+        } @else if (tool() === 'lasso') {
+          <div class="lasso-panel">
+            <p class="help">{{ 'tool.lasso.help' | transloco }}</p>
+            <ul class="keys faint">
+              <li><kbd>{{ 'tool.lasso.enter' | transloco }}</kbd> {{ 'tool.lasso.closeKey' | transloco }}</li>
+              <li><kbd>Ctrl</kbd> + <kbd>Z</kbd> {{ 'tool.lasso.undoKey' | transloco }}</li>
+              <li><kbd>{{ 'tool.lasso.escape' | transloco }}</kbd> {{ 'tool.lasso.clearKey' | transloco }}</li>
+            </ul>
+            <div class="segmented" role="group" [attr.aria-label]="'tool.lasso.where' | transloco">
+              <button type="button" [class.active]="!lassoAround()" [attr.aria-pressed]="!lassoAround()" (click)="lassoAround.set(false)">{{ 'tool.lasso.inside' | transloco }}</button>
+              <button type="button" [class.active]="lassoAround()" [attr.aria-pressed]="lassoAround()" (click)="lassoAround.set(true)">{{ 'tool.lasso.around' | transloco }}</button>
+            </div>
+            <p class="lasso-state" role="status">
+              @if (!lassoPoints().length) {
+                {{ 'tool.lasso.empty' | transloco }}
+              } @else if (lassoClosed()) {
+                {{ 'tool.lasso.closed' | transloco: { count: lassoPoints().length } }}
+              } @else {
+                {{ 'tool.lasso.drawing' | transloco: { count: lassoPoints().length } }}
+              }
+            </p>
+            <div class="row two">
+              <button class="btn dark sm" type="button" [disabled]="!lassoUsable()" (click)="lassoApply('add')"><app-icon name="brush" [size]="15" /> {{ 'tool.lasso.restore' | transloco }}</button>
+              <button class="btn sm" type="button" [disabled]="!lassoUsable()" (click)="lassoApply('remove')"><app-icon name="scissors" [size]="15" /> {{ 'tool.lasso.cut' | transloco }}</button>
+            </div>
+            @if (lassoPoints().length) {
+              <div class="row">
+                @if (lassoCanClose()) {
+                  <button class="btn ghost sm" type="button" (click)="lassoClose()">{{ 'tool.lasso.close' | transloco }}</button>
+                }
+                <button class="btn ghost sm" type="button" (click)="lassoClear()">{{ 'tool.lasso.clear' | transloco }}</button>
+              </div>
             }
           </div>
         } @else if (tool() === 'rescue') {

@@ -2,6 +2,16 @@
 
 All notable changes to FreeRemoveBg. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning: [SemVer](https://semver.org/) — `MAJOR.MINOR.PATCH`: MAJOR for changes that break how the app is used or hosted, MINOR for new features, PATCH for fixes.
 
+## [2.3.0] - 2026-11-12
+
+### Added
+- Lasso retouching: click point by point around an area, or hold the button down and draw freehand, close the shape (on its first point, with a double click, Enter or a button), then restore it or cut it out, inside the shape or around it
+- Ctrl + Z while drawing removes the last point (and reopens a closed shape); afterwards it undoes the change like every retouch. Backspace removes the last point too, Escape clears the shape
+- The home page presents the lasso: a "New" link at the top and a section with an animated demo (grass left by the AI, cut out, then brought back with Ctrl + Z), and a question in the FAQ
+
+### Changed
+- The retouch tools are laid out on two rows of three, with a "New" badge on the lasso
+
 ## [2.2.0] - 2026-11-12
 
 ### Added

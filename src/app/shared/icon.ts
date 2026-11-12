@@ -61,6 +61,9 @@ const ICONS: Record<string, string> = {
   pointer: '<path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>',
   phone: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>',
   crop: '<path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>',
+  // A lasso: a dotted loop (the selection), its knot and its rope (drawn for FreeRemoveBg).
+  lasso: '<path d="M6.6 15.6C4.3 14.4 3 12.6 3 10.5 3 6.4 7 3.5 12 3.5s9 2.9 9 7-4 7-9 7c-1.2 0-2.3-.2-3.3-.5" stroke-dasharray="2.6 2.1"/><circle cx="7" cy="16.7" r="1.8"/><path d="M6.3 18.5c-.7 1.2-.6 2.4.4 3.2"/>',
+  scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12"/>',
 };
 
 @Component({

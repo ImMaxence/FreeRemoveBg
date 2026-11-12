@@ -1,7 +1,8 @@
 {
   "common": {
     "close": "Close",
-    "downloadStats": "{{ done }} of {{ total }} · {{ speed }} · {{ left }} left"
+    "downloadStats": "{{ done }} of {{ total }} · {{ speed }} · {{ left }} left",
+    "new": "New"
   },
   "nav": {
     "skip": "Skip to content",
@@ -74,16 +75,42 @@
         "cutout": "Cut out",
         "background": "New background"
       },
-      "caption": "Cut out by FreeRemoveBg in the browser, untouched"
+      "caption": "Cut out by FreeRemoveBg in the browser, untouched",
+      "new": "Lasso retouching"
     },
     "ticker": {
       "free": "Free",
+      "lasso": "New: the lasso",
       "ai": "Open source AI: IS-Net, ORMBG, SAM 2",
       "noUpload": "Nothing uploaded",
       "fullSize": "Full size",
       "batch": "Batch processing",
       "offline": "Works offline",
       "noAccount": "No account"
+    },
+    "lasso": {
+      "eyebrow": "Version 2.3",
+      "title": "The lasso: draw around, then restore or cut.",
+      "lead": "The AI left a bit of background, or cut off a hand? Place points around the area, close the shape, and decide: restore it, or cut it out. Inside the shape or all around it.",
+      "steps": {
+        "points": {
+          "title": "Point by point",
+          "text": "Click around the area. Or hold the button down and draw freehand."
+        },
+        "close": {
+          "title": "Close the shape",
+          "text": "On the first point, with a double click or Enter."
+        },
+        "apply": {
+          "title": "Restore or cut out",
+          "text": "Inside the shape, or around it to keep only what it encloses."
+        }
+      },
+      "undo": "removes the last point while you draw, then undoes the change once applied.",
+      "cta": "Try the lasso",
+      "demoRestore": "Restore",
+      "demoCut": "Cut out",
+      "demoAlt": "A cat cut out of its photo, with a dotted lasso being drawn around its ear"
     },
     "ai": {
       "eyebrow": "The AI inside",
@@ -204,8 +231,8 @@
         "text": "Turn, mirror, crop with ready-made proportions (square, 4:5, 16:9…)."
       },
       "brush": {
-        "title": "Brush and rescue",
-        "text": "Erase or restore by hand, or click on an object the AI missed: SAM 2 selects it, you add it."
+        "title": "Brush, lasso and click",
+        "text": "Erase or restore by hand, surround an area with the lasso, or click on a forgotten object: SAM 2 selects it, you add it."
       },
       "batch": {
         "title": "Batches",
@@ -288,6 +315,10 @@
       "sam": {
         "q": "What is SAM 2 for?",
         "a": "SAM 2.1 (Segment Anything, Meta, Apache-2.0) is not a background remover: it selects the object you click on. In FreeRemoveBg it powers the \"Click\" retouch tool, to add an object the cutout missed (something held at arm's length…) or to take one away. It reads each picture once, then answers each click at once. It is only downloaded (78 to 156 MB) if you use it, after you agree."
+      },
+      "lasso": {
+        "q": "How do I fix one precise area of the cutout?",
+        "a": "With the lasso, in the Retouch tab: click point by point around the area (or draw freehand), close the shape, then \"Restore\" or \"Cut out\". It can apply inside the shape or around it. Ctrl + Z undoes it, like every retouch."
       },
       "download": {
         "q": "Why does a model have to be downloaded?",
@@ -490,6 +521,7 @@
       "move": "Move",
       "erase": "Erase",
       "restore": "Restore",
+      "lasso": "Lasso",
       "rescue": "Rescue",
       "size": "Brush size",
       "help": "Erase what should go, restore what should stay. Zoom in for details: the brush keeps its size on screen.",
@@ -499,6 +531,24 @@
       "reset": "Back to the AI result",
       "moveHelp": "Turn the mouse wheel over the picture to zoom in and out; once zoomed in, drag the picture to move around.",
       "point": "Click"
+    },
+    "lasso": {
+      "help": "Click point by point around an area, or hold the button down and draw freehand. Close the shape on its first point, with a double click or Enter, then restore it or cut it out.",
+      "enter": "Enter",
+      "closeKey": "closes the shape",
+      "undoKey": "removes the last point",
+      "escape": "Esc",
+      "clearKey": "clears it",
+      "where": "Where the change applies",
+      "inside": "Inside the shape",
+      "around": "Around it",
+      "empty": "Click on the picture to place the first point.",
+      "drawing": "{{ count }} points: close the shape, or keep going.",
+      "closed": "Shape closed ({{ count }} points).",
+      "restore": "Restore",
+      "cut": "Cut out",
+      "close": "Close the shape",
+      "clear": "Start over"
     },
     "export": {
       "title": "Download",
@@ -759,7 +809,7 @@
         {
           "title": "Content that is not accessible",
           "body": [
-            "The erase and restore brush, the rescue of an area and the \"Click\" tool need a pointer (mouse, finger or stylus): they have no keyboard equivalent. The automatic cutout, preparing the picture, the backgrounds and the downloads do not depend on them.",
+            "The erase and restore brush, the lasso, the rescue of an area and the \"Click\" tool need a pointer (mouse, finger or stylus): they have no keyboard equivalent. The automatic cutout, preparing the picture, the backgrounds and the downloads do not depend on them.",
             "The preview of a picture is a drawing surface described by a short text only (the name of the file and its state): the content of your own pictures cannot be described automatically.",
             "The changelog is written in English only, including on the French version of the site.",
             "Dropping files and pasting from the clipboard are shortcuts; the \"Choose images\" button always offers the same function.",
@@ -775,7 +825,7 @@
         {
           "title": "About this statement",
           "body": [
-            "This statement was written on 11 November 2026 and checked again for version 2.2.0 of the site. It is updated when the site changes."
+            "This statement was written on 11 November 2026 and checked again for version 2.3.0 of the site. It is updated when the site changes."
           ]
         }
       ]
