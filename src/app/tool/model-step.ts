@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ImagesStore } from '../core/images.store';
@@ -89,14 +89,21 @@ import { Icon } from '../shared/icon';
               </div>
             }
             <div class="actions">
-              <button class="btn primary lg" type="button" [disabled]="store.modelState() === 'checking'" (click)="agree.emit()">
-                <app-icon name="download" [size]="19" />
-                {{ (store.modelState() === 'error' ? 'tool.model.retry' : 'tool.model.agree') | transloco: { name: model().name, size: size(store.model()) } }}
-              </button>
-              @if (store.previousModel(); as previous) {
-                <button class="btn lg" type="button" (click)="store.selectModel(previous)">{{ 'tool.model.keep' | transloco: { name: models[previous].name } }}</button>
+              @if (store.modelState() === 'ready') {
+                <!-- Opened again from the stepper: the chosen model is ready, back to the pictures. -->
+                <button class="btn primary lg" type="button" (click)="continue.emit()">{{ 'tool.model.useReady' | transloco: { name: model().name } }} <app-icon name="arrow-right" [size]="18" /></button>
               } @else {
-                <button class="btn lg" type="button" (click)="decline.emit()">{{ 'tool.model.decline' | transloco }}</button>
+                <button class="btn primary lg" type="button" [disabled]="store.modelState() === 'checking'" (click)="agree.emit()">
+                  <app-icon name="download" [size]="19" />
+                  {{ (store.modelState() === 'error' ? 'tool.model.retry' : 'tool.model.agree') | transloco: { name: model().name, size: size(store.model()) } }}
+                </button>
+                @if (store.previousModel(); as previous) {
+                  <button class="btn lg" type="button" (click)="store.selectModel(previous)">{{ 'tool.model.keep' | transloco: { name: models[previous].name } }}</button>
+                } @else if (browsing()) {
+                  <button class="btn lg" type="button" (click)="continue.emit()">{{ 'tool.model.back' | transloco }}</button>
+                } @else {
+                  <button class="btn lg" type="button" (click)="decline.emit()">{{ 'tool.model.decline' | transloco }}</button>
+                }
               }
             </div>
             <p class="faint small">{{ 'tool.model.mobile' | transloco }}</p>
@@ -362,6 +369,8 @@ export class ModelStep {
   protected readonly models = MODELS;
   protected readonly ids = MODEL_IDS;
   protected readonly model = computed(() => MODELS[this.store.model()]);
+  /** Opened again from the stepper, after the first visit. */
+  readonly browsing = input(false);
   readonly agree = output();
   readonly continue = output();
   readonly decline = output();

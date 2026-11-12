@@ -1,0 +1,80 @@
+<div class="container">
+  <div class="spot-card">
+    <div class="spot-copy" appReveal>
+      <span class="eyebrow"
+        ><span class="new-badge">{{ 'common.new' | transloco }}</span>
+        {{ 'landing.zones.eyebrow' | transloco }}</span
+      >
+      <h2>{{ 'landing.zones.title' | transloco }}</h2>
+      <p class="lead">{{ 'landing.zones.lead' | transloco }}</p>
+      <ol class="spot-steps">
+        @for (s of steps; track s) {
+          <li>
+            <b>{{ 'landing.zones.steps.' + s + '.title' | transloco }}</b>
+            <span class="muted">{{ 'landing.zones.steps.' + s + '.text' | transloco }}</span>
+          </li>
+        }
+      </ol>
+      <button class="btn primary lg" type="button" (click)="tryDogs()">
+        {{ 'landing.zones.cta' | transloco }} <app-icon name="arrow-right" [size]="19" />
+      </button>
+    </div>
+
+    <!-- A frame around each dog, then the photo goes and the dogs stay; or four pictures. -->
+    <figure
+      class="zones-demo"
+      [appReveal]="1"
+      role="img"
+      [attr.aria-label]="'landing.zones.demoAlt' | transloco"
+    >
+      <div class="demo-stage" aria-hidden="true">
+        <img
+          class="demo-cut"
+          src="/samples/dogs-cutout-960.webp"
+          width="960"
+          height="641"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="demo-photo"
+          src="/samples/dogs-960.webp"
+          width="960"
+          height="641"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+        @for (z of zones; track $index) {
+          <span
+            [class]="'demo-zone z' + $index"
+            [style.left.%]="percent(z[0], 960)"
+            [style.top.%]="percent(z[1], 641)"
+            [style.width.%]="percent(z[2], 960)"
+            [style.height.%]="percent(z[3], 641)"
+            ><b>{{ $index + 1 }}</b></span
+          >
+        }
+        <span class="demo-tag">{{ 'landing.zones.together' | transloco }}</span>
+      </div>
+      <div class="demo-split" aria-hidden="true">
+        <span class="demo-split-label">{{
+          'landing.zones.split' | transloco: { count: zones.length }
+        }}</span>
+        <div class="stickers">
+          @for (z of zones; track $index) {
+            <span [class]="'sticker s' + $index"
+              ><img
+                [src]="'/samples/dogs-zone-' + ($index + 1) + '.webp'"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              /><b>{{ $index + 1 }}</b></span
+            >
+          }
+        </div>
+      </div>
+    </figure>
+  </div>
+</div>

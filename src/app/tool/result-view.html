@@ -157,7 +157,8 @@
 
 <aside class="side" [attr.aria-label]="'tool.result.settings' | transloco">
   <div class="side-top">
-    <button class="btn ghost sm" type="button" [disabled]="!done() && it.status !== 'error'" (click)="backToPrepare()"><app-icon name="arrow-left" [size]="16" /> {{ 'tool.result.back' | transloco }}</button>
+    <button class="btn sm" type="button" [disabled]="!done() && it.status !== 'error'" (click)="backToPrepare()"><app-icon name="arrow-left" [size]="16" /> {{ 'tool.result.back' | transloco }}</button>
+    <button class="btn ghost sm" type="button" (click)="store.selectedId.set(null)"><app-icon name="images" [size]="16" /> {{ 'tool.nav.images' | transloco }}</button>
   </div>
 
   @if (done() && it.model) {

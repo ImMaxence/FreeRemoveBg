@@ -6,7 +6,52 @@
   </div>
   <div #viewport class="viewport">
     <div class="frame" [style.width.px]="display().width" [style.height.px]="display().height">
-      <canvas #canvas role="img" [attr.aria-label]="'tool.prepare.alt' | transloco: { name: it.name }"></canvas>
+      <canvas
+        #canvas
+        role="img"
+        [attr.aria-label]="'tool.prepare.alt' | transloco: { name: it.name }"
+        [class.drawing]="zoning()"
+        (pointerdown)="drawStart($event)"
+        (pointermove)="drawMove($event)"
+        (pointerup)="drawEnd()"
+        (pointercancel)="drawEnd()"
+      ></canvas>
+      @if (!cropping()) {
+        @for (z of zones(); track $index; let i = $index) {
+          <div
+            class="zone"
+            [class.live]="zoning()"
+            [attr.data-zone]="i"
+            [attr.tabindex]="zoning() ? 0 : -1"
+            role="group"
+            [attr.aria-label]="'tool.zones.zone' | transloco: { n: i + 1, size: zoneSize(z) }"
+            [style.left.%]="percent(z.x, it.width)"
+            [style.top.%]="percent(z.y, it.height)"
+            [style.width.%]="percent(z.width, it.width)"
+            [style.height.%]="percent(z.height, it.height)"
+            (keydown)="onZoneKey($event, i)"
+          >
+            <!-- Moved by its number: a drag inside a zone draws another one (subjects side by side overlap). -->
+            <span class="zone-num" aria-hidden="true" (pointerdown)="grabZone($event, i, 'move')" (pointermove)="moveZone($event)" (pointerup)="releaseZone()" (pointercancel)="releaseZone()">{{ i + 1 }}</span>
+            @if (zoning()) {
+              <button
+                type="button"
+                class="zone-remove"
+                (pointerdown)="$event.stopPropagation()"
+                (click)="removeZone(i)"
+                [attr.aria-label]="'tool.zones.remove' | transloco: { n: i + 1 }"
+                [title]="'tool.zones.remove' | transloco: { n: i + 1 }"
+              >
+                <app-icon name="x" [size]="12" />
+              </button>
+              <span class="handle se" aria-hidden="true" (pointerdown)="grabZone($event, i, 'se')" (pointermove)="moveZone($event)" (pointerup)="releaseZone()" (pointercancel)="releaseZone()"></span>
+            }
+          </div>
+        }
+        @if (zoneDraft(); as d) {
+          <div class="zone draft" aria-hidden="true" [style.left.%]="percent(d.x, it.width)" [style.top.%]="percent(d.y, it.height)" [style.width.%]="percent(d.width, it.width)" [style.height.%]="percent(d.height, it.height)"></div>
+        }
+      }
       @if (frame(); as f) {
         <div
           class="crop"
@@ -41,12 +86,16 @@
 </section>
 
 <aside class="side" [attr.aria-label]="'tool.prepare.title' | transloco">
+  <div class="side-top">
+    <button class="btn sm" type="button" (click)="store.selectedId.set(null)"><app-icon name="arrow-left" [size]="16" /> {{ 'tool.nav.images' | transloco }}</button>
+  </div>
+
   <section class="card group">
     <span class="eyebrow">{{ 'tool.prepare.eyebrow' | transloco }}</span>
     <h2>{{ 'tool.prepare.title' | transloco }}</h2>
     <p class="muted">{{ 'tool.prepare.text' | transloco }}</p>
 
-    <div class="tool-grid" role="group" [attr.aria-label]="'tool.prepare.tools' | transloco">
+    <div class="tool-grid six" role="group" [attr.aria-label]="'tool.prepare.tools' | transloco">
       <button class="tool-btn" type="button" [disabled]="busy()" (click)="rotate(-1)">
         <app-icon name="rotate-ccw" [size]="20" />
         <span>{{ 'tool.prepare.rotateLeft' | transloco }}</span>
@@ -63,6 +112,11 @@
         <app-icon name="crop" [size]="20" />
         <span>{{ 'tool.prepare.crop' | transloco }}</span>
       </button>
+      <button class="tool-btn" type="button" [class.on]="zoning()" [attr.aria-pressed]="zoning()" [disabled]="busy()" (click)="toggleZones()">
+        <app-icon name="zones" [size]="20" />
+        <span>{{ 'tool.zones.tool' | transloco }}</span>
+        <span class="new-badge" aria-hidden="true">{{ 'common.new' | transloco }}</span>
+      </button>
     </div>
 
     @if (cropping()) {
@@ -78,6 +132,27 @@
           <button class="btn dark sm" type="button" (click)="applyCrop()"><app-icon name="check" [size]="16" /> {{ 'tool.prepare.apply' | transloco }}</button>
           <button class="btn ghost sm" type="button" (click)="cancelCrop()">{{ 'tool.prepare.cancel' | transloco }}</button>
         </div>
+      </div>
+    }
+
+    @if (zoning()) {
+      <div class="crop-options zone-options">
+        <p class="faint help">{{ 'tool.zones.help' | transloco }}</p>
+        <p class="zone-count" role="status">{{ (zones().length ? 'tool.zones.count' : 'tool.zones.none') | transloco: { count: zones().length } }}</p>
+        <div class="row">
+          <button class="btn sm" type="button" [disabled]="zones().length >= maxZones" (click)="addZone()"><app-icon name="plus" [size]="15" /> {{ 'tool.zones.add' | transloco }}</button>
+          @if (zones().length) {
+            <button class="btn ghost sm" type="button" (click)="clearZones()">{{ 'tool.zones.clear' | transloco }}</button>
+          }
+        </div>
+        @if (zones().length) {
+          <div class="zone-ways">
+            <button class="btn dark sm" type="button" [disabled]="busy()" (click)="cutOut()"><app-icon name="sparkles" [size]="16" /> {{ 'tool.zones.together' | transloco: { count: zones().length } }}</button>
+            <p class="faint help">{{ 'tool.zones.togetherHelp' | transloco }}</p>
+            <button class="btn sm" type="button" [disabled]="busy()" (click)="separate()"><app-icon name="images" [size]="16" /> {{ 'tool.zones.split' | transloco: { count: zones().length } }}</button>
+            <p class="faint help">{{ 'tool.zones.splitHelp' | transloco }}</p>
+          </div>
+        }
       </div>
     }
 
@@ -106,7 +181,11 @@
     }
     <button class="btn primary lg block" type="button" [disabled]="busy()" (click)="cutOut()">
       <app-icon name="sparkles" [size]="19" />
-      {{ 'tool.prepare.go' | transloco }}
+      @if (zones().length) {
+        {{ 'tool.zones.go' | transloco: { count: zones().length } }}
+      } @else {
+        {{ 'tool.prepare.go' | transloco }}
+      }
     </button>
     @if (otherDrafts() > 0) {
       <button class="btn block" type="button" [disabled]="busy()" (click)="cutOut(true)">

@@ -2,6 +2,21 @@
 
 All notable changes to FreeRemoveBg. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning: [SemVer](https://semver.org/) — `MAJOR.MINOR.PATCH`: MAJOR for changes that break how the app is used or hosted, MINOR for new features, PATCH for fixes.
 
+## [2.4.0] - 2026-11-12
+
+### Added
+- Zones, in the "Prepare" step: draw a frame around each subject of a picture (up to 12, four dogs on one photo…). "Cut out the zones on this picture" has the AI cut out each zone at close range and puts everything back in its place on the whole picture; "Split into N pictures" makes each zone a picture of its own, to prepare and cut out like the others. Zones may overlap; they are moved by their number, resized by their corner, and can be added, moved and resized with the keyboard too
+- The steps at the top of the tool are buttons: back to the AI model (to choose another one), to the pictures, to "Prepare" or to the result, in one click
+- "My pictures" buttons in "Prepare" and next to the result; back on step 2, the pictures already added are listed
+- A fourth sample picture, four dogs on leashes ("Walking Dogs" by Matt Nelson, CC0), to try the zones
+- The home page presents the zones: the "New" link at the top leads to a section with an animated demo; a question in the FAQ
+
+### Changed
+- "Back to preparing" is a full button
+
+### Fixed
+- A missing space between the names of the AIs in the footer
+
 ## [2.3.0] - 2026-11-12
 
 ### Added

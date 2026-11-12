@@ -276,4 +276,65 @@ test.describe('the tool', () => {
     await page.getByRole('button', { name: 'Back to preparing' }).click();
     await expect(page.getByRole('heading', { name: 'Prepare the picture?' })).toBeVisible();
   });
+
+  test('cuts out several subjects zone by zone, splits them into pictures, and goes back through the steps', async ({ page }) => {
+    test.setTimeout(400_000);
+    page.on('dialog', (d) => d.accept());
+    await page.goto('/app?device=wasm');
+    await page.getByRole('button', { name: /^Download IS-Net/ }).click();
+    await page.getByRole('button', { name: 'Continue to my pictures' }).click({ timeout: 10_000 }).catch(() => undefined);
+    await page.locator('app-dropzone input[type=file]').setInputFiles('public/samples/dogs.jpg');
+
+    // Zones: one around the husky, one around the Australian shepherd.
+    await page.getByRole('button', { name: 'Zones', exact: true }).click();
+    const box = (await page.locator('app-prepare-view canvas').boundingBox())!;
+    const draw = async (x1: number, y1: number, x2: number, y2: number) => {
+      await page.mouse.move(box.x + box.width * x1, box.y + box.height * y1);
+      await page.mouse.down();
+      await page.mouse.move(box.x + box.width * x2, box.y + box.height * y2, { steps: 5 });
+      await page.mouse.up();
+    };
+    const count = page.locator('.zone-count');
+    await draw(0.26, 0.33, 0.44, 0.77);
+    await draw(0.63, 0.39, 0.86, 0.92);
+    await expect(count).toHaveText('Zones: 2');
+    // A drag that starts inside a zone draws another one: subjects side by side overlap.
+    await draw(0.3, 0.4, 0.4, 0.7);
+    await expect(count).toHaveText('Zones: 3');
+    await page.getByRole('button', { name: 'Remove zone 3' }).click();
+    await expect(count).toHaveText('Zones: 2');
+    // With the keyboard: a zone is added, gets the focus, moves, and is removed.
+    await page.getByRole('button', { name: 'Add a zone' }).click();
+    await expect(page.locator('[data-zone="2"]')).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('Delete');
+    await expect(count).toHaveText('Zones: 2');
+
+    // Together on the whole picture: nothing outside the zones, the dogs inside.
+    await page.getByRole('button', { name: 'Cut out the zones on this picture' }).click();
+    await expect(page.locator('p[role=status]').first()).toHaveText('Background removed', { timeout: 280_000 });
+    await expect(page.locator('.meta')).toContainText('1440 × 961 px');
+    const canvas = page.locator('.viewport canvas:not(.overlay)');
+    const alpha = (fx: number, fy: number) =>
+      canvas.evaluate((c: HTMLCanvasElement, [x, y]: number[]) => c.getContext('2d')!.getImageData(Math.round(c.width * x), Math.round(c.height * y), 1, 1).data[3], [fx, fy]);
+    expect(await alpha(0.05, 0.3)).toBe(0);
+    expect(await alpha(0.75, 0.72)).toBeGreaterThan(200);
+
+    // Back to "Prepare" from the steps at the top: the zones are still there; one picture each.
+    await page.locator('.stepper li').nth(2).getByRole('button').click();
+    await page.getByRole('button', { name: 'Zones', exact: true }).click();
+    await expect(count).toHaveText('Zones: 2');
+    await page.getByRole('button', { name: /^Split into 2 pictures/ }).click();
+    await expect(page.getByRole('button', { name: /^dogs \(1\)\.jpg — to prepare/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^dogs \(2\)\.jpg — to prepare/ })).toBeVisible();
+
+    // Step 2 lists the pictures already added; step 1 shows the model, then leads back.
+    await page.locator('.stepper li').nth(1).getByRole('button').click();
+    await expect(page.getByText('Your pictures (2)')).toBeVisible();
+    await page.getByRole('button', { name: 'Back to my pictures' }).click();
+    await expect(page.getByRole('heading', { name: 'Prepare the picture?' })).toBeVisible();
+    await page.locator('.stepper li').nth(0).getByRole('button').click();
+    await page.getByRole('button', { name: 'Continue with IS-Net' }).click();
+    await expect(page.getByRole('heading', { name: 'Prepare the picture?' })).toBeVisible();
+  });
 });

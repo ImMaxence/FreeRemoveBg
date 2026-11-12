@@ -247,6 +247,99 @@ canvas {
   }
 }
 
+/* Zones: one frame around each subject, numbered. */
+canvas.drawing {
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.zone {
+  position: absolute;
+  border: 2px dashed #ffd60a;
+  outline: 1.5px solid rgb(0 0 0 / 0.6);
+  background: rgb(255 214 10 / 0.12);
+  pointer-events: none;
+  /* Its inside lets drags through to the picture: only its number, × and corner can be grabbed. */
+  &.live {
+    .zone-num,
+    .zone-remove,
+    .handle {
+      pointer-events: auto;
+      touch-action: none;
+    }
+    .zone-num {
+      cursor: move;
+    }
+  }
+  &.draft {
+    border-style: solid;
+  }
+  &:focus-visible {
+    outline: 3px solid #ffd60a;
+    outline-offset: 2px;
+  }
+  .handle.se {
+    width: 16px;
+    height: 16px;
+    margin: -8px;
+  }
+}
+
+.zone-num {
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 6px 0 8px 0;
+  background: #ffd60a;
+  color: #16140f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.zone-remove {
+  position: absolute;
+  right: -11px;
+  top: -11px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #16140f;
+  color: #fff;
+  cursor: pointer;
+  /* A larger area to tap than to see. */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
+}
+
+.zone-count {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.zone-ways {
+  display: grid;
+  gap: 6px;
+  .btn {
+    justify-content: flex-start;
+  }
+  .help + .btn {
+    margin-top: 6px;
+  }
+}
+
 /* Result overlays ------------------------------------------------------------------------------ */
 
 /* The "Click" tool: SAM's selection, and the points clicked. */
@@ -469,6 +562,8 @@ canvas {
 
 .side-top {
   display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   justify-content: flex-start;
 }
 

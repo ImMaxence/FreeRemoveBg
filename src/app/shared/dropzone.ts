@@ -31,7 +31,7 @@ import { Icon } from './icon';
         <span>{{ 'drop.samples' | transloco }}</span>
         <div class="row">
           @for (s of sampleList; track s.id; let i = $index) {
-            <button type="button" class="sample" [style.--tilt]="(i - 1) * 4 + 'deg'" (click)="sample.emit(s)" [attr.aria-label]="'drop.sample.' + s.id | transloco">
+            <button type="button" class="sample" [style.--tilt]="(i - (sampleList.length - 1) / 2) * 4 + 'deg'" (click)="sample.emit(s)" [attr.aria-label]="'drop.sample.' + s.id | transloco">
               <img [src]="s.thumb" alt="" width="64" height="64" loading="lazy" decoding="async" />
             </button>
           }

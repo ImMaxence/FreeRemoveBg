@@ -59,6 +59,9 @@ await shot(page, 'install-help');
 await page.keyboard.press('Escape');
 // The focus goes back to the install button: without it, its ring stays in the next screenshots.
 await page.evaluate(() => document.activeElement?.blur());
+// And the mouse leaves it: no hover either.
+await page.mouse.move(700, 600);
+await section(page, '#zones .spot-card', 'landing-zones');
 await section(page, '#lasso .spot-card', 'landing-lasso');
 await section(page, '#ai', 'landing-ai');
 await section(page, '#how', 'landing-steps');
@@ -132,6 +135,26 @@ for (const [x, y] of [[292, 418], [297, 442], [262, 505], [222, 594], [170, 594]
 }
 await page.waitForTimeout(400);
 await shot(page, 'editor-lasso');
+await page.context().close();
+
+// Zones: a frame around each of the four dogs, then cut out together.
+page = await open('/app');
+await agree(page);
+await page.locator('app-dropzone input[type=file]').setInputFiles('public/samples/dogs.jpg');
+await page.getByRole('button', { name: 'Zones', exact: true }).click();
+const photo = await page.locator('app-prepare-view canvas').boundingBox();
+for (const [x, y, w, h] of [[250, 210, 170, 285], [385, 222, 95, 300], [415, 158, 190, 445], [608, 252, 215, 335]]) {
+  await page.mouse.move(photo.x + (photo.width * x) / 960, photo.y + (photo.height * y) / 641);
+  await page.mouse.down();
+  await page.mouse.move(photo.x + (photo.width * (x + w)) / 960, photo.y + (photo.height * (y + h)) / 641, { steps: 6 });
+  await page.mouse.up();
+}
+await page.waitForTimeout(300);
+await shot(page, 'editor-zones');
+await page.getByRole('button', { name: 'Cut out the zones on this picture' }).click();
+await page.locator('p[role=status]').filter({ hasText: 'Background removed' }).waitFor({ timeout: 300_000 });
+await page.waitForTimeout(500);
+await shot(page, 'editor-zones-result');
 await page.context().close();
 
 page = await open('/app', { colorScheme: 'dark' });

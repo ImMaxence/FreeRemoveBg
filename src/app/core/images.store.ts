@@ -5,6 +5,7 @@ import { EXPORT_FORMATS, type ExportFormat, exportName, isImageFile } from '../e
 import { type LassoPoint, isShape } from '../engine/lasso';
 import { maskSize, modelInputSize, workingSize } from '../engine/mask';
 import { type Rect, drawTurned, scaleRect, turnedSize } from '../engine/prepare';
+import { MAX_ZONES, zoneName } from '../engine/zones';
 import { uniqueNames, zip } from '../engine/zip';
 import { DEFAULT_MODEL, MODELS, type ModelId } from './models';
 import type { AiDevice, CatalogEntry, RemoveProgress, RemoveResult, RemoveWorkerApi, WorkerOptions } from '../workers/worker-types';
@@ -32,6 +33,11 @@ export interface Item {
   height: number;
   /** The original was larger than the limit and has been shrunk. */
   resized: boolean;
+  /**
+   * Areas drawn around each subject (in pixels of `source`): each is cut out on its own, at
+   * close range, and the answers are put together on the whole picture. None: the whole picture.
+   */
+  zones: Rect[];
   status: ItemStatus;
   /** The model that cut it out. */
   model: ModelId | null;
@@ -257,6 +263,7 @@ export class ImagesStore {
           width: bitmap.width,
           height: bitmap.height,
           resized,
+          zones: [],
           status: 'draft',
           model: null,
           aiMask: null,
@@ -359,10 +366,49 @@ export class ImagesStore {
     if (item && item.source !== item.original) await this.replaceSource(item, item.original);
   }
 
+  /** The zones of a picture being prepared (at most MAX_ZONES). */
+  setZones(id: number, zones: Rect[]): void {
+    const item = this.find(id);
+    if (!item || item.status !== 'draft') return;
+    this.patch(id, { zones: zones.slice(0, MAX_ZONES) });
+  }
+
+  /**
+   * Each zone becomes a picture of its own, in place of the whole one, ready to be prepared and
+   * cut out like any other ("dogs (1).jpg", "dogs (2).jpg"…).
+   */
+  async splitZones(id: number): Promise<void> {
+    const item = this.find(id);
+    if (!item?.zones.length || item.status !== 'draft') return;
+    const pieces: Item[] = [];
+    for (const [index, zone] of item.zones.entries()) {
+      const bitmap = await createImageBitmap(item.source, zone.x, zone.y, zone.width, zone.height);
+      pieces.push({
+        ...item,
+        id: this.nextId++,
+        name: zoneName(item.name, index),
+        source: bitmap,
+        original: bitmap,
+        width: bitmap.width,
+        height: bitmap.height,
+        zones: [],
+        revision: 0,
+        thumb: null,
+      });
+    }
+    this.items.update((items) => items.flatMap((i) => (i.id === id ? pieces : [i])));
+    item.source.close();
+    if (item.original !== item.source) item.original.close();
+    if (item.thumb) URL.revokeObjectURL(item.thumb);
+    this.selectedId.set(pieces[0].id);
+    for (const piece of pieces) void this.refreshThumb(piece.id);
+  }
+
   private async replaceSource(previous: Item, source: ImageBitmap): Promise<void> {
     // The picture given first is kept, to come back to it.
     if (previous.source !== previous.original && previous.source !== source) previous.source.close();
-    this.patch(previous.id, { source, width: source.width, height: source.height, status: 'draft', model: null, aiMask: null, mask: null, undo: [], redo: [], error: null });
+    // Turned or cropped, the picture has other coordinates: its zones go.
+    this.patch(previous.id, { source, width: source.width, height: source.height, zones: [], status: 'draft', model: null, aiMask: null, mask: null, undo: [], redo: [], error: null });
     this.touch(previous.id, true);
   }
 
@@ -529,7 +575,9 @@ export class ImagesStore {
         const id = item.id;
         this.patch(id, { status: 'working' });
         try {
-          const result = await this.cutOut(item);
+          const mask = document.createElement('canvas');
+          Object.assign(mask, maskSize(item.width, item.height));
+          const { result, aiMask } = item.zones.length ? await this.cutOutZones(item, mask) : await this.cutOutWhole(item, mask);
           this.engine.set({ model: result.model, device: result.device, ms: result.ms });
           const current = this.find(id);
           if (!current) {
@@ -539,10 +587,6 @@ export class ImagesStore {
           }
           // Prepared again while the AI was working: its new version waits for the user.
           if (current.source !== item.source || current.status !== 'working') continue;
-          const aiMask = alphaToImageData(result.alpha, result.width, result.height);
-          const mask = document.createElement('canvas');
-          Object.assign(mask, maskSize(item.width, item.height));
-          drawAiMask(mask, aiMask);
           this.patch(id, { status: 'done', model: result.model, aiMask, mask, undo: [], redo: [] });
           this.touch(id, true);
         } catch (e) {
@@ -555,6 +599,32 @@ export class ImagesStore {
     } finally {
       this.running = false;
     }
+  }
+
+  /** The whole picture at once: the AI's answer is stretched to the mask. */
+  private async cutOutWhole(item: Item, mask: HTMLCanvasElement): Promise<{ result: RemoveResult; aiMask: ImageData }> {
+    const result = await this.cutOut(item);
+    const aiMask = alphaToImageData(result.alpha, result.width, result.height);
+    drawAiMask(mask, aiMask);
+    return { result, aiMask };
+  }
+
+  /**
+   * Zone by zone: each is cut out on its own (the AI sees it larger) and its answer is put in its
+   * place on the mask; outside the zones, nothing is kept. The whole mask is the AI's result.
+   */
+  private async cutOutZones(item: Item, mask: HTMLCanvasElement): Promise<{ result: RemoveResult; aiMask: ImageData }> {
+    const ctx = mask.getContext('2d', { willReadFrequently: true })!;
+    ctx.imageSmoothingQuality = 'high';
+    let result: RemoveResult | null = null;
+    let ms = 0;
+    for (const zone of item.zones) {
+      result = await this.cutOut(item, zone);
+      ms += result.ms;
+      const target = scaleRect(zone, item.width, item.height, mask.width, mask.height);
+      ctx.drawImage(squareOf(alphaToImageData(result.alpha, result.width, result.height)), target.x, target.y, target.width, target.height);
+    }
+    return { result: { ...result!, ms }, aiMask: ctx.getImageData(0, 0, mask.width, mask.height) };
   }
 
   /**

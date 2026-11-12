@@ -4,25 +4,31 @@
 
   <ol class="stepper" [attr.aria-label]="'tool.steps.label' | transloco">
     @for (s of steps(); track s.id; let i = $index) {
-      <li [class]="s.state" [attr.aria-current]="s.state === 'current' ? 'step' : null">
-        <span class="num" aria-hidden="true">
+      <li [class]="s.state" [class.reachable]="s.reachable" [attr.aria-current]="s.state === 'current' ? 'step' : null">
+        <!-- Each step already reached is a button: back to it in one click. -->
+        <button type="button" class="step-go" [disabled]="!s.reachable" [title]="s.reachable ? ('tool.steps.goTo' | transloco: { step: ('tool.steps.' + s.id | transloco) }) : ''" (click)="goTo(s.id)">
+          <span class="num" aria-hidden="true">
+            @if (s.state === 'done') {
+              <app-icon name="check" [size]="16" />
+            } @else {
+              {{ i + 1 }}
+            }
+          </span>
+          <span class="label">
+            <b>{{ 'tool.steps.' + s.id | transloco }}</b>
+            @if (s.id === 'model') {
+              <small>{{ modelNote() }}</small>
+            } @else {
+              <small>{{ 'tool.steps.' + s.id + 'Note' | transloco }}</small>
+            }
+          </span>
           @if (s.state === 'done') {
-            <app-icon name="check" [size]="16" />
-          } @else {
-            {{ i + 1 }}
+            <span class="sr-only">{{ 'tool.steps.doneLabel' | transloco }}</span>
           }
-        </span>
-        <span class="label">
-          <b>{{ 'tool.steps.' + s.id | transloco }}</b>
-          @if (s.id === 'model') {
-            <small>{{ modelNote() }}</small>
-          } @else {
-            <small>{{ 'tool.steps.' + s.id + 'Note' | transloco }}</small>
+          @if (s.reachable) {
+            <app-icon class="go-icon" [name]="s.state === 'done' ? 'undo' : 'arrow-right'" [size]="16" />
           }
-        </span>
-        @if (s.state === 'done') {
-          <span class="sr-only">{{ 'tool.steps.doneLabel' | transloco }}</span>
-        }
+        </button>
       </li>
     }
   </ol>
@@ -58,7 +64,7 @@
       </div>
     }
     @case ('model') {
-      <app-model-step (agree)="agree()" (continue)="continue()" (decline)="decline()" />
+      <app-model-step [browsing]="browsingModels()" (agree)="agree()" (continue)="continue()" (decline)="decline()" />
     }
     @case ('images') {
       <section class="images">
@@ -67,6 +73,26 @@
           <h2>{{ 'tool.images.title' | transloco }}</h2>
           <p class="muted">{{ 'tool.images.text' | transloco }}</p>
         </div>
+        @if (store.items().length) {
+          <!-- Back on step 2 with pictures already added: they are still here. -->
+          <div class="yours card">
+            <div class="yours-head">
+              <b>{{ 'tool.images.yours' | transloco: { count: store.items().length } }}</b>
+              <button class="btn primary sm" type="button" (click)="resume()">{{ 'tool.images.resume' | transloco }} <app-icon name="arrow-right" [size]="16" /></button>
+            </div>
+            <ul>
+              @for (i of store.items(); track i.id) {
+                <li>
+                  <button type="button" class="thumb" [attr.aria-label]="i.name + ' — ' + (stateKey(i.status) | transloco)" [title]="i.name" (click)="store.selectedId.set(i.id)">
+                    @if (i.thumb) {
+                      <span class="pic"><img [src]="i.thumb" alt="" /></span>
+                    }
+                  </button>
+                </li>
+              }
+            </ul>
+          </div>
+        }
         <app-dropzone (files)="add($event)" (sample)="addSample($event)" />
         <p class="private"><app-icon name="lock" [size]="16" /> {{ 'tool.private' | transloco }}</p>
       </section>

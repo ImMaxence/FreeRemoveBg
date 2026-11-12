@@ -50,7 +50,8 @@
     "sample": {
       "dog": "Essayer avec le chien",
       "cat": "Essayer avec le chat",
-      "plant": "Essayer avec la plante"
+      "plant": "Essayer avec la plante",
+      "dogs": "Essayer avec les quatre chiens"
     }
   },
   "landing": {
@@ -76,17 +77,41 @@
         "background": "Nouveau fond"
       },
       "caption": "Détouré par FreeRemoveBg dans le navigateur, sans retouche",
-      "new": "Retouche au lasso"
+      "new": "Détourer plusieurs sujets"
     },
     "ticker": {
       "free": "Gratuit",
-      "lasso": "Nouveau : le lasso",
+      "lasso": "Retouche au lasso",
+      "zones": "Nouveau : les zones",
       "ai": "IA open source : IS-Net, ORMBG, SAM 2",
       "noUpload": "Aucun envoi",
       "fullSize": "Taille réelle",
       "batch": "Traitement par lot",
       "offline": "Hors ligne",
       "noAccount": "Sans compte"
+    },
+    "zones": {
+      "eyebrow": "Version 2.4",
+      "title": "Plusieurs chiens sur la photo ? Une zone pour chacun.",
+      "lead": "Dans « Préparer », tracez un cadre autour de chaque sujet. L'IA détoure chaque zone de près, puis tout revient à sa place sur l'image entière. Ou séparez les zones en autant d'images.",
+      "steps": {
+        "draw": {
+          "title": "Une zone par sujet",
+          "text": "Glissez sur l'image pour tracer un cadre, jusqu'à 12. Déplacez-le, agrandissez-le, ou ajoutez-le au clavier."
+        },
+        "together": {
+          "title": "Tout sur la même image",
+          "text": "Chaque zone est détourée de près : les sujets restent à leur place, le reste devient transparent."
+        },
+        "split": {
+          "title": "Ou une image par zone",
+          "text": "Chaque zone devient une image à part, à préparer et télécharger comme les autres, tout en ZIP."
+        }
+      },
+      "cta": "Essayer avec les quatre chiens",
+      "demoAlt": "Quatre chiens en laisse dans un parc, un cadre numéroté autour de chacun, puis détourés ensemble, ou en quatre images séparées",
+      "together": "Sur la même image",
+      "split": "Ou {{ count }} images"
     },
     "lasso": {
       "eyebrow": "Version 2.3",
@@ -228,7 +253,7 @@
       },
       "prepare": {
         "title": "Préparer avant",
-        "text": "Pivoter, retourner, recadrer avec des proportions toutes prêtes (carré, 4:5, 16:9…)."
+        "text": "Pivoter, retourner, recadrer avec des proportions toutes prêtes, ou tracer une zone autour de chaque sujet quand il y en a plusieurs."
       },
       "brush": {
         "title": "Pinceau, lasso et clic",
@@ -320,6 +345,10 @@
         "q": "Comment corriger une zone précise du détourage ?",
         "a": "Avec le lasso, dans l'onglet Retoucher : cliquez point par point autour de la zone (ou dessinez à main levée), fermez la forme, puis « Restaurer » ou « Couper ». Il s'applique dans la forme ou autour. Ctrl + Z l'annule, comme chaque retouche."
       },
+      "zones": {
+        "q": "Comment détourer plusieurs sujets d'une même photo ?",
+        "a": "Dans l'étape « Préparer », choisissez « Zones » et tracez un cadre autour de chaque sujet (jusqu'à 12). « Détourer les zones sur cette image » détoure chacun de près et garde tout à sa place ; « Séparer en N images » fait de chaque zone une image à part, à télécharger ensuite en ZIP."
+      },
       "download": {
         "q": "Pourquoi faut-il télécharger un modèle ?",
         "a": "Parce que l'IA tourne sur votre appareil et non sur un serveur. Avant le premier détourage, FreeRemoveBg vous demande votre accord pour télécharger le modèle choisi (88 à 179 Mo) depuis Hugging Face. Votre navigateur le garde ensuite : les fois suivantes, rien n'est retéléchargé, et tout fonctionne même hors ligne."
@@ -384,7 +413,8 @@
       "resultNote": "Fond et export",
       "preparing": "préparation…",
       "ready": "prêt",
-      "doneLabel": "terminé"
+      "doneLabel": "terminé",
+      "goTo": "Aller à l'étape : {{ step }}"
     },
     "state": {
       "draft": "à préparer",
@@ -404,7 +434,9 @@
       "eyebrow": "Étape 2",
       "title": "Ajoutez vos images",
       "text": "Une image ou tout un lot. Rien n'est envoyé : votre navigateur les ouvre lui-même.",
-      "list": "Vos images"
+      "list": "Vos images",
+      "yours": "Vos images ({{ count }})",
+      "resume": "Revenir à mes images"
     },
     "model": {
       "eyebrow": "Étape 1 · une seule fois",
@@ -434,7 +466,9 @@
       "choose": "Modèle",
       "recommended": "Conseillé",
       "cached": "Déjà sur cet appareil",
-      "keep": "Garder {{ name }}"
+      "keep": "Garder {{ name }}",
+      "useReady": "Continuer avec {{ name }}",
+      "back": "Retour"
     },
     "prepare": {
       "preview": "Image à préparer",
@@ -442,7 +476,7 @@
       "cropFrame": "Cadre de recadrage. Les flèches le déplacent, Maj + flèches le redimensionnent, Entrée applique",
       "eyebrow": "Étape 3 · facultatif",
       "title": "Préparer l'image ?",
-      "text": "Redressez-la, ou recadrez autour du sujet : l'IA le verra plus grand et le détourera plus précisément. Sinon, passez directement au détourage.",
+      "text": "Redressez-la, recadrez autour du sujet, ou tracez une zone autour de chaque sujet quand il y en a plusieurs : l'IA les verra plus grands et les détourera plus précisément. Sinon, passez directement au détourage.",
       "tools": "Outils de préparation",
       "rotateLeft": "Pivoter à gauche",
       "rotateRight": "Pivoter à droite",
@@ -466,6 +500,21 @@
       "goAll": "Détourer les {{ count }} images",
       "skipHint": "Rien n'est envoyé : le détourage se fait sur votre appareil.",
       "model": "Modèle d'IA"
+    },
+    "zones": {
+      "tool": "Zones",
+      "help": "Glissez sur l'image pour tracer un cadre autour de chaque sujet ; les cadres peuvent se chevaucher. Faites glisser un cadre par son numéro pour le déplacer, par son coin pour l'agrandir ; × le retire.",
+      "none": "Aucune zone pour le moment : tracez-en une autour de chaque sujet.",
+      "count": "Zones : {{ count }}",
+      "add": "Ajouter une zone",
+      "clear": "Tout retirer",
+      "together": "Détourer les zones sur cette image",
+      "togetherHelp": "Chaque zone est détourée de près ; chaque sujet reste à sa place sur l'image entière, le reste devient transparent.",
+      "split": "Séparer en {{ count }} images",
+      "splitHelp": "Chaque zone devient une image à part, à préparer et détourer comme les autres (tout en ZIP à la fin).",
+      "go": "Détourer les {{ count }} zones",
+      "zone": "Zone {{ n }}, {{ size }}. Les flèches la déplacent, Maj + flèches la redimensionnent, Suppr la retire",
+      "remove": "Retirer la zone {{ n }}"
     },
     "result": {
       "preview": "Résultat",
@@ -593,6 +642,9 @@
       "phone": "L'IA demande beaucoup de calcul et de mémoire, et le navigateur ne peut souvent pas utiliser la carte graphique d'un téléphone : une image peut prendre plusieurs dizaines de secondes, et les téléphones anciens peuvent manquer de mémoire et échouer. Pour beaucoup d'images, un ordinateur reste plus confortable.",
       "cpuTitle": "Pas de carte graphique disponible",
       "cpu": "Votre navigateur ne donne pas accès à une carte graphique (WebGPU) : l'IA tourne sur le processeur, ce qui prend plusieurs secondes par image au lieu d'une environ."
+    },
+    "nav": {
+      "images": "Mes images"
     }
   },
   "changelog": {
@@ -651,7 +703,7 @@
         {
           "title": "Images",
           "body": [
-            "Les photos d'exemple ont été placées dans le domaine public (CC0) par leurs auteurs et proviennent de Wikimedia Commons : « Dog on a log » de Christal Yuen, « Cat in green grass » de Raphael Schaller et « Rubber Plant » de Scott Webb ([détails](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md)). Elles ont été recadrées ; leurs détourages ont été réalisés par FreeRemoveBg lui-même, sans retouche.",
+            "Les photos d'exemple ont été placées dans le domaine public (CC0) par leurs auteurs et proviennent de Wikimedia Commons : « Dog on a log » de Christal Yuen, « Cat in green grass » de Raphael Schaller, « Rubber Plant » de Scott Webb et « Walking Dogs » de Matt Nelson ([détails](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md)). Elles ont été recadrées ; leurs détourages ont été réalisés par FreeRemoveBg lui-même, sans retouche.",
             "Le logo, l'image de partage et les illustrations du site ont été créés pour lui."
           ]
         },
@@ -825,7 +877,7 @@
         {
           "title": "À propos de cette déclaration",
           "body": [
-            "Cette déclaration a été rédigée le 11 novembre 2026 et revue pour la version 2.3.0 du site. Elle est mise à jour quand le site évolue."
+            "Cette déclaration a été rédigée le 11 novembre 2026 et revue pour la version 2.4.0 du site. Elle est mise à jour quand le site évolue."
           ]
         }
       ]

@@ -20,17 +20,46 @@
   li {
     position: relative;
     display: flex;
-    align-items: center;
-    gap: 12px;
     min-width: 0;
-    padding: 10px 14px 10px 10px;
     border: 2px solid var(--line-soft);
     border-radius: 999px;
     background: transparent;
     color: var(--ink-faint);
     transition:
       background 0.2s,
-      border-color 0.2s;
+      border-color 0.2s,
+      transform 0.15s var(--ease),
+      box-shadow 0.15s var(--ease);
+    &.reachable:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: var(--shadow);
+    }
+  }
+  .step-go {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    padding: 10px 14px 10px 10px;
+    border: 0;
+    border-radius: inherit;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    &:disabled {
+      cursor: default;
+    }
+    &:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+  }
+  .go-icon {
+    margin-left: auto;
+    opacity: 0.7;
   }
   .num {
     display: grid;
@@ -176,6 +205,52 @@
     max-width: 560px;
     font-size: 17px;
   }
+}
+
+/* Back on step 2: the pictures already added, to go back to. */
+.yours {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  text-align: left;
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .thumb {
+    display: block;
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    background: var(--checker);
+    overflow: hidden;
+    cursor: pointer;
+    &:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: var(--shadow-sm);
+    }
+  }
+  .pic,
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.yours-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .private {

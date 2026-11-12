@@ -59,6 +59,8 @@ export class Tool {
   /** The user asked for the model in this visit, and has not moved on yet. */
   private readonly asked = signal(false);
   private readonly continued = signal(false);
+  /** The model step, opened again from the stepper to choose another model. */
+  private readonly browsingModels = signal(false);
 
   private readonly forcedCpu: boolean;
   private readonly noticeHidden = signal(readNoticeHidden());
@@ -79,6 +81,7 @@ export class Tool {
   private readonly inModelStep = signal(false);
 
   protected readonly view = computed<View>(() => {
+    if (this.browsingModels()) return 'model';
     const state = this.store.modelState();
     if (state === 'checking') {
       if (!this.settled()) return 'checking';
@@ -99,7 +102,7 @@ export class Tool {
     return this.transloco.translate('tool.steps.modelNote');
   });
 
-  protected readonly steps = computed<{ id: string; state: StepState }[]>(() => {
+  protected readonly steps = computed<{ id: View; state: StepState; reachable: boolean }[]>(() => {
     const view = this.view();
     const item = this.store.selected();
     const order: View[] = ['model', 'images', 'prepare', 'result'];
@@ -108,9 +111,64 @@ export class Tool {
       let state: StepState = index < at ? 'done' : index === at ? 'current' : 'todo';
       if (id === 'model' && this.store.modelAllowed() && view !== 'model') state = 'done';
       if (id === 'result' && item?.status === 'done') state = view === 'result' ? 'current' : 'done';
-      return { id, state };
+      return { id, state, reachable: id !== view && this.canGo(id) };
     });
   });
+
+  /** Steps the stepper leads to: once the model is agreed to, every step already reached. */
+  private canGo(step: View): boolean {
+    if (!this.store.modelAllowed()) return false;
+    const items = this.store.items();
+    switch (step) {
+      case 'model':
+      case 'images':
+        return true;
+      case 'prepare':
+        return this.pictureToPrepare() !== undefined;
+      case 'result':
+        return items.some((i) => i.status === 'done');
+      default:
+        return false;
+    }
+  }
+
+  /** The picture "Prepare" leads to: the one on screen if it can be prepared, else the first that can. */
+  private pictureToPrepare() {
+    const free = (i: { status: string }) => i.status === 'draft' || i.status === 'done' || i.status === 'error';
+    const selected = this.store.selected();
+    return selected && free(selected) ? selected : this.store.items().find(free);
+  }
+
+  /** A click on a step of the stepper: back to it, or on to it once reached. */
+  protected goTo(step: View): void {
+    const store = this.store;
+    if (step === 'model') {
+      this.browsingModels.set(true);
+      return;
+    }
+    this.browsingModels.set(false);
+    if (step === 'images') {
+      store.selectedId.set(null);
+    } else if (step === 'prepare') {
+      const item = this.pictureToPrepare();
+      if (!item) return;
+      store.selectedId.set(item.id);
+      if (item.status === 'draft') return;
+      if (item.undo.length && !confirm(this.transloco.translate('tool.result.backConfirm'))) return;
+      store.backToPrepare(item.id);
+    } else if (step === 'result') {
+      const selected = store.selected();
+      const item = selected?.status === 'done' ? selected : store.items().find((i) => i.status === 'done');
+      if (item) store.selectedId.set(item.id);
+    }
+  }
+
+  /** Back from the list of pictures (step 2) to the first one still to prepare, or the first one. */
+  protected resume(): void {
+    const items = this.store.items();
+    const item = items.find((i) => i.status === 'draft') ?? items[0];
+    if (item) this.store.selectedId.set(item.id);
+  }
 
   constructor() {
     // ?device=wasm and ?model=… impose the processor or a model (tests, broken graphics drivers).
@@ -159,6 +217,7 @@ export class Tool {
 
   protected continue(): void {
     this.continued.set(true);
+    this.browsingModels.set(false);
   }
 
   protected decline(): void {

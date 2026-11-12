@@ -63,6 +63,8 @@ const ICONS: Record<string, string> = {
   crop: '<path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>',
   // A lasso: a dotted loop (the selection), its knot and its rope (drawn for FreeRemoveBg).
   lasso: '<path d="M6.6 15.6C4.3 14.4 3 12.6 3 10.5 3 6.4 7 3.5 12 3.5s9 2.9 9 7-4 7-9 7c-1.2 0-2.3-.2-3.3-.5" stroke-dasharray="2.6 2.1"/><circle cx="7" cy="16.7" r="1.8"/><path d="M6.3 18.5c-.7 1.2-.6 2.4.4 3.2"/>',
+  // Several frames, one around each subject: the "Zones" tool (drawn for FreeRemoveBg).
+  zones: '<rect x="2.5" y="3" width="9" height="11" rx="1.5" stroke-dasharray="2.5 2"/><rect x="12.5" y="10" width="9" height="11" rx="1.5" stroke-dasharray="2.5 2"/>',
   scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12"/>',
 };
 

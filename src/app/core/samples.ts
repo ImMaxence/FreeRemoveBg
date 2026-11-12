@@ -10,7 +10,7 @@ export interface Sample {
   name: string;
 }
 
-export const SAMPLES: Sample[] = ['dog', 'cat', 'plant'].map((id) => ({
+export const SAMPLES: Sample[] = ['dog', 'cat', 'plant', 'dogs'].map((id) => ({
   id,
   url: `/samples/${id}.jpg`,
   thumb: `/samples/${id}-thumb.jpg`,

@@ -155,6 +155,7 @@ ${NAME} is a web app (installable as a PWA, works offline), version ${version}, 
 - A picture can be cut out again with the other model, to compare
 - "Click" retouch tool: ${SAM.name} (Meta, "Segment Anything in Images and Videos", 2024; ${SAM.license}; ${Math.round(SAM.weights.fp16 / 1e6)} MB on a graphics card, ${Math.round(SAM.weights.fp32 / 1e6)} MB otherwise, downloaded only if used) selects the object the user clicks on, to add it to the cutout or take it away
 - Optional preparation before the cutout: turn, mirror, crop with preset proportions
+- Zones: in "Prepare", a frame drawn around each subject of a picture (up to 12); each zone is cut out at close range and everything is put back in its place on the whole picture, or each zone becomes a picture of its own
 - Replaces the background: transparent, a color, a gradient, another picture, or the original blurred
 - Erase and restore brush, and "rescue": draw around an object the AI missed so it looks again
 - Lasso: place points around an area (or draw it freehand), close the shape, then restore it or cut it out, inside the shape or around it; Ctrl + Z removes the last point while drawing and undoes any retouch

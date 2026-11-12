@@ -50,7 +50,8 @@
     "sample": {
       "dog": "Try with the dog",
       "cat": "Try with the cat",
-      "plant": "Try with the plant"
+      "plant": "Try with the plant",
+      "dogs": "Try with the four dogs"
     }
   },
   "landing": {
@@ -76,17 +77,41 @@
         "background": "New background"
       },
       "caption": "Cut out by FreeRemoveBg in the browser, untouched",
-      "new": "Lasso retouching"
+      "new": "Cut out several subjects"
     },
     "ticker": {
       "free": "Free",
-      "lasso": "New: the lasso",
+      "lasso": "Lasso retouching",
+      "zones": "New: zones",
       "ai": "Open source AI: IS-Net, ORMBG, SAM 2",
       "noUpload": "Nothing uploaded",
       "fullSize": "Full size",
       "batch": "Batch processing",
       "offline": "Works offline",
       "noAccount": "No account"
+    },
+    "zones": {
+      "eyebrow": "Version 2.4",
+      "title": "Several dogs in the photo? One zone each.",
+      "lead": "In \"Prepare\", draw a frame around each subject. The AI cuts out every zone at close range, then everything goes back in its place on the whole picture. Or split the zones into as many pictures.",
+      "steps": {
+        "draw": {
+          "title": "One zone per subject",
+          "text": "Drag on the picture to draw a frame, up to 12. Move it, resize it, or add it with the keyboard."
+        },
+        "together": {
+          "title": "All on the same picture",
+          "text": "Each zone is cut out at close range: the subjects stay in their place, the rest becomes transparent."
+        },
+        "split": {
+          "title": "Or one picture per zone",
+          "text": "Each zone becomes a picture of its own, to prepare and download like the others, all in one ZIP."
+        }
+      },
+      "cta": "Try with the four dogs",
+      "demoAlt": "Four dogs on leashes in a park, a numbered frame drawn around each one, then cut out together, or as four separate pictures",
+      "together": "On the same picture",
+      "split": "Or {{ count }} pictures"
     },
     "lasso": {
       "eyebrow": "Version 2.3",
@@ -228,7 +253,7 @@
       },
       "prepare": {
         "title": "Prepare first",
-        "text": "Turn, mirror, crop with ready-made proportions (square, 4:5, 16:9…)."
+        "text": "Turn, mirror, crop with ready-made proportions, or draw a zone around each subject when there are several."
       },
       "brush": {
         "title": "Brush, lasso and click",
@@ -320,6 +345,10 @@
         "q": "How do I fix one precise area of the cutout?",
         "a": "With the lasso, in the Retouch tab: click point by point around the area (or draw freehand), close the shape, then \"Restore\" or \"Cut out\". It can apply inside the shape or around it. Ctrl + Z undoes it, like every retouch."
       },
+      "zones": {
+        "q": "How do I cut out several subjects of the same photo?",
+        "a": "In the \"Prepare\" step, choose \"Zones\" and draw a frame around each subject (up to 12). \"Cut out the zones on this picture\" cuts each one out at close range and keeps everything in its place; \"Split into N pictures\" makes each zone a picture of its own, to download in one ZIP afterwards."
+      },
       "download": {
         "q": "Why does a model have to be downloaded?",
         "a": "Because the AI runs on your device, not on a server. Before the first cutout, FreeRemoveBg asks you before downloading the model you chose (88 to 179 MB) from Hugging Face. Your browser then keeps it: next time nothing is downloaded again, and everything works even offline."
@@ -384,7 +413,8 @@
       "resultNote": "Background and export",
       "preparing": "preparing…",
       "ready": "ready",
-      "doneLabel": "done"
+      "doneLabel": "done",
+      "goTo": "Go to this step: {{ step }}"
     },
     "state": {
       "draft": "to prepare",
@@ -404,7 +434,9 @@
       "eyebrow": "Step 2",
       "title": "Add your pictures",
       "text": "One picture or a whole batch. Nothing is sent: your browser opens them itself.",
-      "list": "Your pictures"
+      "list": "Your pictures",
+      "yours": "Your pictures ({{ count }})",
+      "resume": "Back to my pictures"
     },
     "model": {
       "eyebrow": "Step 1 · only once",
@@ -434,7 +466,9 @@
       "choose": "Model",
       "recommended": "Recommended",
       "cached": "Already on this device",
-      "keep": "Keep {{ name }}"
+      "keep": "Keep {{ name }}",
+      "useReady": "Continue with {{ name }}",
+      "back": "Back"
     },
     "prepare": {
       "preview": "Picture to prepare",
@@ -442,7 +476,7 @@
       "cropFrame": "Crop frame. Arrows move it, Shift + arrows resize it, Enter applies",
       "eyebrow": "Step 3 · optional",
       "title": "Prepare the picture?",
-      "text": "Straighten it, or crop around the subject: the AI will see it bigger and cut it out more precisely. Otherwise, go straight to the cutout.",
+      "text": "Straighten it, crop around the subject, or draw a zone around each subject when there are several: the AI sees them bigger and cuts them out more precisely. Otherwise, go straight to the cutout.",
       "tools": "Preparation tools",
       "rotateLeft": "Turn left",
       "rotateRight": "Turn right",
@@ -466,6 +500,21 @@
       "goAll": "Cut out all {{ count }} pictures",
       "skipHint": "Nothing is sent: the cutout happens on your device.",
       "model": "AI model"
+    },
+    "zones": {
+      "tool": "Zones",
+      "help": "Drag on the picture to draw a frame around each subject; frames may overlap. Drag a frame by its number to move it, by its corner to resize it; × removes it.",
+      "none": "No zone yet: draw one around each subject.",
+      "count": "Zones: {{ count }}",
+      "add": "Add a zone",
+      "clear": "Remove all",
+      "together": "Cut out the zones on this picture",
+      "togetherHelp": "Each zone is cut out at close range; every subject stays in its place on the whole picture, the rest becomes transparent.",
+      "split": "Split into {{ count }} pictures",
+      "splitHelp": "Each zone becomes a picture of its own, to prepare and cut out like the others (all in one ZIP at the end).",
+      "go": "Cut out the {{ count }} zones",
+      "zone": "Zone {{ n }}, {{ size }}. Arrows move it, Shift + arrows resize it, Delete removes it",
+      "remove": "Remove zone {{ n }}"
     },
     "result": {
       "preview": "Result",
@@ -593,6 +642,9 @@
       "phone": "The AI needs a lot of computing power and memory, and the browser often cannot use a phone's graphics card: a picture can take tens of seconds, and older phones may run out of memory and fail. For many pictures, a computer is more comfortable.",
       "cpuTitle": "No graphics card available",
       "cpu": "Your browser gives no access to a graphics card (WebGPU): the AI runs on the processor, which takes several seconds per picture instead of about one."
+    },
+    "nav": {
+      "images": "My pictures"
     }
   },
   "changelog": {
@@ -651,7 +703,7 @@
         {
           "title": "Pictures",
           "body": [
-            "The sample pictures were placed in the public domain (CC0) by their authors and come from Wikimedia Commons: \"Dog on a log\" by Christal Yuen, \"Cat in green grass\" by Raphael Schaller and \"Rubber Plant\" by Scott Webb ([details](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md)). They were cropped; their cutouts were made by FreeRemoveBg itself, without retouching.",
+            "The sample pictures were placed in the public domain (CC0) by their authors and come from Wikimedia Commons: \"Dog on a log\" by Christal Yuen, \"Cat in green grass\" by Raphael Schaller, \"Rubber Plant\" by Scott Webb and \"Walking Dogs\" by Matt Nelson ([details](https://github.com/ImMaxence/FreeRemoveBg/blob/main/public/samples/CREDITS.md)). They were cropped; their cutouts were made by FreeRemoveBg itself, without retouching.",
             "The logo, the sharing picture and the illustrations of the site were made for it."
           ]
         },
@@ -825,7 +877,7 @@
         {
           "title": "About this statement",
           "body": [
-            "This statement was written on 11 November 2026 and checked again for version 2.3.0 of the site. It is updated when the site changes."
+            "This statement was written on 11 November 2026 and checked again for version 2.4.0 of the site. It is updated when the site changes."
           ]
         }
       ]

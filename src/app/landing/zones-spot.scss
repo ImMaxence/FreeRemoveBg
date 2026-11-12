@@ -1,0 +1,240 @@
+@use 'spot';
+
+.zones-demo {
+  display: grid;
+  gap: 22px;
+  margin: 0;
+}
+
+.demo-stage {
+  position: relative;
+  aspect-ratio: 960 / 641;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--checker);
+  box-shadow:
+    0 0 0 3px var(--line),
+    10px 10px 0 3px var(--shadow-color);
+  transform: rotate(-1.5deg);
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* The loop (10 s): a frame around each dog, the photo goes, the dogs stay; then the four pictures. */
+.demo-photo,
+.demo-zone,
+.demo-tag,
+.demo-split-label,
+.sticker {
+  animation-duration: 10s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+/* Without motion: the result, with its zones, and the four pictures. */
+.demo-photo {
+  opacity: 0;
+  animation-name: zs-photo;
+}
+
+@keyframes zs-photo {
+  0%,
+  44% {
+    opacity: 1;
+  }
+  52%,
+  90% {
+    opacity: 0;
+  }
+  97%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.demo-zone {
+  position: absolute;
+  border: 2.5px dashed #ffd60a;
+  outline: 1.5px solid rgb(0 0 0 / 0.55);
+  transform-origin: top left;
+  b {
+    position: absolute;
+    left: -2px;
+    top: -2px;
+    display: grid;
+    place-items: center;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 5px 0 7px 0;
+    background: #ffd60a;
+    color: #16140f;
+    font-size: 12.5px;
+    font-weight: 800;
+  }
+}
+
+@for $i from 0 through 3 {
+  $t: 6 + $i * 8;
+  .demo-zone.z#{$i} {
+    animation-name: zs-zone-#{$i};
+  }
+  @keyframes zs-zone-#{$i} {
+    0%,
+    #{$t}% {
+      opacity: 0;
+      transform: scale(0.2);
+    }
+    #{$t + 4}%,
+    56% {
+      opacity: 1;
+      transform: none;
+    }
+    62%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+}
+
+.demo-tag {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  padding: 6px 13px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--yellow);
+  color: var(--on-yellow);
+  font-size: 13.5px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  animation-name: zs-tag;
+}
+
+@keyframes zs-tag {
+  0%,
+  50% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  54%,
+  88% {
+    opacity: 1;
+    transform: none;
+  }
+  92%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.demo-split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.demo-split-label {
+  font-weight: 700;
+  animation-name: zs-split;
+}
+
+@keyframes zs-split {
+  0%,
+  60% {
+    opacity: 0;
+  }
+  64%,
+  90% {
+    opacity: 1;
+  }
+  95%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.stickers {
+  display: flex;
+  gap: 10px;
+}
+
+.sticker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 80px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: var(--checker);
+  box-shadow: var(--shadow-sm);
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  b {
+    position: absolute;
+    left: -8px;
+    top: -8px;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--line);
+    border-radius: 50%;
+    background: var(--yellow);
+    color: var(--on-yellow);
+    font-size: 12px;
+    font-weight: 800;
+  }
+}
+
+@for $i from 0 through 3 {
+  $t: 62 + $i * 4;
+  .sticker.s#{$i} {
+    animation-name: zs-sticker-#{$i};
+  }
+  @keyframes zs-sticker-#{$i} {
+    0%,
+    #{$t}% {
+      opacity: 0;
+      transform: translateY(10px) scale(0.7);
+    }
+    #{$t + 4}%,
+    90% {
+      opacity: 1;
+      transform: rotate(#{($i - 1.5) * 4}deg);
+    }
+    95%,
+    100% {
+      opacity: 0;
+      transform: rotate(#{($i - 1.5) * 4}deg);
+    }
+  }
+}
+
+.sticker {
+  transform: rotate(-4deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zones-demo * {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .sticker {
+    width: 54px;
+    height: 68px;
+  }
+}

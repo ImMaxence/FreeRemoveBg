@@ -21,6 +21,25 @@
   <img src="docs/screenshots/landing-light.png" alt="FreeRemoveBg home page: the headline 'Cut out any picture. Without uploading it.', and a dog cut out of its photo, breaking out of the frame" />
 </p>
 
+## New in 2.4: zones, for several subjects
+
+<p align="center">
+  <img src="docs/screenshots/editor-zones.png" alt="The Prepare step: a numbered frame drawn around each of four dogs on one photo, with the buttons to cut out the zones together or to split them into four pictures" />
+</p>
+
+Four dogs on one photo? In **Prepare**, choose **Zones** and **draw a frame around each subject** (up to 12; frames may overlap). Then:
+
+- **Cut out the zones on this picture**: the AI cuts out each zone at close range, where it sees the subject bigger, and everything goes back in its place on the whole picture; the rest becomes transparent.
+- **Split into N pictures**: each zone becomes a picture of its own, to prepare, cut out and download like the others (all in one ZIP).
+
+A frame is moved by its number and resized by its corner; <kbd>Add a zone</kbd>, the arrows, <kbd>Shift</kbd> + arrows and <kbd>Delete</kbd> do the same with the keyboard.
+
+| The four dogs, cut out zone by zone | The zones on the home page |
+| --- | --- |
+| ![Four dogs cut out together on the whole picture, each from its own zone](docs/screenshots/editor-zones-result.png) | ![The home page's "New" section: a frame around each dog, then the dogs cut out, or as four pictures](docs/screenshots/landing-zones.png) |
+
+**Going back** is one click too: the steps at the top of the tool are buttons (to choose another AI model, go back to your pictures, to "Prepare" or to the result), and "My pictures" and "Back to preparing" sit next to the picture.
+
 ## New in 2.3: the lasso
 
 <p align="center">
@@ -75,7 +94,7 @@ Tried and left out (see [`src/app/core/models.ts`](src/app/core/models.ts)): BiR
 
 1. **The AI model.** The first time, the user picks a model (IS-Net or ORMBG); the page says what it needs (88 to 179 MB from Hugging Face, once) and downloads nothing until the user agrees. The download continues while pictures are added and prepared. On the next visits the model is found in the browser and this step is skipped.
 2. **Pictures.** Choose, drop anywhere or paste with `Ctrl + V`, one or many. Every picture the browser can open is accepted (JPG, PNG, WebP, AVIF, GIF, BMP, HEIC in Safari).
-3. **Prepare.** Optional: turn, mirror, crop with set proportions (free, original, square, 4:5, 3:2, 16:9), also with the keyboard, and back to the original. Cropping around a small subject lets the AI see it bigger.
+3. **Prepare.** Optional: turn, mirror, crop with set proportions (free, original, square, 4:5, 3:2, 16:9), also with the keyboard, and back to the original. Cropping around a small subject lets the AI see it bigger; with several subjects, draw a zone around each one.
 4. **Cut out and export.** New background, eraser and restore brush, the lasso to restore or cut out any area, "rescue" an object the AI missed, "click" an object to add it or take it away (SAM 2.1), try the other model, then download as PNG, WebP or JPG at the photo's size, copy, or download the whole batch as a ZIP. The mouse wheel zooms around the pointer; with "Move", dragging moves the zoomed picture.
 
 ## Features
@@ -85,6 +104,8 @@ Tried and left out (see [`src/app/core/models.ts`](src/app/core/models.ts)): BiR
 | **Automatic cutout** | People, animals, products, objects: the subject is isolated in about a second on a graphics card, a few seconds on the processor. Two models: IS-Net for any subject, ORMBG for people; one click cuts a picture out again with the other. |
 | **New background** | Transparent, a color (presets or your own), a gradient, one of your pictures, or the original blurred. The same background applies to the whole batch. |
 | **Prepare** | Turn by quarter turns, mirror, crop with a frame (8 handles, set proportions, arrows and Shift + arrows on the keyboard). |
+| **Zones** (new) | Several subjects on one picture: a frame around each (up to 12). Cut out zone by zone and put back together on the whole picture, or split into as many pictures. |
+| **Steps you can go back to** | The steps at the top of the tool are buttons: another AI model, your pictures, "Prepare" or the result, in one click. |
 | **Brush and rescue** | Erase or restore by hand, with zoom up to 800 % (mouse wheel, around the pointer), undo and redo. "Rescue": draw a rectangle around something the AI missed (an object held at arm's length…), it looks there again and adds it. |
 | **Lasso** (new) | Click point by point around an area, or draw it freehand, close the shape, then restore it or cut it out, inside or around it. <kbd>Ctrl</kbd> + <kbd>Z</kbd> takes the last point back while drawing and undoes the change afterwards; <kbd>Enter</kbd> closes, <kbd>Esc</kbd> clears. |
 | **Click (SAM 2.1)** | Click an object, or draw a box around it, and SAM 2.1 outlines it: add it to the cutout or remove it from it. More clicks refine the selection ("Include", "Exclude" or Alt + click). Undoable like a brush stroke. |

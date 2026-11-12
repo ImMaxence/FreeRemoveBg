@@ -1,6 +1,6 @@
 {
   "name": "freeremovebg",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Free background remover running 100% in the browser: AI cutout, background replacement, erase/restore brush, batch processing, full-resolution download. Nothing is uploaded.",
   "license": "MIT",
   "author": "Maxence Bonnici",

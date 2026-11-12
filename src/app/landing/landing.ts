@@ -9,13 +9,14 @@ import { REPO_URL } from '../core/version';
 import { Icon } from '../shared/icon';
 import { Reveal } from '../shared/reveal';
 import { LassoSpot } from './lasso-spot';
+import { ZonesSpot } from './zones-spot';
 
 type ArtMode = 'photo' | 'cutout' | 'background';
 
 /** The home page: what the tool does, with which AI, and how private it is. */
 @Component({
   selector: 'app-landing',
-  imports: [RouterLink, TranslocoPipe, Icon, Reveal, LassoSpot],
+  imports: [RouterLink, TranslocoPipe, Icon, Reveal, LassoSpot, ZonesSpot],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,7 +46,7 @@ export class Landing {
   protected readonly browsers = BROWSERS;
   protected readonly faq = FAQ;
   protected readonly modes: ArtMode[] = ['photo', 'cutout', 'background'];
-  protected readonly ticker = ['lasso', 'free', 'ai', 'noUpload', 'fullSize', 'batch', 'offline', 'noAccount'];
+  protected readonly ticker = ['zones', 'lasso', 'free', 'ai', 'noUpload', 'fullSize', 'batch', 'offline', 'noAccount'];
   protected readonly aiPoints = ['precise', 'choice', 'local', 'open'];
 
   /** What the hero picture shows: the photo, the cutout, or the cutout on a new background. */
